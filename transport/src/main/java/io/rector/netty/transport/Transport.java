@@ -1,18 +1,15 @@
 package io.rector.netty.transport;
 
-import io.rector.netty.transport.connction.Connection;
 import io.rector.netty.config.Config;
+import io.rector.netty.transport.connction.DuplexConnection;
 import reactor.core.publisher.Mono;
-import reactor.ipc.netty.options.ServerOptions;
 
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public interface Transport {
 
-    Consumer<? super ServerOptions.Builder<?>> nettyOptions();
 
-
-    Mono<Connection> connect(Config config, Transport transport);
+    Mono<DuplexConnection> connect();
 
 
 }

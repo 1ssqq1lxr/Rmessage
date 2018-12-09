@@ -1,14 +1,17 @@
 package io.rector.netty.core;
 
+import io.rector.netty.core.socket.TcpSocket;
+import io.rector.netty.transport.ServerTransport;
+import io.rector.netty.transport.connction.DuplexConnection;
 import io.rector.netty.transport.socket.Rsocket;
 import io.rector.netty.config.Config;
 import io.rector.netty.config.Protocol;
 import io.rector.netty.config.ServerConfig;
+import io.rector.netty.transport.socket.RsocketAcceptor;
 import lombok.Data;
+import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
-import reactor.ipc.netty.NettyConnector;
-import reactor.ipc.netty.NettyInbound;
-import reactor.ipc.netty.NettyOutbound;
+import reactor.ipc.netty.tcp.TcpServer;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -19,15 +22,22 @@ import java.io.IOException;
  * @Description:
  */
 @Data
-public class ServerStart<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements Closeable {
+public class ServerStart implements Closeable {
 
     private static UnicastProcessor<Operation> operations =UnicastProcessor.create();
 
-    private Rsocket<T> rsocket;
-
-    private ServerStart(Config config){
-
+    public Mono<DuplexConnection> connect(ServerConfig config){
+        TcpServer tcpServer = TcpServer.create();
+        ServerTransport serverTransport =new ServerTransport(tcpServer,config);
+        return serverTransport.connect();
     }
+
+
+    public RsocketAcceptor<TcpServer> acceptorScoket(){
+        return  TcpSocket::new;
+    }
+
+
 
     public  static ServerStart.builder builder(){
             return  new ServerStart.builder();
@@ -35,7 +45,7 @@ public class ServerStart<T extends NettyConnector< ? extends NettyInbound,? exte
 
     @Override
     public void close() throws IOException {
-        rsocket.close(()->{});
+//        rsocket.close(()->{});
     }
 
     public static class builder{
