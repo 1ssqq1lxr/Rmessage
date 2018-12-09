@@ -1,9 +1,12 @@
 package io.rector.netty.transport.socket;
 
+import io.rector.netty.transport.Transport;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
+
+import java.util.function.Supplier;
 
 /**
  * @Auther: lxr
@@ -12,10 +15,6 @@ import reactor.ipc.netty.NettyOutbound;
  */
 public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> {
 
-    private NettyConnector nettyConnector;
-
-    public Mono<Void> close(Runnable runnable){
-        return  Mono.empty();
-    }
+    protected Supplier<Transport> transport;
 
 }

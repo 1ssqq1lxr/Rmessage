@@ -1,12 +1,11 @@
 package io.rector.netty.core;
 
+import io.rector.netty.config.Protocol;
+import io.rector.netty.config.ServerConfig;
 import io.rector.netty.core.socket.TcpSocket;
 import io.rector.netty.transport.ServerTransport;
 import io.rector.netty.transport.connction.DuplexConnection;
 import io.rector.netty.transport.socket.Rsocket;
-import io.rector.netty.config.Config;
-import io.rector.netty.config.Protocol;
-import io.rector.netty.config.ServerConfig;
 import io.rector.netty.transport.socket.RsocketAcceptor;
 import lombok.Data;
 import reactor.core.publisher.Mono;
@@ -29,6 +28,11 @@ public class ServerStart implements Closeable {
     public Mono<DuplexConnection> connect(ServerConfig config){
         TcpServer tcpServer = TcpServer.create();
         ServerTransport serverTransport =new ServerTransport(tcpServer,config);
+        RsocketAcceptor<TcpServer> tcpServerRsocketAcceptor = acceptorScoket();
+        Rsocket<TcpServer> accept = tcpServerRsocketAcceptor.accept(() -> serverTransport);
+//        accept.connect();
+
+
         return serverTransport.connect();
     }
 
@@ -56,12 +60,12 @@ public class ServerStart implements Closeable {
 
         public   Integer port;
 
-        public  ServerStart build(){
-            return  new ServerStart(ServerConfig.builder()
-                    .ip(ip)
-                    .port(port)
-                    .protocol(protocol).build());
-        }
+//        public  ServerStart build(){
+//            return  new ServerStart(ServerConfig.builder()
+//                    .ip(ip)
+//                    .port(port)
+//                    .protocol(protocol).build());
+//        }
 
 
 

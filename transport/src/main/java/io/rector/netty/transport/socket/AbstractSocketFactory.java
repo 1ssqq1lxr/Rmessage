@@ -15,7 +15,7 @@ public class AbstractSocketFactory<T extends  NettyConnector> implements SocketF
     @Override
     public TcpServer newFactory(Config config, Transport transport) {
         return  TcpServer.builder().listenAddress(config.getInetSocketAddress())
-                .options(transport.nettyOptions())
+//                .options(transport.nettyOptions())
                 .build();
     }
 
