@@ -1,5 +1,6 @@
 package io.rector.netty.transport.socket;
 
+import io.rector.netty.config.Protocol;
 import io.rector.netty.transport.Transport;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
@@ -16,5 +17,7 @@ import java.util.function.Supplier;
 public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> {
 
     protected Supplier<Transport> transport;
+
+    public abstract Supplier<Protocol> getPrptocol();
 
 }

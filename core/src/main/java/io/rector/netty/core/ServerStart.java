@@ -7,9 +7,13 @@ import io.rector.netty.transport.ServerTransport;
 import io.rector.netty.transport.connction.DuplexConnection;
 import io.rector.netty.transport.socket.Rsocket;
 import io.rector.netty.transport.socket.RsocketAcceptor;
+import io.rector.netty.transport.socket.SocketFactory;
 import lombok.Data;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
+import reactor.ipc.netty.NettyConnector;
+import reactor.ipc.netty.NettyInbound;
+import reactor.ipc.netty.NettyOutbound;
 import reactor.ipc.netty.tcp.TcpServer;
 
 import java.io.Closeable;
@@ -25,53 +29,27 @@ public class ServerStart implements Closeable {
 
     private static UnicastProcessor<Operation> operations =UnicastProcessor.create();
 
-    public Mono<DuplexConnection> connect(ServerConfig config){
+    private SocketFactory socketFactory = new SocketFactory(sockets->{
+        sockets.put(
+                Protocol.TCP,Mono.defer(()->{
+                         RsocketAcceptor<TcpServer> rsocketAcceptor= TcpSocket::new;
+                         return Mono.just(rsocketAcceptor); })
+        );
+    });
+
+    public <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<ApiOperation<T>> connect(ServerConfig config){
         TcpServer tcpServer = TcpServer.create();
         ServerTransport serverTransport =new ServerTransport(tcpServer,config);
-        RsocketAcceptor<TcpServer> tcpServerRsocketAcceptor = acceptorScoket();
-        Rsocket<TcpServer> accept = tcpServerRsocketAcceptor.accept(() -> serverTransport);
-//        accept.connect();
-
-
-        return serverTransport.connect();
-    }
-
-
-    public RsocketAcceptor<TcpServer> acceptorScoket(){
-        return  TcpSocket::new;
-    }
-
-
-
-    public  static ServerStart.builder builder(){
-            return  new ServerStart.builder();
+        return socketFactory.getSocket(config.getProtocol())
+                .map(rsocketAcceptor -> {
+                         Rsocket<T> rsocket= (Rsocket<T>) rsocketAcceptor.accept(() -> serverTransport);
+                         return new ApiOperation<>(rsocket);
+                });
     }
 
     @Override
     public void close() throws IOException {
 //        rsocket.close(()->{});
-    }
-
-    public static class builder{
-
-        private  Protocol protocol;
-
-        public   String ip;
-
-        public   Integer port;
-
-//        public  ServerStart build(){
-//            return  new ServerStart(ServerConfig.builder()
-//                    .ip(ip)
-//                    .port(port)
-//                    .protocol(protocol).build());
-//        }
-
-
-
-
-
-
     }
 
 }

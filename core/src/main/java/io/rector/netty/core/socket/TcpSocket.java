@@ -1,9 +1,8 @@
 package io.rector.netty.core.socket;
 
-import io.rector.netty.core.ApiOperation;
+import io.rector.netty.config.Protocol;
 import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.socket.Rsocket;
-import reactor.core.publisher.Mono;
 import reactor.ipc.netty.tcp.TcpServer;
 
 import java.util.function.Supplier;
@@ -15,13 +14,18 @@ import java.util.function.Supplier;
  */
 public class TcpSocket extends Rsocket<TcpServer> {
 
-
+    private Supplier<Protocol> protocol;
 
     public TcpSocket(Supplier<Transport> transport) {
         this.transport = transport;
     }
 
 
+
+    @Override
+    public Supplier<Protocol> getPrptocol() {
+        return ()->Protocol.TCP;
+    }
 
 
 }
