@@ -12,6 +12,7 @@ import java.util.function.Supplier;
  * @Date: 2018/12/9 15:55
  * @Description:
  */
+@FunctionalInterface
 public interface RsocketAcceptor<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> {
 
     Rsocket<T> accept(Supplier<Transport> transport);

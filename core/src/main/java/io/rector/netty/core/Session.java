@@ -14,9 +14,6 @@ import java.util.function.Supplier;
  */
 public interface Session {
 
-    //连接
-    Mono<Connection> connect(Supplier<? extends SocketFactory> factory);
-
     //查看所有连接
     Mono<List<Connection>> listConnection();
 
