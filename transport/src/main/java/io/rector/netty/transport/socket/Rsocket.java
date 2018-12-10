@@ -2,15 +2,13 @@ package io.rector.netty.transport.socket;
 
 import io.rector.netty.config.Protocol;
 import io.rector.netty.transport.Transport;
-import io.rector.netty.transport.connction.DuplexConnection;
-import reactor.core.publisher.Flux;
+import io.rector.netty.transport.connction.RConnection;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
 /**
@@ -20,7 +18,7 @@ import java.util.function.Supplier;
  */
 public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> {
 
-    protected List<DuplexConnection> connections ;
+    protected List<RConnection> connections ;
 
     protected Supplier<Transport> transport;
 

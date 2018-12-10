@@ -1,7 +1,7 @@
 package io.rector.netty.transport;
 
 import io.rector.netty.config.ServerConfig;
-import io.rector.netty.transport.connction.DuplexConnection;
+import io.rector.netty.transport.connction.RConnection;
 import reactor.core.publisher.Flux;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyContext;
@@ -37,10 +37,10 @@ public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? 
     }
 
     @Override
-    public Flux<DuplexConnection> connect() {
+    public Flux<RConnection> connect() {
        return Flux.create(fluxSink -> {
          this.context =server.get().newHandler((in, out)->{
-               DuplexConnection duplexConnection = new DuplexConnection(in,out,out.context(),this);
+               RConnection duplexConnection = new RConnection(in,out,out.context(),this);
                fluxSink.next(duplexConnection);
                return out.context().onClose();
            }).block();

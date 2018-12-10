@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  * @Description:
  */
 @Data
-public class DuplexConnection implements Connection {
+public class RConnection implements Connection {
 
     private NettyInbound inbound;
 
@@ -25,7 +25,7 @@ public class DuplexConnection implements Connection {
     private NettyContext context;
 
 
-    public DuplexConnection(NettyInbound inbound, NettyOutbound outbound, NettyContext context, Transport transport) {
+    public RConnection(NettyInbound inbound, NettyOutbound outbound, NettyContext context, Transport transport) {
         this.inbound = inbound;
         this.outbound = outbound;
         this.context = context;
