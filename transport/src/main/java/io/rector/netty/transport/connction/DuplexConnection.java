@@ -69,4 +69,9 @@ public class DuplexConnection implements Connection {
     public <T> Flux<T> receiveMsg(Class<T> contentClass) {
         return inbound.receiveObject().cast(contentClass);
     }
+
+    @Override
+    public void onClose(Runnable close) {
+        context.onClose(close);
+    }
 }

@@ -1,15 +1,14 @@
 package io.rector.netty.transport;
 
-import io.rector.netty.config.Config;
 import io.rector.netty.transport.connction.DuplexConnection;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
-import java.util.function.Supplier;
+import java.util.List;
 
 public interface Transport {
 
 
-    Mono<DuplexConnection> connect();
+    Flux<DuplexConnection> connect();
 
 
 }

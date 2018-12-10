@@ -6,14 +6,15 @@ import reactor.ipc.netty.options.ServerOptions;
 
 import java.net.InetSocketAddress;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @Auther: lxr
  * @Date: 2018/12/7 16:09
  * @Description:
  */
-@Builder
 @Data
+@Builder
 public class ServerConfig implements Config{
 
     private  Protocol protocol;
@@ -21,6 +22,16 @@ public class ServerConfig implements Config{
     public   String ip;
 
     public   Integer port;
+
+    private  Long readIdle;
+
+    private Supplier<Runnable> readEvent;
+
+    private  Long writeIdle;
+
+    private Supplier<Runnable> writeEvent;
+
+    public   Consumer<? super ServerOptions.Builder<?>>  options;
 
     @Override
     public InetSocketAddress getInetSocketAddress() {

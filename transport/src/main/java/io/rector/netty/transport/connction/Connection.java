@@ -32,4 +32,6 @@ public interface Connection {
     Mono<NettyOutbound> onWriteIdle(Long l, Supplier<? extends Runnable> writeLe);
 
      <T> Flux<T> receiveMsg(Class<T> contentClass);
+
+    void onClose(Runnable remove);
 }

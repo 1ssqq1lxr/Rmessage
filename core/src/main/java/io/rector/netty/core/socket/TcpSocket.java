@@ -2,9 +2,13 @@ package io.rector.netty.core.socket;
 
 import io.rector.netty.config.Protocol;
 import io.rector.netty.transport.Transport;
+import io.rector.netty.transport.connction.DuplexConnection;
 import io.rector.netty.transport.socket.Rsocket;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.ipc.netty.tcp.TcpServer;
 
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
 /**
@@ -14,13 +18,13 @@ import java.util.function.Supplier;
  */
 public class TcpSocket extends Rsocket<TcpServer> {
 
-    private Supplier<Protocol> protocol;
+
+    private Flux<DuplexConnection> connectionFlux;
 
     public TcpSocket(Supplier<Transport> transport) {
         this.transport = transport;
+        this.connections = new CopyOnWriteArrayList<>();
     }
-
-
 
     @Override
     public Supplier<Protocol> getPrptocol() {
@@ -28,4 +32,15 @@ public class TcpSocket extends Rsocket<TcpServer> {
     }
 
 
+    public Mono<Rsocket<TcpServer>> start() {
+        return  Mono.defer(()->{
+              transport.get()
+                      .connect()
+                      .subscribe(duplexConnection -> {
+                          duplexConnection.onClose(()->connections.remove(duplexConnection));
+                          connections.add(duplexConnection);
+                      });
+              return Mono.just(this);
+          });
+    }
 }
