@@ -25,13 +25,11 @@ public class RConnection implements Connection {
     private NettyContext context;
 
 
-    public RConnection(NettyInbound inbound, NettyOutbound outbound, NettyContext context, Transport transport) {
+    public RConnection(NettyInbound inbound, NettyOutbound outbound, NettyContext context) {
         this.inbound = inbound;
         this.outbound = outbound;
         this.context = context;
-        context.onClose(() -> {
-            context.dispose();
-        });
+        context.onClose(() -> context.dispose());
     }
 
     @Override

@@ -12,6 +12,7 @@
     <module>core</module>
     <module>flow</module>
     <module>config</module>
+      <module>api</module>
   </modules>
   <packaging>pom</packaging>
 

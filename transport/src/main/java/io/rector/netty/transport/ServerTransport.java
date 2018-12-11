@@ -1,6 +1,8 @@
 package io.rector.netty.transport;
 
+import io.netty.buffer.ByteBufUtil;
 import io.rector.netty.config.ServerConfig;
+import io.rector.netty.transport.connction.Connection;
 import io.rector.netty.transport.connction.RConnection;
 import reactor.core.publisher.Flux;
 import reactor.ipc.netty.NettyConnector;
@@ -40,7 +42,7 @@ public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? 
     public Flux<RConnection> connect() {
        return Flux.create(fluxSink -> {
          this.context =server.get().newHandler((in, out)->{
-               RConnection duplexConnection = new RConnection(in,out,out.context(),this);
+               RConnection duplexConnection = new RConnection(in,out,out.context());
                fluxSink.next(duplexConnection);
                return out.context().onClose();
            }).block();
