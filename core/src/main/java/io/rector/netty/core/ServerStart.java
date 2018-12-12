@@ -47,15 +47,12 @@ public class ServerStart{
         return this;
     }
 
-
     private static UnicastProcessor<Operation> operations =UnicastProcessor.create();
 
-
-    private SocketFactory socketFactory = new SocketFactory(sockets-> sockets.put(
-            Protocol.TCP,Mono.defer(()->{
-                     RsocketAcceptor<TcpServer> rsocketAcceptor= TcpSocket::new;
-                     return Mono.just(rsocketAcceptor); })
-    ));
+    private SocketFactory socketFactory = new SocketFactory(sockets->{
+        RsocketAcceptor rs=TcpSocket::new;
+        sockets.put(Protocol.TCP,Mono.just(rs));
+    } );
 
     public <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<PersistSession<T>> connect(){
         Objects.requireNonNull(config.getOptions(),"请配置options");

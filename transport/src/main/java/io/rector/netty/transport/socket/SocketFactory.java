@@ -17,21 +17,21 @@ import java.util.function.Consumer;
  * @Description:
  */
 public class SocketFactory {
-    private Map<Protocol,Mono<RsocketAcceptor<? extends  NettyConnector>>> sockets = new HashMap<>();
+    private Map<Protocol,Mono<RsocketAcceptor>> sockets = new HashMap<>();
 
 
-    public SocketFactory(Consumer< Map<Protocol,Mono<RsocketAcceptor<? extends  NettyConnector>>>> consumer){
+    public SocketFactory(Consumer< Map<Protocol,Mono<RsocketAcceptor>>> consumer){
         consumer.accept(sockets);
     }
 
 
-    public  Mono<Void> register(Protocol protocol,Mono<RsocketAcceptor<? extends  NettyConnector>> rsocket){
+    public  Mono<Void> register(Protocol protocol,Mono<RsocketAcceptor> rsocket){
        return Mono.defer(()->{
             sockets.put(protocol,rsocket);
             return Mono.empty();
         });
     }
-    public Mono<RsocketAcceptor<? extends  NettyConnector>> getSocket(Protocol protocol){
+    public Mono<RsocketAcceptor> getSocket(Protocol protocol){
       return   Optional.ofNullable(sockets.get(protocol))
                 .orElse(Mono.empty());
 
