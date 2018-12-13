@@ -27,15 +27,7 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
     public abstract Supplier<Protocol> getPrptocol();
 
     public Mono<Rsocket<T>> start() {
-        return  Mono.defer(()->{
-            transport.get()
-                    .connect()
-                    .doOnNext(duplexConnection -> {
-                        duplexConnection.onClose(()->connections.remove(duplexConnection));
-                        connections.add(duplexConnection);
-                    });
-            return Mono.just(this);
-        });
+        return  Mono.defer(this::get);
     }
 
     public void close() {
@@ -43,4 +35,13 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
     }
 
 
+    private Mono<? extends Rsocket<T>> get() {
+        transport.get()
+                .connect()
+                .subscribe(duplexConnection -> {
+                    duplexConnection.onClose(() -> connections.remove(duplexConnection));
+                    connections.add(duplexConnection);
+                });
+        return Mono.just(this);
+    }
 }

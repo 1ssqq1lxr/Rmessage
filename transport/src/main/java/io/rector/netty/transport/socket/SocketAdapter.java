@@ -7,7 +7,6 @@ import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 

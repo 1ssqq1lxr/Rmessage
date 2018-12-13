@@ -1,5 +1,7 @@
 package io.rector.netty.transport;
 
+import io.reactor.netty.api.ReflectUtil;
+import io.rector.netty.config.Config;
 import io.rector.netty.config.ServerConfig;
 import io.rector.netty.transport.connction.RConnection;
 import reactor.core.publisher.Flux;
@@ -9,8 +11,6 @@ import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
-import java.util.function.Supplier;
-
 /**
  * @Auther: lxr
  * @Date: 2018/12/7 16:46
@@ -18,16 +18,16 @@ import java.util.function.Supplier;
  */
 public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements Transport<T> {
 
-    private Supplier<T> server;
+    private ServerConfig config;
 
-    private Supplier<ServerConfig> config;
+    private Class<T> classT;
 
-    private   NettyContext context;
+    private  NettyContext context;
 
 
-    public ServerTransport(T server, ServerConfig config) {
-        this.server =()->server;
-        this.config = ()->config;
+    public ServerTransport(Class<T> classT, ServerConfig config) {
+        this.config = config;
+        this.classT=classT;
     }
 
     @Override
@@ -41,17 +41,16 @@ public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? 
     }
 
     @Override
-    public Supplier<ServerConfig> config() {
+    public Config config() {
         return this.config;
     }
 
     @Override
     public Flux<RConnection> connect() {
-
-       return Flux.create(fluxSink -> this.context =server.get().newHandler((in, out)->{
-             RConnection duplexConnection = new RConnection(in,out,out.context());
-             fluxSink.next(duplexConnection);
-             return out.context().onClose();
-         }).block());
+       return Flux.create(fluxSink -> this.context=ReflectUtil.staticMethod(classT,config.getOptions()).newHandler((in, out)->{
+           RConnection duplexConnection = new RConnection(in,out,out.context());
+           fluxSink.next(duplexConnection);
+           return out.context().onClose();
+       }).block());
     }
 }
