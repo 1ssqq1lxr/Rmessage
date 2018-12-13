@@ -17,6 +17,8 @@ public interface Config {
 
     void setPort(int port);
 
+    Protocol getProtocol();
+
     InetSocketAddress getInetSocketAddress();
 
     void setProtocol(Protocol protocol);

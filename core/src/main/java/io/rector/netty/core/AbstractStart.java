@@ -2,8 +2,11 @@ package io.rector.netty.core;
 
 import io.rector.netty.config.Config;
 import io.rector.netty.config.Protocol;
+import io.rector.netty.transport.socket.SocketFactory;
+import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.options.ServerOptions;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -62,5 +65,16 @@ abstract class AbstractStart implements Start {
     public Start options(Consumer<ServerOptions.Builder<?>> options) {
         config.setOptions(options);
         return this;
+    }
+
+    protected  SocketFactoryAcceptor socketFactory(){
+        return SocketFactory::new;
+    }
+
+
+    protected @FunctionalInterface interface SocketFactoryAcceptor{
+
+        SocketFactory accept(Consumer<Map<Protocol,Class<? extends NettyConnector>>> consumer);
+
     }
 }

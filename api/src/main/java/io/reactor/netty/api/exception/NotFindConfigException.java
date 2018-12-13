@@ -5,5 +5,9 @@ package io.reactor.netty.api.exception;
  * @Date: 2018/12/13 13:53
  * @Description:
  */
-public class NotFindConfigException {
+public class NotFindConfigException extends RuntimeException  {
+
+    public NotFindConfigException(String message) {
+        super(message);
+    }
 }

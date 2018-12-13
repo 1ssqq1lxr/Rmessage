@@ -38,13 +38,6 @@ public class ServerConfig implements Config{
         return null;
     }
 
-    @Override
-    public void setProtocol(Protocol protocol) {
-
-    }
-
-
-
     public Consumer<? extends ServerOptions.Builder<?>> getOptions() {
         return options;
     }
