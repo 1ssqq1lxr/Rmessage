@@ -21,7 +21,7 @@ public class ServerConfig implements Config{
 
     public   String ip;
 
-    public   Integer port;
+    public   int port;
 
     private  Long readIdle;
 
@@ -31,7 +31,7 @@ public class ServerConfig implements Config{
 
     private Supplier<Runnable> writeEvent;
 
-    public   Consumer<? super ServerOptions.Builder<?>>  options;
+    public   Consumer<ServerOptions.Builder<?>>  options;
 
     @Override
     public InetSocketAddress getInetSocketAddress() {
@@ -43,4 +43,9 @@ public class ServerConfig implements Config{
 
     }
 
+
+
+    public Consumer<? extends ServerOptions.Builder<?>> getOptions() {
+        return options;
+    }
 }

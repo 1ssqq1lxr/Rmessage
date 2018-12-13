@@ -1,9 +1,9 @@
 package io.rector.netty.config;
 
-import reactor.ipc.netty.options.NettyOptions;
 import reactor.ipc.netty.options.ServerOptions;
 
 import java.net.InetSocketAddress;
+import java.util.function.Consumer;
 
 
 /**
@@ -13,12 +13,15 @@ import java.net.InetSocketAddress;
  */
 public interface Config {
 
+    void setIp(String ip);
+
+    void setPort(int port);
+
     InetSocketAddress getInetSocketAddress();
 
     void setProtocol(Protocol protocol);
 
+    void setOptions(Consumer<ServerOptions.Builder<?>> options);
 
-
-
-
+    Consumer<? extends ServerOptions.Builder<?>> getOptions();
 }
