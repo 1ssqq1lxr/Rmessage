@@ -41,13 +41,17 @@ public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? 
     }
 
     @Override
+    public Supplier<ServerConfig> config() {
+        return this.config;
+    }
+
+    @Override
     public Flux<RConnection> connect() {
-       return Flux.create(fluxSink -> {
-         this.context =server.get().newHandler((in, out)->{
-               RConnection duplexConnection = new RConnection(in,out,out.context());
-               fluxSink.next(duplexConnection);
-               return out.context().onClose();
-           }).block();
-       });
+
+       return Flux.create(fluxSink -> this.context =server.get().newHandler((in, out)->{
+             RConnection duplexConnection = new RConnection(in,out,out.context());
+             fluxSink.next(duplexConnection);
+             return out.context().onClose();
+         }).block());
     }
 }

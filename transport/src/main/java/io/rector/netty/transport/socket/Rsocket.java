@@ -39,7 +39,7 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
     }
 
     public void close() {
-       transport.get().close();
+       transport.get().close().subscribe();
     }
 
 
