@@ -1,10 +1,9 @@
 package io.rector.netty.transport;
 
-import io.netty.buffer.ByteBufUtil;
 import io.rector.netty.config.ServerConfig;
-import io.rector.netty.transport.connction.Connection;
 import io.rector.netty.transport.connction.RConnection;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.NettyInbound;
@@ -17,7 +16,7 @@ import java.util.function.Supplier;
  * @Date: 2018/12/7 16:46
  * @Description:
  */
-public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements Transport {
+public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements Transport<T> {
 
     private Supplier<T> server;
 
@@ -32,10 +31,13 @@ public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? 
     }
 
     @Override
-    public void close() {
-        if(!context.isDisposed()){
-            context.dispose();
-        }
+    public Mono<Void> close() {
+     return Mono.defer(()->{
+            if(!context.isDisposed()){
+                context.dispose();
+            }
+            return  Mono.empty();
+        });
     }
 
     @Override

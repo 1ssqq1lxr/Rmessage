@@ -54,13 +54,13 @@ public class ServerStart{
         sockets.put(Protocol.TCP,Mono.just(rs));
     } );
 
-    public <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<PersistSession<T>> connect(){
+    public <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<PersistSession<T>> connect(T t){
         Objects.requireNonNull(config.getOptions(),"请配置options");
-        TcpServer tcpServer = TcpServer.create(config.getOptions());
-        ServerTransport serverTransport =new ServerTransport(tcpServer,config);
+//        TcpServer tcpServer = TcpServer.create(config.getOptions());
+        ServerTransport<T> serverTransport =new ServerTransport(t,config);
         return socketFactory.getSocket(config.getProtocol())
                 .map(rsocketAcceptor -> {
-                         Rsocket<T> rsocket= (Rsocket<T>) rsocketAcceptor.accept(() -> serverTransport);
+                         Rsocket<T> rsocket= rsocketAcceptor.accept(() -> serverTransport);
                          return  rsocket.start()
                                  .map(socket->new PersistSession<>(rsocket))
                                  .doOnError(ex-> log.error("connect error:",ex))
