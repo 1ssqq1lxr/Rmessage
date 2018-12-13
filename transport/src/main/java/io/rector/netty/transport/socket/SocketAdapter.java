@@ -1,4 +1,4 @@
-package io.rector.netty.core.socket;
+package io.rector.netty.transport.socket;
 
 import io.rector.netty.config.Protocol;
 import io.rector.netty.transport.ServerTransport;
@@ -21,9 +21,9 @@ import java.util.function.Supplier;
  * @Date: 2018/12/9 22:53
  * @Description:
  */
-public class TcpSocket<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>  extends Rsocket<T> implements Closeable {
+public class SocketAdapter<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>  extends Rsocket<T> implements Closeable {
 
-    public TcpSocket(Supplier<Transport<T>> transport) {
+    public SocketAdapter(Supplier<Transport<T>> transport) {
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
     }
