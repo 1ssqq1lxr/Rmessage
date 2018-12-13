@@ -25,6 +25,6 @@ public interface Start {
 
     Start options(Consumer<ServerOptions.Builder<?>> options);
 
-    <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<PersistSession<T>> connect(Class<T> classT);
+    <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<PersistSession<T>> connect();
 
 }

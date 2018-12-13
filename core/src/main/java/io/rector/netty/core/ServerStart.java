@@ -16,6 +16,7 @@ import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 import reactor.ipc.netty.options.ServerOptions;
+import reactor.ipc.netty.tcp.TcpClient;
 import reactor.ipc.netty.tcp.TcpServer;
 import reactor.ipc.netty.udp.UdpServer;
 
@@ -54,13 +55,14 @@ public class ServerStart extends AbstractStart {
         return StartBuilder.start;
     }
 
-    public <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<PersistSession<T>> connect(Class<T> classT){
-        Objects.requireNonNull(config.getOptions(),"请配置options");
-        ServerTransport<T> serverTransport =new ServerTransport(
-                socketFactory()
+    public <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<PersistSession<T>> connect(){
+//        Objects.requireNonNull(config.getOptions(),"请配置options");
+        Class<? extends NettyConnector> s=  socketFactory()
                 .accept(consumer)
                 .getSocket(config.getProtocol())
-                .orElseThrow(()->new NotFindConfigException("协议不存在")),(ServerConfig)config);
+                .orElseThrow(()->new NotFindConfigException("协议不存在"));
+        ServerTransport<T> serverTransport =new ServerTransport(s
+                ,(ServerConfig)config);
         return rsocketAcceptor()
                 .map(rsocketAcceptor -> {
                          SocketAdapter<T> rsocket= rsocketAcceptor.accept(() -> serverTransport);
@@ -80,18 +82,20 @@ public class ServerStart extends AbstractStart {
 
     public static void  main(String[] a) throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-//       Mono<PersistSession<TcpServer>>mono=
+       Mono<PersistSession<TcpClient>>mono=
             ServerStart
                 .builder()
                 .tcp()
                 .ip("127.0.0.1")
                 .port(1884)
-                .options(operations->{
-
-                })
-                .connect(TcpServer.class)
-               .subscribe();
-
+//                .options(operations->{
+//
+//                })
+                .connect();
+        mono.subscribe(tcpClientPersistSession -> {
+            tcpClientPersistSession.getRsocket().get();
+            System.out.println("123");
+        });
 
 //        ServerStart
 //                .builder()
