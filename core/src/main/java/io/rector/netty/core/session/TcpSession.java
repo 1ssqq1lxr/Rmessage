@@ -1,8 +1,8 @@
-package io.rector.netty.core;
+package io.rector.netty.core.session;
 
 import io.rector.netty.transport.connction.Connection;
+import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.socket.Rsocket;
-import io.rector.netty.transport.socket.SocketFactory;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
@@ -16,15 +16,15 @@ import java.util.function.Supplier;
  * @Date: 2018/12/7 17:33
  * @Description:
  */
-public class PersistSession<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements Session{
+public class TcpSession<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements Session {
 
-    private Supplier<Rsocket<T>>  rsocket;
+    private Rsocket<T>  rsocket;
 
-    public PersistSession(Rsocket<T> rsocket) {
-        this.rsocket = ()->rsocket;
+    public TcpSession(Rsocket<T> rsocket) {
+        this.rsocket =rsocket;
     }
 
-    public Supplier<Rsocket<T>> getRsocket() {
+    public Rsocket<T> getRsocket() {
         return rsocket;
     }
 

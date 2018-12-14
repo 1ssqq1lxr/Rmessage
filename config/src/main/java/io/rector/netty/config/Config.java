@@ -1,5 +1,7 @@
 package io.rector.netty.config;
 
+import io.netty.channel.Channel;
+import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.options.ServerOptions;
 
 import java.net.InetSocketAddress;
@@ -26,4 +28,10 @@ public interface Config {
     void setOptions(Consumer<ServerOptions.Builder<?>> options);
 
     Consumer<? extends ServerOptions.Builder<?>> getOptions();
+
+    void setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit);
+
+    void setAfterChannelInit(Consumer<? super Channel> afterChannelInit);
+
+
 }

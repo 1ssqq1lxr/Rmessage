@@ -36,12 +36,10 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
 
 
     private Mono<? extends Rsocket<T>> get() {
-        transport.get()
-                .connect()
-                .subscribe(duplexConnection -> {
-                    duplexConnection.onClose(() -> connections.remove(duplexConnection));
-                    connections.add(duplexConnection);
-                });
-        return Mono.just(this);
+        return  transport.get()
+                .connect().doOnNext(rConnection -> {
+                    connections.add(rConnection);// 维护客户端列表
+                    rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
+                }).then(Mono.just(this));
     }
 }

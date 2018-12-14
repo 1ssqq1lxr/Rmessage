@@ -1,4 +1,4 @@
-package io.rector.netty.core;
+package io.rector.netty.core.session;
 
 import io.rector.netty.transport.connction.Connection;
 import io.rector.netty.transport.socket.SocketFactory;

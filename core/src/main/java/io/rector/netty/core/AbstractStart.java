@@ -1,9 +1,11 @@
 package io.rector.netty.core;
 
+import io.netty.channel.Channel;
 import io.rector.netty.config.Config;
 import io.rector.netty.config.Protocol;
 import io.rector.netty.transport.socket.SocketFactory;
 import reactor.ipc.netty.NettyConnector;
+import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.options.ServerOptions;
 
 import java.util.Map;
@@ -60,10 +62,15 @@ abstract class AbstractStart implements Start {
         return this;
     }
 
+    @Override
+    public Start setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit) {
+        config.setAfterNettyContextInit(afterNettyContextInit);
+        return this;
+    }
 
     @Override
-    public Start options(Consumer<ServerOptions.Builder<?>> options) {
-        config.setOptions(options);
+    public Start setAfterChannelInit(Consumer<? super Channel> afterChannelInit) {
+        config.setAfterChannelInit(afterChannelInit);
         return this;
     }
 

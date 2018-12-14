@@ -1,11 +1,13 @@
 package io.rector.netty.core;
 
 
+import io.netty.channel.Channel;
+import io.rector.netty.core.session.TcpSession;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
+import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
-import reactor.ipc.netty.options.ServerOptions;
 
 import java.util.function.Consumer;
 
@@ -23,8 +25,11 @@ public interface Start {
 
     Start  websocket();
 
-    Start options(Consumer<ServerOptions.Builder<?>> options);
+    Start setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit);
 
-    <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<PersistSession<T>> connect();
+    Start setAfterChannelInit(Consumer<? super Channel> afterChannelInit);
+
+
+    <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<TcpSession<T>> connect();
 
 }

@@ -1,7 +1,9 @@
 package io.rector.netty.config;
 
+import io.netty.channel.Channel;
 import lombok.Builder;
 import lombok.Data;
+import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.options.ServerOptions;
 
 import java.net.InetSocketAddress;
@@ -31,7 +33,11 @@ public class ServerConfig implements Config{
 
     private Supplier<Runnable> writeEvent;
 
-    public   Consumer<ServerOptions.Builder<?>>  options ;
+    private  Consumer<ServerOptions.Builder<?>>  options ;
+
+    private Consumer<? super NettyContext> afterNettyContextInit;
+
+    private Consumer<? super Channel> afterChannelInit;
 
     @Override
     public InetSocketAddress getInetSocketAddress() {
@@ -39,7 +45,9 @@ public class ServerConfig implements Config{
     }
 
     public Consumer<? extends ServerOptions.Builder<?>> getOptions() {
-        this.options= builder ->builder.host(ip).port(port);
+        this.options= builder ->builder.host(ip).port(port).afterChannelInit(afterChannelInit).afterNettyContextInit(afterNettyContextInit);
         return this.options;
     }
+
+
 }
