@@ -23,13 +23,9 @@ public interface Connection {
 
     Mono<Void>   dispose();
 
-    Mono<NettyInbound> onReadIdle(Supplier<? extends Runnable> readLe);
+    Mono<NettyInbound> onReadIdle(Long l, Runnable readLe);
 
-    Mono<NettyInbound> onReadIdle(Long l, Supplier<? extends Runnable> readLe);
-
-    Mono<NettyOutbound> onWriteIdle(Supplier<? extends Runnable> writeLe);
-
-    Mono<NettyOutbound> onWriteIdle(Long l, Supplier<? extends Runnable> writeLe);
+    Mono<NettyOutbound> onWriteIdle(Long l, Runnable writeLe);
 
      <T> Flux<T> receiveMsg(Class<T> contentClass);
 

@@ -64,5 +64,4 @@ public class ServerConfig implements Config{
         this.writeEvent=writeLe;
     }
 
-
 }

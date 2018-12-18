@@ -40,4 +40,13 @@ public interface Config {
     void onWriteIdle(Long l, Supplier< Runnable> writeLe);
 
 
+    Long getReadIdle() ;
+
+    Supplier<Runnable> getReadEvent();
+
+    Long getWriteIdle();
+
+    Supplier<Runnable> getWriteEvent();
+
+
 }

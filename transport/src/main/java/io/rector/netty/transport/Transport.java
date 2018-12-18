@@ -21,7 +21,5 @@ public interface Transport<T extends NettyConnector< ? extends NettyInbound,? ex
     Mono<Void> close();
 
     Config config();
-    
-//    T protocolHandler();
 
 }

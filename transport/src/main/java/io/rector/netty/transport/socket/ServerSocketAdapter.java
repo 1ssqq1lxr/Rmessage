@@ -15,9 +15,9 @@ import java.util.function.Supplier;
  * @Date: 2018/12/9 22:53
  * @Description:
  */
-public class SocketAdapter<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>  extends Rsocket<T> implements Closeable {
+public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>  extends Rsocket<T> implements Closeable {
 
-    public SocketAdapter(Supplier<Transport<T>> transport) {
+    public ServerSocketAdapter(Supplier<Transport<T>> transport) {
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
     }

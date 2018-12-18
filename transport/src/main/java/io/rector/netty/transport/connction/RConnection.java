@@ -7,7 +7,6 @@ import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
-import java.util.function.Supplier;
 
 /**
  * @Auther: lxr
@@ -40,26 +39,18 @@ public class RConnection implements Connection {
         });
     }
 
-    @Override
-    public Mono<NettyInbound> onReadIdle(Supplier<? extends Runnable> readLe) {
-//        return onReadIdle(connectionConfig.getReadWriteIdel(),readLe);
-        return Mono.empty();
-    }
+
 
     @Override
-    public Mono<NettyInbound> onReadIdle(Long l, Supplier<? extends Runnable> readLe) {
-        return   Mono.just(inbound.onReadIdle(l,readLe.get()));
+    public Mono<NettyInbound> onReadIdle(Long l, Runnable readLe) {
+        return   Mono.just(inbound.onReadIdle(l,readLe));
     }
 
-    @Override
-    public Mono<NettyOutbound> onWriteIdle(Supplier< ? extends Runnable> writeLe) {
-//        return  onWriteIdle(connectionConfig.getReadWriteIdel(),writeLe) ;
-        return Mono.empty();
-    }
+
 
     @Override
-    public Mono<NettyOutbound> onWriteIdle(Long l, Supplier<? extends Runnable> write) {
-        return Mono.just(outbound.onWriteIdle(l,write.get()));
+    public Mono<NettyOutbound> onWriteIdle(Long l, Runnable write) {
+        return Mono.just(outbound.onWriteIdle(l,write));
     }
 
     @Override
