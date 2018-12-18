@@ -1,6 +1,5 @@
 package io.rector.netty.transport.connction;
 
-import io.rector.netty.transport.Transport;
 import lombok.Data;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

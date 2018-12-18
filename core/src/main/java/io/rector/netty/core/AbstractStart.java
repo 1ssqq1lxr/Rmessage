@@ -6,10 +6,10 @@ import io.rector.netty.config.Protocol;
 import io.rector.netty.transport.socket.SocketFactory;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyContext;
-import reactor.ipc.netty.options.ServerOptions;
 
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @Auther: lxr
@@ -61,6 +61,31 @@ abstract class AbstractStart implements Start {
         config.setPort(port);
         return this;
     }
+
+
+    @Override
+    public Start onReadIdle(Long l) {
+        onReadIdle(l,null);
+        return this;
+    }
+
+    @Override
+    public Start onReadIdle(Long l, Supplier< Runnable> readLe) {
+        return this;
+    }
+
+    @Override
+    public Start onWriteIdle(Long l) {
+        onWriteIdle(l,null);
+        return this;
+    }
+
+    @Override
+    public Start onWriteIdle(Long l, Supplier<Runnable> write) {
+        return this;
+    }
+
+
 
     @Override
     public Start setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit) {

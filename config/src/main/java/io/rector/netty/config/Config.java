@@ -6,6 +6,7 @@ import reactor.ipc.netty.options.ServerOptions;
 
 import java.net.InetSocketAddress;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 
 /**
@@ -32,6 +33,11 @@ public interface Config {
     void setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit);
 
     void setAfterChannelInit(Consumer<? super Channel> afterChannelInit);
+
+
+    void onReadIdle(Long l, Supplier< Runnable> readLe);
+
+    void onWriteIdle(Long l, Supplier< Runnable> writeLe);
 
 
 }

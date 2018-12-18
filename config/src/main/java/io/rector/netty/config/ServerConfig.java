@@ -25,19 +25,20 @@ public class ServerConfig implements Config{
 
     public   int port;
 
-    private  Long readIdle;
+    private  Long readIdle = 10*1000l;
 
-    private Supplier<Runnable> readEvent;
+    private Supplier<Runnable> readEvent = ()->()->{};
 
-    private  Long writeIdle;
+    private  Long writeIdle = 10*1000l;;
 
-    private Supplier<Runnable> writeEvent;
+    private Supplier<Runnable> writeEvent = ()->()->{};;
 
     private  Consumer<ServerOptions.Builder<?>>  options ;
 
     private Consumer<? super NettyContext> afterNettyContextInit;
 
     private Consumer<? super Channel> afterChannelInit;
+
 
     @Override
     public InetSocketAddress getInetSocketAddress() {
@@ -47,6 +48,20 @@ public class ServerConfig implements Config{
     public Consumer<? extends ServerOptions.Builder<?>> getOptions() {
         this.options= builder ->builder.host(ip).port(port).afterChannelInit(afterChannelInit).afterNettyContextInit(afterNettyContextInit);
         return this.options;
+    }
+
+
+    @Override
+    public void onReadIdle(Long l, Supplier<Runnable> readLe) {
+            this.readIdle=l;
+            this.readEvent=readLe;
+    }
+
+
+    @Override
+    public void onWriteIdle(Long l, Supplier< Runnable> writeLe) {
+        this.writeIdle=l;
+        this.writeEvent=writeLe;
     }
 
 

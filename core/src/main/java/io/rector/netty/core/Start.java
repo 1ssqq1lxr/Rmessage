@@ -10,6 +10,7 @@ import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public interface Start {
 
@@ -28,6 +29,14 @@ public interface Start {
     Start setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit);
 
     Start setAfterChannelInit(Consumer<? super Channel> afterChannelInit);
+
+    Start onReadIdle(Long l);
+
+    Start onReadIdle(Long l, Supplier<Runnable> readLe);
+
+    Start onWriteIdle(Long l);
+
+    Start onWriteIdle(Long l, Supplier<Runnable> writeLe);
 
 
     <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<TcpSession<T>> connect();
