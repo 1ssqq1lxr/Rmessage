@@ -58,7 +58,7 @@ public class ServerStart extends AbstractStart {
                 .orElseThrow(()->new NotFindConfigException("协议不存在")),(ServerConfig)config);
         return rsocketAcceptor()
                 .map(rsocketAcceptor -> {
-                         Rsocket<T> rsocket= rsocketAcceptor.accept(() -> serverTransport);
+                      ServerSocketAdapter<T> rsocket= (ServerSocketAdapter<T> )rsocketAcceptor.accept(() -> serverTransport);
                          return   rsocket.start()
                                  .map(socket->new TcpSession(rsocket))
                                  .doOnError(ex-> log.error("connect error:",ex))
