@@ -111,7 +111,6 @@ public class Frame extends AbstractReferenceCounted implements ByteBufHolder {
         final Frame frame = RECYCLER.get();
         frame.setRefCnt(1);
         frame.content = content;
-
         return frame;
     }
 

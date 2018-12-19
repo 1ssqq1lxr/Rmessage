@@ -1,5 +1,6 @@
 package io.rector.netty.transport.socket;
 
+import io.netty.buffer.ByteBuf;
 import io.rector.netty.config.Protocol;
 import io.rector.netty.transport.ServerTransport;
 import io.rector.netty.transport.Transport;
@@ -50,7 +51,13 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
                         rConnection.dispose();
                         tTransport.config().getWriteEvent().get().run();
                     });
+                    rConnection.receiveMsg();
                     rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
                 }).then(Mono.just(this));
     }
+
+
+
+
+
 }

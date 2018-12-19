@@ -13,6 +13,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="module" module-name="config" />
     <orderEntry type="module" module-name="api" />
+    <orderEntry type="module" module-name="flow" />
     <orderEntry type="library" name="Maven: io.projectreactor.ipc:reactor-netty:0.7.12.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-codec-http:4.1.31.Final" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.31.Final" level="project" />

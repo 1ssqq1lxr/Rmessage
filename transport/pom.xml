@@ -33,7 +33,11 @@
             <version>1.0-SNAPSHOT</version>
             <artifactId>config</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>io.rector.netty.rmessage</groupId>
+            <version>1.0-SNAPSHOT</version>
+            <artifactId>flow</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
