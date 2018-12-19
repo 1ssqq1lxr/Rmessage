@@ -2,6 +2,9 @@ package io.rector.netty.transport.socket;
 
 import io.netty.buffer.ByteBuf;
 import io.rector.netty.config.Protocol;
+import io.rector.netty.flow.frame.Frame;
+import io.rector.netty.flow.plugin.PluginRegistry;
+import io.rector.netty.flow.plugin.Plugins;
 import io.rector.netty.transport.ServerTransport;
 import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.connction.RConnection;
@@ -9,9 +12,11 @@ import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
-import reactor.ipc.netty.tcp.TcpServer;
 
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -21,7 +26,7 @@ import java.util.function.Supplier;
  */
 public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> {
 
-    protected List<RConnection> connections ;
+    protected   PluginRegistry registry = Plugins.defaultPlugins();
 
     protected Supplier<Transport<T>> transport;
 
@@ -38,24 +43,11 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
 
     private Mono<? extends Rsocket<T>> get() {
         Transport<T> tTransport=transport.get();
-        return  tTransport
-                .connect().doOnNext(rConnection -> {
-                    connections.add(rConnection);// 维护客户端列表
-                    rConnection.onReadIdle(tTransport.config().getReadIdle(),()->{
-                        connections.remove(rConnection);
-                        rConnection.dispose();
-                        tTransport.config().getReadEvent().get().run();
-                    });
-                    rConnection.onWriteIdle(tTransport.config().getWriteIdle(),()->{
-                        connections.remove(rConnection);
-                        rConnection.dispose();
-                        tTransport.config().getWriteEvent().get().run();
-                    });
-                    rConnection.receiveMsg();
-                    rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
-                }).then(Mono.just(this));
+        return  transport.get()
+                .connect().doOnNext(next().apply(tTransport)).then(Mono.just(this));
     }
 
+    public abstract Function<Transport<T>,Consumer<RConnection>>  next();
 
 
 

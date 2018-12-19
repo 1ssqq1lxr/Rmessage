@@ -1,8 +1,6 @@
 package io.rector.netty.transport.connction;
 
 import io.rector.netty.flow.frame.Frame;
-import io.rector.netty.transport.ByteBufPayload;
-import io.rector.netty.transport.Payload;
 import lombok.Data;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
