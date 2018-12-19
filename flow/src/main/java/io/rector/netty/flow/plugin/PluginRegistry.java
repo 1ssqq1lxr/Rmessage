@@ -3,7 +3,9 @@ package io.rector.netty.flow.plugin;
 
 import io.rector.netty.flow.frame.Frame;
 
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * @Auther: lxr
@@ -24,6 +26,14 @@ public class PluginRegistry {
 
     public void addServerPlugin(FrameInterceptor interceptor) {
         serverInterceptors.add(interceptor);
+    }
+
+    public void addClientPlugin(FrameInterceptor... interceptor) {
+        clientInterceptors.addAll(Arrays.stream(interceptor).collect(Collectors.toSet()));
+    }
+
+    public void addServerPlugin(FrameInterceptor... interceptor) {
+        serverInterceptors.addAll(Arrays.stream(interceptor).collect(Collectors.toSet()));
     }
 
 

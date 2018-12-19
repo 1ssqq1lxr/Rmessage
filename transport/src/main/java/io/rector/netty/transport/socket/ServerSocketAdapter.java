@@ -2,6 +2,7 @@ package io.rector.netty.transport.socket;
 
 import io.rector.netty.config.Protocol;
 import io.rector.netty.flow.frame.Frame;
+import io.rector.netty.flow.plugin.FrameInterceptor;
 import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.connction.RConnection;
 import reactor.ipc.netty.NettyConnector;
@@ -22,12 +23,12 @@ import java.util.function.Supplier;
  */
 public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>  extends Rsocket<T> implements Closeable {
 
-
     private List<RConnection> connections ;
 
     public ServerSocketAdapter(Supplier<Transport<T>> transport) {
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
+        registry.addServerPlugin(frame -> frame);
     }
 
 
