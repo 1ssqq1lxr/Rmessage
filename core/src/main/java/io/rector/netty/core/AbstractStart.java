@@ -25,22 +25,11 @@ abstract class AbstractStart implements Start {
     }
 
     @Override
-    public Start udp() {
-        config.setProtocol(Protocol.UDP);
-        return this;
-    }
-
-    @Override
     public Start tcp() {
         config.setProtocol(Protocol.TCP);
         return this;
     }
 
-    @Override
-    public Start mqtt() {
-        config.setProtocol(Protocol.MQTT);
-        return this;
-    }
 
     @Override
     public Start websocket() {

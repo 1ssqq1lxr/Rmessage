@@ -34,10 +34,7 @@ public class ServerStart extends AbstractStart {
 
     private static UnicastProcessor<Operation> operations =UnicastProcessor.create();
 
-    private Consumer<Map<Protocol,Class<? extends NettyConnector>>> consumer = classes->{
-        classes.put(Protocol.TCP,TcpServer.class);
-        classes.put(Protocol.UDP, UdpServer.class);
-    };
+    private Consumer<Map<Protocol,Class<? extends NettyConnector>>> consumer = classes-> classes.put(Protocol.TCP,TcpServer.class);
 
     public ServerStart() {
         super(ServerConfig.builder().build());

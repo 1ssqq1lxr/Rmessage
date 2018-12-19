@@ -1,6 +1,5 @@
 package io.rector.netty.config;
 
-import org.apache.logging.log4j.core.jmx.Server;
 
 /**
  * @Auther: lxr
@@ -9,7 +8,5 @@ import org.apache.logging.log4j.core.jmx.Server;
  */
 public enum  Protocol {
     TCP,
-    UDP,
     WS,
-    MQTT
 }
