@@ -3,6 +3,7 @@ package io.rector.netty.core;
 
 import io.netty.channel.Channel;
 import io.rector.netty.core.session.TcpSession;
+import io.rector.netty.flow.plugin.FrameInterceptor;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyContext;
@@ -19,6 +20,8 @@ public interface Start {
     Start  ip(String ip);
 
     Start  port(int port);
+
+    Start  interceptor(FrameInterceptor... frameInterceptor);
 
     Start  websocket();
 

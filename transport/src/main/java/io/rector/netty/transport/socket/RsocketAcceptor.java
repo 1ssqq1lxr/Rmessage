@@ -1,5 +1,6 @@
 package io.rector.netty.transport.socket;
 
+import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.transport.Transport;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
@@ -15,6 +16,6 @@ import java.util.function.Supplier;
 @FunctionalInterface
 public interface RsocketAcceptor {
 
-    <T extends  NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Rsocket<T> accept(Supplier<Transport<T>> transport);
+    <T extends  NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Rsocket<T> accept(Supplier<Transport<T>> transport, PluginRegistry pluginRegistry);
 
 }

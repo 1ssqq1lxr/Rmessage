@@ -3,6 +3,7 @@ package io.rector.netty.transport.socket;
 import io.rector.netty.config.Protocol;
 import io.rector.netty.flow.frame.Frame;
 import io.rector.netty.flow.plugin.FrameInterceptor;
+import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.connction.RConnection;
 import reactor.ipc.netty.NettyConnector;
@@ -25,9 +26,12 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private List<RConnection> connections ;
 
-    public ServerSocketAdapter(Supplier<Transport<T>> transport) {
+    private PluginRegistry pluginRegistry;
+
+    public ServerSocketAdapter(Supplier<Transport<T>> transport, PluginRegistry pluginRegistry) {
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
+        this.pluginRegistry =pluginRegistry;
         registry.addServerPlugin(frame -> frame);
     }
 

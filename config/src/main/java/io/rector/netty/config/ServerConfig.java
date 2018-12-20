@@ -3,6 +3,7 @@ package io.rector.netty.config;
 import io.netty.channel.Channel;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.logging.log4j.core.config.plugins.util.PluginRegistry;
 import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.options.ServerOptions;
 
@@ -39,6 +40,8 @@ public class ServerConfig implements Config{
 
     private Consumer<? super Channel> afterChannelInit;
 
+    private PluginRegistry pluginRegistry;
+
 
     @Override
     public InetSocketAddress getInetSocketAddress() {
@@ -62,6 +65,11 @@ public class ServerConfig implements Config{
     public void onWriteIdle(Long l, Supplier< Runnable> writeLe) {
         this.writeIdle=l;
         this.writeEvent=writeLe;
+    }
+
+    @Override
+    public PluginRegistry getPluginRegistry() {
+        return this.pluginRegistry;
     }
 
 }

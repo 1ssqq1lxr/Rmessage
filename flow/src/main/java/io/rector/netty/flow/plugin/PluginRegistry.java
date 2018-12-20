@@ -28,12 +28,14 @@ public class PluginRegistry {
         serverInterceptors.add(interceptor);
     }
 
-    public void addClientPlugin(FrameInterceptor... interceptor) {
+    public PluginRegistry addClientPlugin(FrameInterceptor... interceptor) {
         clientInterceptors.addAll(Arrays.stream(interceptor).collect(Collectors.toSet()));
+        return  this;
     }
 
-    public void addServerPlugin(FrameInterceptor... interceptor) {
+    public PluginRegistry addServerPlugin(FrameInterceptor... interceptor) {
         serverInterceptors.addAll(Arrays.stream(interceptor).collect(Collectors.toSet()));
+        return  this;
     }
 
 

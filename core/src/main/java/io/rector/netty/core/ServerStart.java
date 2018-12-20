@@ -4,6 +4,9 @@ import io.reactor.netty.api.exception.NotFindConfigException;
 import io.rector.netty.config.Protocol;
 import io.rector.netty.config.ServerConfig;
 import io.rector.netty.core.session.TcpSession;
+import io.rector.netty.flow.plugin.FrameInterceptor;
+import io.rector.netty.flow.plugin.PluginRegistry;
+import io.rector.netty.flow.plugin.Plugins;
 import io.rector.netty.transport.socket.Rsocket;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import io.rector.netty.transport.ServerTransport;
@@ -19,6 +22,7 @@ import reactor.ipc.netty.tcp.TcpServer;
 import reactor.ipc.netty.udp.UdpServer;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
@@ -36,6 +40,8 @@ public class ServerStart extends AbstractStart {
 
     private Consumer<Map<Protocol,Class<? extends NettyConnector>>> consumer = classes-> classes.put(Protocol.TCP,TcpServer.class);
 
+    private PluginRegistry registry = Plugins.defaultPlugins();
+
     public ServerStart() {
         super(ServerConfig.builder().build());
     }
@@ -48,6 +54,16 @@ public class ServerStart extends AbstractStart {
         return StartBuilder.start;
     }
 
+
+
+    @Override
+    public Start interceptor(FrameInterceptor... frameInterceptor) {
+        registry.addServerPlugin(frameInterceptor);
+        return this;
+    }
+
+
+
     public <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<TcpSession<T>> connect(){
         ServerTransport<T> serverTransport =new ServerTransport(socketFactory()
                 .accept(consumer)
@@ -55,7 +71,7 @@ public class ServerStart extends AbstractStart {
                 .orElseThrow(()->new NotFindConfigException("协议不存在")),(ServerConfig)config);
         return rsocketAcceptor()
                 .map(rsocketAcceptor -> {
-                      ServerSocketAdapter<T> rsocket= (ServerSocketAdapter<T> )rsocketAcceptor.accept(() -> serverTransport);
+                      ServerSocketAdapter<T> rsocket= (ServerSocketAdapter<T> )rsocketAcceptor.accept(() -> serverTransport,registry);
                          return   rsocket.start()
                                  .map(socket->new TcpSession(rsocket))
                                  .doOnError(ex-> log.error("connect error:",ex))

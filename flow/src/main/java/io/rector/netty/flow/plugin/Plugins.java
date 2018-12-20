@@ -1,7 +1,6 @@
 package io.rector.netty.flow.plugin;
 
 
-import io.rector.netty.flow.frame.Frame;
 
 /**
  * @Auther: lxr

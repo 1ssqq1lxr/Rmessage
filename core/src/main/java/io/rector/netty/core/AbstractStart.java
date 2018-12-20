@@ -3,6 +3,8 @@ package io.rector.netty.core;
 import io.netty.channel.Channel;
 import io.rector.netty.config.Config;
 import io.rector.netty.config.Protocol;
+import io.rector.netty.flow.plugin.FrameInterceptor;
+import io.rector.netty.flow.plugin.Plugins;
 import io.rector.netty.transport.socket.SocketFactory;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyContext;
@@ -60,6 +62,7 @@ abstract class AbstractStart implements Start {
 
     @Override
     public Start onReadIdle(Long l, Supplier< Runnable> readLe) {
+        config.onReadIdle(l,readLe);
         return this;
     }
 
@@ -71,6 +74,7 @@ abstract class AbstractStart implements Start {
 
     @Override
     public Start onWriteIdle(Long l, Supplier<Runnable> write) {
+        config.onWriteIdle(l,write);
         return this;
     }
 
