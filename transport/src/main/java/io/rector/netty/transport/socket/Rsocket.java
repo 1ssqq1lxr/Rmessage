@@ -26,7 +26,6 @@ import java.util.function.Supplier;
  */
 public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> {
 
-    protected   PluginRegistry registry = Plugins.defaultPlugins();
 
     protected Supplier<Transport<T>> transport;
 

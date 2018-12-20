@@ -32,7 +32,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
         this.pluginRegistry =pluginRegistry;
-        registry.addServerPlugin(frame -> frame);
+        pluginRegistry.addServerPlugin(frame -> frame);
     }
 
 
@@ -66,6 +66,6 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     }
 
     private Frame apply(Frame frame) {
-        return registry.applyServer(frame);
+        return pluginRegistry.applyServer(frame);
     }
 }

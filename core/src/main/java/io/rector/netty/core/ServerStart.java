@@ -26,6 +26,8 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
+import static java.lang.annotation.ElementType.METHOD;
+
 
 /**
  * @Auther: lxr
@@ -63,8 +65,9 @@ public class ServerStart extends AbstractStart {
     }
 
 
-
+    @SuppressWarnings("unchecked")
     public <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<TcpSession<T>> connect(){
+
         ServerTransport<T> serverTransport =new ServerTransport(socketFactory()
                 .accept(consumer)
                 .getSocket(config.getProtocol())
