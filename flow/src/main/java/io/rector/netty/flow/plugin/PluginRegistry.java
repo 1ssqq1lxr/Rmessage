@@ -1,6 +1,7 @@
 package io.rector.netty.flow.plugin;
 
 
+import io.netty.util.ReferenceCountUtil;
 import io.rector.netty.flow.frame.Frame;
 
 import java.util.Arrays;
@@ -40,17 +41,23 @@ public class PluginRegistry {
 
 
     public Frame applyClient(Frame frame) {
-        for (FrameInterceptor i : clientInterceptors) {
-            frame = i.apply(frame);
-        }
-        return frame;
+        return doResult(frame,clientInterceptors);
     }
 
-    public Frame applyServer(Frame rSocket) {
-        for (FrameInterceptor i : serverInterceptors) {
-            rSocket = i.apply(rSocket);
+    public Frame applyServer(Frame frame) {
+        return doResult(frame,serverInterceptors);
+    }
+
+    private  Frame doResult(Frame rSocket,LinkedList<FrameInterceptor>  interceptors){
+        try {
+            for (FrameInterceptor i : interceptors) {
+                rSocket = i.apply(rSocket);
+            }
+            return rSocket;
         }
-        return rSocket;
+        finally {
+            ReferenceCountUtil.release(rSocket);
+        }
     }
 
 }
