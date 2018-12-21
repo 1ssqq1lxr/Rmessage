@@ -6,6 +6,7 @@ import io.rector.netty.flow.plugin.FrameInterceptor;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.connction.RConnection;
+import reactor.core.publisher.UnicastProcessor;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
@@ -35,6 +36,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
         pluginRegistry.addServerPlugin(frame -> frame);
     }
 
+    private UnicastProcessor<Frame> frames = UnicastProcessor.create();
 
     @Override
     public Supplier<Protocol> getPrptocol() {
@@ -57,8 +59,8 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                     transport.config().getWriteEvent().get().run();
                 });
                 rConnection.receiveMsg()
-                        .map(this::apply)
-                        .subscribe();
+                        .subscribe(frame -> frames.onNext(frame));
+                frames.subscribe(this::apply);
                 rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
             };
             return  rConnectionConsumer;

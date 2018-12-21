@@ -96,6 +96,7 @@ public class ServerStart extends AbstractStart {
                 .tcp()
                 .ip("127.0.0.1")
                 .port(1884)
+                .interceptor(frame -> frame,frame -> frame)
                 .setAfterNettyContextInit(nettyContext -> {
                         // netty连接设置
                 })
