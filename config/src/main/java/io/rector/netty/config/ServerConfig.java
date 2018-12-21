@@ -43,11 +43,6 @@ public class ServerConfig implements Config{
     private PluginRegistry pluginRegistry;
 
 
-    @Override
-    public InetSocketAddress getInetSocketAddress() {
-        return null;
-    }
-
     public Consumer<? extends ServerOptions.Builder<?>> getOptions() {
         this.options= builder ->builder.host(ip).port(port).afterChannelInit(afterChannelInit).afterNettyContextInit(afterNettyContextInit);
         return this.options;
@@ -67,9 +62,5 @@ public class ServerConfig implements Config{
         this.writeEvent=writeLe;
     }
 
-    @Override
-    public PluginRegistry getPluginRegistry() {
-        return this.pluginRegistry;
-    }
 
 }

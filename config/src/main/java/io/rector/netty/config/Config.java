@@ -22,7 +22,6 @@ public interface Config {
 
     Protocol getProtocol();
 
-    InetSocketAddress getInetSocketAddress();
 
     void setProtocol(Protocol protocol);
 
