@@ -7,10 +7,9 @@ import io.rector.netty.core.session.TcpSession;
 import io.rector.netty.flow.plugin.FrameInterceptor;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.flow.plugin.Plugins;
-import io.rector.netty.transport.socket.Rsocket;
-import io.rector.netty.transport.socket.ServerSocketAdapter;
 import io.rector.netty.transport.ServerTransport;
 import io.rector.netty.transport.socket.RsocketAcceptor;
+import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -19,14 +18,10 @@ import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 import reactor.ipc.netty.tcp.TcpServer;
-import reactor.ipc.netty.udp.UdpServer;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
-
-import static java.lang.annotation.ElementType.METHOD;
 
 
 /**

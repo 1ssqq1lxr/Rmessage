@@ -29,14 +29,17 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private PluginRegistry pluginRegistry;
 
+    private UnicastProcessor<Frame> frames = UnicastProcessor.create();
+
     public ServerSocketAdapter(Supplier<Transport<T>> transport, PluginRegistry pluginRegistry) {
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
         this.pluginRegistry =pluginRegistry;
         pluginRegistry.addServerPlugin(frame -> frame);
+        frames.subscribe(this::apply);
     }
 
-    private UnicastProcessor<Frame> frames = UnicastProcessor.create();
+
 
     @Override
     public Supplier<Protocol> getPrptocol() {
@@ -60,7 +63,6 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                 });
                 rConnection.receiveMsg()
                         .subscribe(frame -> frames.onNext(frame));
-                frames.subscribe(this::apply);
                 rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
             };
             return  rConnectionConsumer;
