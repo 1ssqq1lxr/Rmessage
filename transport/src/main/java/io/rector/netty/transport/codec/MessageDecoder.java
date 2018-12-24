@@ -8,7 +8,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  * @Description:
  *
  *  * +-----1byte--------------------|---1 byte -| --------4 byte-----|-----n byte-----|-----n byte-----|  timestamp |
- *  * |固定头高4bit| 消息类型低 4bit  | 发送目的key|     发送body长度   |  发送kjey     |   body          |   8byte    |
+ *  * |固定头高4bit| 消息类型低 4bit  |to目的key|     发送body长度   |  to发送kjey     |   body          |   8byte    |
  *  @see ProtocolCatagory
  */
 
