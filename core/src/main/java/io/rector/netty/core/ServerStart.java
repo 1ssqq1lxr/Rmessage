@@ -3,7 +3,7 @@ package io.rector.netty.core;
 import io.reactor.netty.api.exception.NotFindConfigException;
 import io.rector.netty.config.Protocol;
 import io.rector.netty.config.ServerConfig;
-import io.rector.netty.core.session.TcpSession;
+import io.rector.netty.core.session.TcpServerSession;
 import io.rector.netty.flow.plugin.FrameInterceptor;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.flow.plugin.Plugins;
@@ -61,7 +61,7 @@ public class ServerStart extends AbstractStart {
 
 
     @SuppressWarnings("unchecked")
-    public <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<TcpSession<T>> connect(){
+    public <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<TcpServerSession<T>> connect(){
 
         ServerTransport<T> serverTransport =new ServerTransport(socketFactory()
                 .accept(consumer)
@@ -71,7 +71,7 @@ public class ServerStart extends AbstractStart {
                 .map(rsocketAcceptor -> {
                       ServerSocketAdapter<T> rsocket= (ServerSocketAdapter<T> )rsocketAcceptor.accept(() -> serverTransport,registry);
                          return   rsocket.start()
-                                 .map(socket->new TcpSession(rsocket))
+                                 .map(socket->new TcpServerSession(rsocket))
                                  .doOnError(ex-> log.error("connect error:",ex))
                                  .retry()
                                  .block();
@@ -86,7 +86,7 @@ public class ServerStart extends AbstractStart {
 
     public static void  main(String[] a) throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-            ServerStart
+          Mono<TcpServerSession<TcpServer>>  sessionMono=ServerStart
                 .builder()
                 .tcp()
                 .ip("127.0.0.1")
@@ -98,8 +98,9 @@ public class ServerStart extends AbstractStart {
                 .setAfterChannelInit(channel -> {
                     //  channel设置
                 })
-                .connect()
-                .subscribe();
+                .connect();
+        sessionMono.subscribe(session->{
+        });
         countDownLatch.await();
     }
 

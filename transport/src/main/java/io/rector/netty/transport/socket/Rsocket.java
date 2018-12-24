@@ -1,20 +1,14 @@
 package io.rector.netty.transport.socket;
 
-import io.netty.buffer.ByteBuf;
 import io.rector.netty.config.Protocol;
-import io.rector.netty.flow.frame.Frame;
-import io.rector.netty.flow.plugin.PluginRegistry;
-import io.rector.netty.flow.plugin.Plugins;
-import io.rector.netty.transport.ServerTransport;
 import io.rector.netty.transport.Transport;
+import io.rector.netty.transport.connction.Connection;
 import io.rector.netty.transport.connction.RConnection;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
-import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -49,6 +43,5 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
     public abstract Function<Transport<T>,Consumer<RConnection>>  next();
 
 
-
-
+    public abstract void removeConnection(RConnection duplexConnection);
 }
