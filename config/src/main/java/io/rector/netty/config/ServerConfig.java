@@ -30,7 +30,7 @@ public class ServerConfig implements Config{
 
     private Supplier<Runnable> readEvent = ()->()->{};
 
-    private  Long writeIdle = 10*1000l;;
+    private  Long writeIdle = 10*1000l;
 
     private Supplier<Runnable> writeEvent = ()->()->{};;
 
@@ -38,7 +38,7 @@ public class ServerConfig implements Config{
 
     private Consumer<? super NettyContext> afterNettyContextInit;
 
-    private Consumer<? super Channel> afterChannelInit;
+    private Consumer<? super Channel> afterChannelInit =channel -> {};
 
     private PluginRegistry pluginRegistry;
 
@@ -47,7 +47,6 @@ public class ServerConfig implements Config{
         this.options= builder ->builder.host(ip).port(port).afterChannelInit(afterChannelInit).afterNettyContextInit(afterNettyContextInit);
         return this.options;
     }
-
 
     @Override
     public void onReadIdle(Long l, Supplier<Runnable> readLe) {

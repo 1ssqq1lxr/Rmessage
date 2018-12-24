@@ -8,6 +8,7 @@ import io.rector.netty.flow.plugin.FrameInterceptor;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.flow.plugin.Plugins;
 import io.rector.netty.transport.ServerTransport;
+import io.rector.netty.transport.codec.MessageDecoder;
 import io.rector.netty.transport.socket.RsocketAcceptor;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.Data;
@@ -92,10 +93,8 @@ public class ServerStart extends AbstractStart {
                 .ip("127.0.0.1")
                 .port(1884)
                 .interceptor(frame -> frame,frame -> frame)
-                .setAfterNettyContextInit(nettyContext -> {
-                        // netty连接设置
-                })
                 .setAfterChannelInit(channel -> {
+
                     //  channel设置
                 })
                 .connect();

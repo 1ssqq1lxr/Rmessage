@@ -25,7 +25,7 @@ public interface Start {
 
     Start  websocket();
 
-    Start setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit);
+//    Start setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit);
 
     Start setAfterChannelInit(Consumer<? super Channel> afterChannelInit);
 

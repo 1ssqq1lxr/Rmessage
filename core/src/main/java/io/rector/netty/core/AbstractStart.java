@@ -3,6 +3,7 @@ package io.rector.netty.core;
 import io.netty.channel.Channel;
 import io.rector.netty.config.Config;
 import io.rector.netty.config.Protocol;
+import io.rector.netty.transport.codec.MessageDecoder;
 import io.rector.netty.transport.socket.SocketFactory;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyContext;
@@ -27,6 +28,7 @@ abstract class AbstractStart implements Start {
     @Override
     public Start tcp() {
         config.setProtocol(Protocol.TCP);
+        config.setAfterNettyContextInit(nettyContext -> nettyContext.addHandler("decoder",new MessageDecoder(0,1,5,0,1)));
         return this;
     }
 
@@ -78,11 +80,11 @@ abstract class AbstractStart implements Start {
 
 
 
-    @Override
-    public Start setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit) {
-        config.setAfterNettyContextInit(afterNettyContextInit);
-        return this;
-    }
+//    @Override
+//    public Start setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit) {
+//        config.setAfterNettyContextInit(afterNettyContextInit);
+//        return this;
+//    }
 
     @Override
     public Start setAfterChannelInit(Consumer<? super Channel> afterChannelInit) {
