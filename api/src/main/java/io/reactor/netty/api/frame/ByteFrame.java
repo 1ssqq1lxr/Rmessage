@@ -1,4 +1,4 @@
-package io.rector.netty.flow.frame;
+package io.reactor.netty.api.frame;
 
 
 import com.sun.istack.internal.Nullable;
@@ -7,24 +7,25 @@ import io.netty.buffer.ByteBufHolder;
 import io.netty.util.AbstractReferenceCounted;
 import io.netty.util.IllegalReferenceCountException;
 import io.netty.util.Recycler;
+import io.reactor.netty.api.codec.RDecoder;
 
 /**
  * @Auther: lxr
  * @Date: 2018/12/11 10:12
  * @Description:
  */
-public class Frame extends AbstractReferenceCounted implements ByteBufHolder {
-    private static final Recycler<Frame> RECYCLER =
-            new Recycler<Frame>() {
-                protected Frame newObject(Handle<Frame> handle) {
-                    return new Frame(handle);
+public class ByteFrame extends AbstractReferenceCounted implements ByteBufHolder, Frame {
+    private static final Recycler<ByteFrame> RECYCLER =
+            new Recycler<ByteFrame>() {
+                protected ByteFrame newObject(Handle<ByteFrame> handle) {
+                    return new ByteFrame(handle);
                 }
             };
 
-    private final Recycler.Handle<Frame> handle;
+    private final Recycler.Handle<ByteFrame> handle;
     private ByteBuf content;
 
-    private Frame(final Recycler.Handle<Frame> handle) {
+    private ByteFrame(final Recycler.Handle<ByteFrame> handle) {
         this.handle = handle;
     }
 
@@ -37,46 +38,46 @@ public class Frame extends AbstractReferenceCounted implements ByteBufHolder {
     }
 
     @Override
-    public Frame copy() {
+    public ByteFrame copy() {
         return replace(content.copy());
     }
 
     @Override
-    public Frame duplicate() {
+    public ByteFrame duplicate() {
         return replace(content.duplicate());
     }
 
     @Override
-    public Frame retainedDuplicate() {
+    public ByteFrame retainedDuplicate() {
         return replace(content.retainedDuplicate());
     }
 
     @Override
-    public Frame replace(ByteBuf content) {
+    public ByteFrame replace(ByteBuf content) {
         return from(content);
     }
 
     @Override
-    public Frame retain() {
+    public ByteFrame retain() {
         super.retain();
         return this;
     }
 
     @Override
-    public Frame retain(int increment) {
+    public ByteFrame retain(int increment) {
         super.retain(increment);
         return this;
     }
 
     @Override
-    public Frame touch() {
+    public ByteFrame touch() {
         content.touch();
         return this;
     }
 
 
     @Override
-    public Frame touch(@Nullable Object hint) {
+    public ByteFrame touch(@Nullable Object hint) {
         content.touch(hint);
         return this;
     }
@@ -95,10 +96,10 @@ public class Frame extends AbstractReferenceCounted implements ByteBufHolder {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Frame)) {
+        if (!(o instanceof ByteFrame)) {
             return false;
         }
-        final Frame frame = (Frame) o;
+        final ByteFrame frame = (ByteFrame) o;
         return content.equals(frame.content());
     }
 
@@ -107,12 +108,16 @@ public class Frame extends AbstractReferenceCounted implements ByteBufHolder {
         return content.hashCode();
     }
 
-    public static Frame from(final ByteBuf content) {
-        final Frame frame = RECYCLER.get();
+    public static ByteFrame from(final ByteBuf content) {
+        final ByteFrame frame = RECYCLER.get();
         frame.setRefCnt(1);
         frame.content = content;
         return frame;
     }
 
+    @Override
+    public Frame decode( RDecoder rDecoder) {
+        return rDecoder.decode(this);
+    }
 }
 

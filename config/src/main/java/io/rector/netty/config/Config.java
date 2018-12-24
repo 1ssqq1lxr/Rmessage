@@ -1,6 +1,7 @@
 package io.rector.netty.config;
 
 import io.netty.channel.Channel;
+import io.rector.netty.config.Protocol;
 import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.options.ServerOptions;
 

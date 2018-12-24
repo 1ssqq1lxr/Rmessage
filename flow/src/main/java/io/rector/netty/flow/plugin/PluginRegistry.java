@@ -2,7 +2,7 @@ package io.rector.netty.flow.plugin;
 
 
 import io.netty.util.ReferenceCountUtil;
-import io.rector.netty.flow.frame.Frame;
+import io.reactor.netty.api.frame.Frame;
 
 import java.util.Arrays;
 import java.util.LinkedList;

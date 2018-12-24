@@ -1,6 +1,6 @@
 package io.rector.netty.flow.plugin;
 
-import io.rector.netty.flow.frame.Frame;
+import io.reactor.netty.api.frame.Frame;
 
 import java.util.function.Function;
 

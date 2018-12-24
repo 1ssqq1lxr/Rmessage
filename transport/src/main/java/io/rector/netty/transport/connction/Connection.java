@@ -1,6 +1,6 @@
 package io.rector.netty.transport.connction;
 
-import io.rector.netty.flow.frame.Frame;
+import io.reactor.netty.api.frame.ByteFrame;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyContext;
@@ -27,7 +27,7 @@ public interface Connection {
 
     Mono<NettyOutbound> onWriteIdle(Long l, Runnable writeLe);
 
-    Flux<Frame> receiveMsg();
+    Flux<ByteFrame> receiveMsg();
 
     void onClose(Runnable remove);
 }

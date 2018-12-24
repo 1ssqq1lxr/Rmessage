@@ -8,7 +8,6 @@ import io.rector.netty.flow.plugin.FrameInterceptor;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.flow.plugin.Plugins;
 import io.rector.netty.transport.ServerTransport;
-import io.rector.netty.transport.codec.MessageDecoder;
 import io.rector.netty.transport.socket.RsocketAcceptor;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.Data;

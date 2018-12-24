@@ -7,7 +7,6 @@ import org.apache.logging.log4j.core.config.plugins.util.PluginRegistry;
 import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.options.ServerOptions;
 
-import java.net.InetSocketAddress;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -20,7 +19,7 @@ import java.util.function.Supplier;
 @Builder
 public class ServerConfig implements Config{
 
-    private  Protocol protocol;
+    private Protocol protocol;
 
     public   String ip;
 
