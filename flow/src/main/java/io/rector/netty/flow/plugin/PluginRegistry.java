@@ -56,7 +56,9 @@ public class PluginRegistry {
             return rSocket;
         }
         finally {
-            ReferenceCountUtil.release(rSocket);
+            if(rSocket.refCnt()>0){
+                ReferenceCountUtil.release(rSocket);
+            }
         }
     }
 
