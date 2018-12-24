@@ -83,7 +83,6 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     @Override
     public void removeConnection(RConnection duplexConnection) {
         connections.remove(duplexConnection);
-
     }
 
     private Frame apply(Frame frame) {
