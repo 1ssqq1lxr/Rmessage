@@ -55,7 +55,7 @@ public class RConnection implements Connection {
     }
 
     @Override
-    public Flux<ByteFrame> receiveMsg() {
+    public Flux<Frame> receiveMsg() {
         return inbound.receive().map(byteBuf -> ByteFrame.from(byteBuf.retain()));
     }
 

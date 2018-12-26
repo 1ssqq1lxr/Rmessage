@@ -1,13 +1,13 @@
 package io.rector.netty.transport.socket;
 
-import io.reactor.netty.api.codec.RDecoder;
 import io.reactor.netty.api.frame.Frame;
 import io.rector.netty.config.Protocol;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.transport.Transport;
+import io.rector.netty.transport.codec.Rdocoder;
+import io.rector.netty.transport.codec.ServerDecoderAcceptor;
 import io.rector.netty.transport.connction.RConnection;
 import lombok.Data;
-import reactor.core.publisher.UnicastProcessor;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
@@ -33,20 +33,14 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private PluginRegistry pluginRegistry;
 
-    private UnicastProcessor<Frame> frames = UnicastProcessor.create();
-
     private Map<String , RConnection> ids = new ConcurrentHashMap<>(); // id -> channel
 
     private Map<String , List<RConnection>> keys = new ConcurrentHashMap<>(); // group -> channel
-
-    private RDecoder rDecoder = frame -> null;
 
     public ServerSocketAdapter(Supplier<Transport<T>> transport, PluginRegistry pluginRegistry) {
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
         this.pluginRegistry =pluginRegistry;
-        pluginRegistry.addServerPlugin(frame -> frame);
-        frames.subscribe(this::apply);
     }
 
 
@@ -71,10 +65,9 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                     rConnection.dispose();
                     transport.config().getWriteEvent().get().run();
                 });
-
                 rConnection.receiveMsg()
-                        .map(frame -> frame.decode(rDecoder))
-                        .subscribe(frame -> frames.onNext(frame));
+                        .map(this::apply)
+                        .subscribe(frame -> decoder().decoder(this,frame));
                 rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
             };
             return  rConnectionConsumer;
@@ -88,5 +81,9 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private Frame apply(Frame frame) {
         return pluginRegistry.applyServer(frame);
+    }
+
+    private Rdocoder decoder(){
+        return ServerDecoderAcceptor::new;
     }
 }
