@@ -8,6 +8,7 @@ import io.rector.netty.transport.codec.Rdocoder;
 import io.rector.netty.transport.codec.ServerDecoderAcceptor;
 import io.rector.netty.transport.connction.RConnection;
 import lombok.Data;
+import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
@@ -67,7 +68,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                 });
                 rConnection.receiveMsg()
                         .map(this::apply)
-                        .subscribe(frame -> decoder().decoder(this,frame).transportMessage());
+                        .subscribe(frame -> decoder().decoder(this,frame,rConnection).transportMessage());
                 rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
             };
             return  rConnectionConsumer;
@@ -75,8 +76,8 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     }
 
     @Override
-    public void removeConnection(RConnection duplexConnection) {
-        connections.remove(duplexConnection);
+    public Mono<Void> removeConnection(RConnection duplexConnection) {
+       return duplexConnection.dispose();
     }
 
     private Frame apply(Frame frame) {

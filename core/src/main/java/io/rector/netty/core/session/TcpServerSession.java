@@ -34,10 +34,7 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
 
     @Override
     public Mono<Void> removeConnection(RConnection duplexConnection) {
-        return Mono.defer(()->{
-            rsocket.removeConnection(duplexConnection);
-            return Mono.empty();
-        });
+        return rsocket.removeConnection(duplexConnection);
     }
 
 

@@ -14,7 +14,9 @@ package io.reactor.netty.api.codec;
  *  }
  *
  */
-public abstract class TransportMessage {
+public  class TransportMessage {
+
+    public static  final  byte MESSAGE_HEADER = 0x0F;
 
     private ProtocolCatagory type;
 

@@ -42,5 +42,5 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
     public abstract Function<Transport<T>,Consumer<RConnection>>  next();
 
 
-    public abstract void removeConnection(RConnection duplexConnection);
+    public abstract Mono<Void>  removeConnection(RConnection duplexConnection);
 }
