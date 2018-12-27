@@ -7,6 +7,7 @@ import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.codec.Rdocoder;
 import io.rector.netty.transport.codec.ServerDecoderAcceptor;
 import io.rector.netty.transport.connction.RConnection;
+import io.rector.netty.transport.distribute.ServerMessageDistribute;
 import lombok.Data;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
@@ -38,10 +39,13 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private Map<String , List<RConnection>> keys = new ConcurrentHashMap<>(); // group -> channel
 
+    private ServerMessageDistribute distribute;
+
     public ServerSocketAdapter(Supplier<Transport<T>> transport, PluginRegistry pluginRegistry) {
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
         this.pluginRegistry =pluginRegistry;
+        this.distribute= new ServerMessageDistribute(this);
     }
 
 
@@ -68,7 +72,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                 });
                 rConnection.receiveMsg()
                         .map(this::apply)
-                        .subscribe(frame -> decoder().decoder(this,frame,rConnection).transportMessage());
+                        .subscribe(frame -> decoder().decoder(distribute,frame,rConnection).transportMessage());
                 rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
             };
             return  rConnectionConsumer;
@@ -87,4 +91,5 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     private Rdocoder decoder(){
         return ServerDecoderAcceptor::new;
     }
+
 }

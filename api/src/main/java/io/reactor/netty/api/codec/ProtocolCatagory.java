@@ -7,7 +7,7 @@ package io.reactor.netty.api.codec;
  */
 public enum  ProtocolCatagory {
 
-    ERROR((byte)0),  //  error
+//    ERROR((byte)0),  //  error
     ONE((byte)1),   //  单发
     GROUP((byte)2),// 群发
     CONFIRM((byte)3),//确认身份机制

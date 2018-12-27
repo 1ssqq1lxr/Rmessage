@@ -4,8 +4,12 @@ import io.netty.buffer.ByteBuf;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.reactor.netty.api.frame.Frame;
 import io.rector.netty.transport.connction.RConnection;
+import io.rector.netty.transport.distribute.ServerMessageDistribute;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import java.nio.charset.Charset;
 
 /**
  * @Auther: lxr
@@ -13,9 +17,10 @@ import lombok.AllArgsConstructor;
  * @Description:
  */
 @AllArgsConstructor
+@Slf4j
 public class ServerDecoderAcceptor implements DecoderAcceptor{
 
-    private ServerSocketAdapter serverSocketAdapter;
+    private ServerMessageDistribute distribute;
 
     private Frame frame;
 
@@ -32,8 +37,14 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                 return;
             }
             switch (obtainLow(header)){
-                case ERROR:
                 case ONE:
+                   byte userLength = byteBuf.readByte();
+                   int  msgLength= byteBuf.readInt();
+                   byte[] userByte = new byte[userLength];
+                   byteBuf.readBytes(userByte);
+                   String user = new String(userByte, Charset.defaultCharset());
+
+                   break;
                 case JOIN:
                 case PING:
                 case PONG:
