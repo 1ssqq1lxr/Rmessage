@@ -1,6 +1,7 @@
 package io.rector.netty.config;
 
 import io.netty.channel.Channel;
+import io.reactor.netty.api.codec.Protocol;
 import lombok.Builder;
 import lombok.Data;
 import org.apache.logging.log4j.core.config.plugins.util.PluginRegistry;

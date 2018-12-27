@@ -1,4 +1,4 @@
-package io.rector.netty.transport.codec;
+package io.reactor.netty.api.codec;
 
 /**
  * @Auther: lxr

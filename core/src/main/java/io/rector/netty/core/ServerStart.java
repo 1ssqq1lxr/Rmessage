@@ -1,7 +1,7 @@
 package io.rector.netty.core;
 
+import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.exception.NotFindConfigException;
-import io.rector.netty.config.Protocol;
 import io.rector.netty.config.ServerConfig;
 import io.rector.netty.core.session.TcpServerSession;
 import io.rector.netty.flow.plugin.FrameInterceptor;

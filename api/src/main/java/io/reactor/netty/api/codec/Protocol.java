@@ -1,4 +1,4 @@
-package io.rector.netty.config;
+package io.reactor.netty.api.codec;
 
 
 /**

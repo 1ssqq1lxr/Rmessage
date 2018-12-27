@@ -1,7 +1,7 @@
 package io.rector.netty.transport.socket;
 
+import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.frame.Frame;
-import io.rector.netty.config.Protocol;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.codec.Rdocoder;
@@ -67,7 +67,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                 });
                 rConnection.receiveMsg()
                         .map(this::apply)
-                        .subscribe(frame -> decoder().decoder(this,frame));
+                        .subscribe(frame -> decoder().decoder(this,frame).transportMessage());
                 rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
             };
             return  rConnectionConsumer;

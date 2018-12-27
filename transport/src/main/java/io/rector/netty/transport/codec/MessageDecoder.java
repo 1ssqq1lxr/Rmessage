@@ -1,6 +1,7 @@
 package io.rector.netty.transport.codec;
 
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.reactor.netty.api.codec.ProtocolCatagory;
 
 /**
  * @Auther: lxr
@@ -9,7 +10,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  *
  *  * +-----1byte--------------------|---1 byte -| --------4 byte-----|-----n byte-----|-----n byte-----|  timestamp |
  *  * |固定头高4bit| 消息类型低 4bit  |to目的key|     发送body长度   |  to发送kjey     |   body          |   8byte    |
- *  @see io.rector.netty.transport.codec.ProtocolCatagory
+ *  @see ProtocolCatagory
  */
 
 

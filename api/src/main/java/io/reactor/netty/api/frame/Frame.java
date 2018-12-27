@@ -9,6 +9,6 @@ import io.netty.buffer.ByteBufHolder;
  */
 public interface Frame  extends ByteBufHolder {
 
-    Frame decode(RDecoder rDecoder);
+//    Frame decode(RDecoder rDecoder);
 
 }

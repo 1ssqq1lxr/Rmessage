@@ -1,8 +1,7 @@
 package io.rector.netty.transport.socket;
 
-import io.rector.netty.config.Protocol;
+import io.reactor.netty.api.codec.Protocol;
 import io.rector.netty.transport.Transport;
-import io.rector.netty.transport.connction.Connection;
 import io.rector.netty.transport.connction.RConnection;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;

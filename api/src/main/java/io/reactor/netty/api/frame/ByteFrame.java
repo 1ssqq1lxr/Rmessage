@@ -114,9 +114,5 @@ public class ByteFrame extends AbstractReferenceCounted implements ByteBufHolder
         return frame;
     }
 
-    @Override
-    public Frame decode( RDecoder rDecoder) {
-        return rDecoder.decode(this);
-    }
 }
 

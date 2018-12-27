@@ -1,11 +1,10 @@
 package io.rector.netty.config;
 
 import io.netty.channel.Channel;
-import io.rector.netty.config.Protocol;
+import io.reactor.netty.api.codec.Protocol;
 import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.options.ServerOptions;
 
-import java.net.InetSocketAddress;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

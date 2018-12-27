@@ -1,8 +1,8 @@
 package io.rector.netty.core;
 
 import io.netty.channel.Channel;
+import io.reactor.netty.api.codec.Protocol;
 import io.rector.netty.config.Config;
-import io.rector.netty.config.Protocol;
 import io.rector.netty.transport.codec.MessageDecoder;
 import io.rector.netty.transport.socket.SocketFactory;
 import reactor.ipc.netty.NettyConnector;
