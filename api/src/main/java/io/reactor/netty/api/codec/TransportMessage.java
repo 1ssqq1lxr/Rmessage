@@ -1,6 +1,5 @@
 package io.reactor.netty.api.codec;
 
-import io.rector.netty.transport.codec.ProtocolCatagory;
 
 /**
  * @Auther: lxr

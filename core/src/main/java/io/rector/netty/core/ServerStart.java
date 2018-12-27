@@ -86,19 +86,24 @@ public class ServerStart extends AbstractStart {
 
     public static void  main(String[] a) throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-          Mono<TcpServerSession<TcpServer>>  sessionMono=ServerStart
-                .builder()
-                .tcp()
-                .ip("127.0.0.1")
-                .port(1884)
-                .interceptor(frame -> frame,frame -> frame)
-                .setAfterChannelInit(channel -> {
-
-                    //  channel设置
-                })
-                .connect();
-        sessionMono.subscribe(session->{
-        });
+//          Mono<TcpServerSession<TcpServer>>  sessionMono=ServerStart
+//                .builder()
+//                .tcp()
+//                .ip("127.0.0.1")
+//                .port(1884)
+//                .interceptor(frame -> frame,frame -> frame)
+//                .setAfterChannelInit(channel -> {
+//
+//                    //  channel设置
+//                })
+//                .connect();
+//        sessionMono.subscribe(session->{
+//        });
+        byte b =117;
+        int high= b>>4 & 0x0F ;
+        int low= b & 0x0F ;
+        System.out.println("high:"+high);
+        System.out.println("low:"+low);
         countDownLatch.await();
     }
 

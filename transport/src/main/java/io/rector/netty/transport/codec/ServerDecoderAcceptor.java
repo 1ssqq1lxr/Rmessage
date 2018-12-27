@@ -21,8 +21,8 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
     public void transportMessage() { // 分发消息
         try {
             ByteBuf byteBuf=frame.content();
-            if(byteBuf.readableBytes()<0)
-                return;
+            byte header=byteBuf.readByte();
+
 
         }
         finally {// 保证释放内存

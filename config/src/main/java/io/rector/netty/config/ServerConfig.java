@@ -32,7 +32,7 @@ public class ServerConfig implements Config{
 
     private  Long writeIdle = 10*1000l;
 
-    private Supplier<Runnable> writeEvent = ()->()->{};;
+    private Supplier<Runnable> writeEvent = ()->()->{};
 
     private  Consumer<ServerOptions.Builder<?>>  options ;
 
