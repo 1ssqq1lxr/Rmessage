@@ -3,6 +3,7 @@ package io.rector.netty.transport.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.ReplayingDecoder;
 import io.reactor.netty.api.codec.ProtocolCatagory;
 
 import java.nio.ByteOrder;
@@ -19,21 +20,16 @@ import java.util.List;
  */
 
 
-public class MessageDecoder extends ByteToMessageDecoder {
-//
-//    private ByteOrder byteOrder;
-//
-//    public MessageDecoder() {
-//        this.byteOrder =  ByteOrder.BIG_ENDIAN;
-//    }
+public class MessageDecoder extends ReplayingDecoder {
+
+    private ByteOrder byteOrder;
+
+    public MessageDecoder() {
+        this.byteOrder =  ByteOrder.BIG_ENDIAN;
+    }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) {
-        int readIndex=buf.readerIndex();
-        if(buf.readableBytes()<1)return;
-        short from=buf.getUnsignedByte(1); //无符号
-        short to=buf.getUnsignedByte(2);
-        long  body=buf.getUnsignedInt(3);
-
+        byte header=buf.readByte();
     }
 }
