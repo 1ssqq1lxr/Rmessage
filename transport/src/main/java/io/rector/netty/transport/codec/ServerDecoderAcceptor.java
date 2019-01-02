@@ -32,8 +32,7 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
             ByteBuf byteBuf=frame.content();
             byte header=byteBuf.readByte();
             if(obtainHigh(header) != TransportMessage.MESSAGE_HEADER){
-                // 发送error消息
-                serverSocketAdapter.removeConnection(rConnection).subscribe();
+                distribute.getServerSocketAdapter().removeConnection(rConnection).subscribe();
                 return;
             }
             switch (obtainLow(header)){
