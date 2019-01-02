@@ -3,6 +3,7 @@ package io.rector.netty.transport.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
+import io.reactor.netty.api.codec.MessageUtils;
 import io.reactor.netty.api.codec.ProtocolCatagory;
 
 import java.util.List;
@@ -18,12 +19,31 @@ import java.util.List;
  */
 
 
-public class MessageDecoder extends ReplayingDecoder {
+public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
+
+    public MessageDecoder() {
+        super(Type.FIXD_HEADER);
+    }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) {
-        buf.readByte();
-//        buf.slice()
-        out.add(buf);
+        switch (state()){
+            case FIXD_HEADER:
+                byte header=buf.readByte();
+                checkpoint();
+                MessageUtils.obtainLow(header);
+                out.add(buf);
+                checkpoint(Type.BODY);
+            case BODY:
+            case CRC:
+        }
     }
+
+    enum Type{
+        FIXD_HEADER,
+        BODY,
+        CRC
+
+    }
+
 }
