@@ -27,7 +27,7 @@ abstract class AbstractStart implements Start {
     @Override
     public Start tcp() {
         config.setProtocol(Protocol.TCP);
-        config.setAfterNettyContextInit(nettyContext -> nettyContext.addHandler("decoder",new MessageDecoder(0,1,5,0,1)));
+//        config.setAfterNettyContextInit(nettyContext -> nettyContext.addHandler("decoder",new MessageDecoder(0,1,5,0,1)));
         return this;
     }
 
