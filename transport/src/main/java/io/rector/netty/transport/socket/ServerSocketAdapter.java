@@ -64,12 +64,12 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                     connections.remove(rConnection);
                     rConnection.dispose();
                     transport.config().getReadEvent().get().run();
-                });
+                }).subscribe();
                 rConnection.onWriteIdle(transport.config().getWriteIdle(),()->{
                     connections.remove(rConnection);
                     rConnection.dispose();
                     transport.config().getWriteEvent().get().run();
-                });
+                }).subscribe();
                 rConnection.receiveMsg()
                         .map(this::apply)
                         .subscribe(frame -> decoder().decoder(distribute,frame,rConnection).transportMessage());

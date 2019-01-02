@@ -19,8 +19,6 @@ import lombok.Data;
 @Data
 public  class TransportMessage {
 
-    public static  final  byte MESSAGE_HEADER = 0x0F;
-
     private ProtocolCatagory type;
 
     private String from;
@@ -35,6 +33,7 @@ public  class TransportMessage {
 
         return new TransportMessage();
     }
+
 
 
 }

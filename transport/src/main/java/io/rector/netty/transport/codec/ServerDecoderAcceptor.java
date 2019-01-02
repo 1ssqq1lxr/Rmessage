@@ -31,26 +31,26 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
         try {
             ByteBuf byteBuf=frame.content();
             byte header=byteBuf.readByte();
-            if(obtainHigh(header) != TransportMessage.MESSAGE_HEADER){
-                distribute.getServerSocketAdapter().removeConnection(rConnection).subscribe();
-                return;
-            }
-            switch (obtainLow(header)){
-                case ONE:
-                   byte userLength = byteBuf.readByte();
-                   int  msgLength= byteBuf.readInt();
-                   byte[] userByte = new byte[userLength];
-                   byteBuf.readBytes(userByte);
-                   String user = new String(userByte, Charset.defaultCharset());
-
-                   break;
-                case JOIN:
-                case PING:
-                case PONG:
-                case GROUP:
-                case LEAVE:
-                case CONFIRM:
-            }
+//            if(obtainHigh(header) != TransportMessage.MESSAGE_HEADER){
+//                distribute.getServerSocketAdapter().removeConnection(rConnection).subscribe();
+//                return;
+//            }
+//            switch (obtainLow(header)){
+//                case ONE:
+//                   byte userLength = byteBuf.readByte();
+//                   int  msgLength= byteBuf.readInt();
+//                   byte[] userByte = new byte[userLength];
+//                   byteBuf.readBytes(userByte);
+//                   String user = new String(userByte, Charset.defaultCharset());
+//
+//                   break;
+//                case JOIN:
+//                case PING:
+//                case PONG:
+//                case GROUP:
+//                case LEAVE:
+//                case CONFIRM:
+//            }
         }
         catch (Exception e){
 

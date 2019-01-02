@@ -4,7 +4,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.ReplayingDecoder;
+import io.reactor.netty.api.codec.MessageUtils;
 import io.reactor.netty.api.codec.ProtocolCatagory;
+import io.reactor.netty.api.codec.TransportMessage;
 
 import java.nio.ByteOrder;
 import java.util.List;
@@ -22,14 +24,10 @@ import java.util.List;
 
 public class MessageDecoder extends ReplayingDecoder {
 
-    private ByteOrder byteOrder;
-
-    public MessageDecoder() {
-        this.byteOrder =  ByteOrder.BIG_ENDIAN;
-    }
-
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) {
-        byte header=buf.readByte();
+        buf.readByte();
+//        buf.slice()
+        out.add(buf);
     }
 }
