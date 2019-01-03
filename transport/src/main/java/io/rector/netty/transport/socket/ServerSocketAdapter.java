@@ -41,7 +41,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private ServerMessageDistribute distribute;
 
-    public ServerSocketAdapter(Supplier<Transport<T>> transport, PluginRegistry pluginRegistry) {
+    public ServerSocketAdapter(Supplier<Transport> transport, PluginRegistry pluginRegistry) {
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
         this.pluginRegistry =pluginRegistry;
@@ -56,7 +56,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     }
 
     @Override
-    public Function<Transport<T>,Consumer<RConnection>> next() {
+    public Function<Transport,Consumer<RConnection>> next() {
         return transport->{
             Consumer<RConnection> rConnectionConsumer =rConnection -> {
                 connections.add(rConnection);// 维护客户端列表

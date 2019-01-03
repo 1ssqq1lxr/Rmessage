@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> {
 
 
-    protected Supplier<Transport<T>> transport;
+    protected Supplier<Transport> transport;
 
     public abstract Supplier<Protocol> getPrptocol();
 
@@ -34,12 +34,12 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
 
 
     private Mono<? extends Rsocket<T>> get() {
-        Transport<T> tTransport=transport.get();
+        Transport tTransport=transport.get();
         return  transport.get()
                 .connect().doOnNext(next().apply(tTransport)).then(Mono.just(this));
     }
 
-    public abstract Function<Transport<T>,Consumer<RConnection>>  next();
+    public abstract Function<Transport,Consumer<RConnection>>  next();
 
 
     public abstract Mono<Void>  removeConnection(RConnection duplexConnection);

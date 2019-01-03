@@ -16,6 +16,6 @@ import java.util.function.Supplier;
 @FunctionalInterface
 public interface RsocketAcceptor {
 
-    <T extends  NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Rsocket<T> accept(Supplier<Transport<T>> transport, PluginRegistry pluginRegistry);
+    <T extends  NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Rsocket<T> accept(Supplier<Transport> transport, PluginRegistry pluginRegistry);
 
 }
