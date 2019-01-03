@@ -1,5 +1,6 @@
 package io.rector.netty.flow.plugin;
 
+import io.reactor.netty.api.codec.TransportMessage;
 import io.reactor.netty.api.frame.Frame;
 
 import java.util.function.Function;
@@ -9,5 +10,5 @@ import java.util.function.Function;
  * @Date: 2018/12/11 15:10
  * @Description:
  */
-public @FunctionalInterface interface FrameInterceptor extends Function<Frame, Frame> {
+public @FunctionalInterface interface FrameInterceptor extends Function<TransportMessage, TransportMessage> {
 }

@@ -1,6 +1,7 @@
 package io.rector.netty.transport.socket;
 
 import io.reactor.netty.api.codec.Protocol;
+import io.reactor.netty.api.codec.TransportMessage;
 import io.reactor.netty.api.frame.Frame;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.transport.Transport;
@@ -84,8 +85,8 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
        return duplexConnection.dispose();
     }
 
-    private Frame apply(Frame frame) {
-        return pluginRegistry.applyServer(frame);
+    private TransportMessage apply(TransportMessage message) {
+        return pluginRegistry.applyServer(message);
     }
 
     private Rdocoder decoder(){

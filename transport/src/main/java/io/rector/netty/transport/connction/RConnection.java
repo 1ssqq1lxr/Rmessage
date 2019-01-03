@@ -1,5 +1,6 @@
 package io.rector.netty.transport.connction;
 
+import io.reactor.netty.api.codec.TransportMessage;
 import io.reactor.netty.api.frame.ByteFrame;
 import io.reactor.netty.api.frame.Frame;
 import lombok.Data;
@@ -55,8 +56,8 @@ public class RConnection implements Connection {
     }
 
     @Override
-    public Flux<Frame> receiveMsg() {
-        return inbound.receive().map(byteBuf -> ByteFrame.from(byteBuf.retain()));
+    public Flux<TransportMessage> receiveMsg() {
+        return inbound.receiveObject().cast(TransportMessage.class);
     }
 
     @Override

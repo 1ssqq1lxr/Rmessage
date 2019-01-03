@@ -1,7 +1,11 @@
 package io.reactor.netty.api.codec;
 
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import lombok.Data;
+
+import java.nio.Buffer;
 
 /**
  * @Auther: lxr
@@ -28,12 +32,6 @@ public  class TransportMessage {
     private String messgae;
 
     private long   timestammp;
-
-    public static TransportMessage build(byte[] bytes){
-
-        return new TransportMessage();
-    }
-
 
 
 }
