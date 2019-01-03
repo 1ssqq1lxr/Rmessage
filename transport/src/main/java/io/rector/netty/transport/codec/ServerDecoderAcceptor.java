@@ -1,9 +1,6 @@
 package io.rector.netty.transport.codec;
 
-import io.netty.buffer.ByteBuf;
 import io.reactor.netty.api.codec.TransportMessage;
-import io.reactor.netty.api.frame.Frame;
-import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.ServerMessageDistribute;
 import lombok.AllArgsConstructor;
@@ -26,7 +23,12 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
 
     @Override
     public void transportMessage() { // 分发消息
+               if(message.isDiscard()){
+                   log.info("message is discard {}",message);
+               }
+               else {
 
+               }
     }
 
 

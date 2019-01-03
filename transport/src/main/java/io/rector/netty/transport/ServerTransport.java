@@ -16,7 +16,8 @@ import reactor.ipc.netty.NettyOutbound;
  * @Date: 2018/12/7 16:46
  * @Description:
  */
-public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements Transport<T> {
+public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements Transport {
+
 
     private ServerConfig config;
 

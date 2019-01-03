@@ -8,7 +8,7 @@ import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
-public interface Transport<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>{
+public interface Transport{
 
     Flux<RConnection> connect();
 

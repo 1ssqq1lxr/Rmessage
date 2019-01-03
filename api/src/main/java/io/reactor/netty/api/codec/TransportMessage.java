@@ -33,5 +33,7 @@ public  class TransportMessage {
 
     private long   timestammp;
 
+    private boolean discard;
+
 
 }
