@@ -72,7 +72,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                 }).subscribe();
                 rConnection.receiveMsg()
                         .map(this::apply)
-                        .subscribe(frame -> decoder().decoder(distribute,frame,rConnection).transportMessage());
+                        .subscribe(message -> decoder().decoder(distribute,message).transportMessage());
                 rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
             };
             return  rConnectionConsumer;

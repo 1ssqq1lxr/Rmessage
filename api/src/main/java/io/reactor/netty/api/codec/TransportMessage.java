@@ -4,6 +4,7 @@ package io.reactor.netty.api.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Data;
+import reactor.core.publisher.Mono;
 
 import java.nio.Buffer;
 
@@ -34,6 +35,12 @@ public  class TransportMessage {
     private long   timestammp;
 
     private boolean discard;
+
+    public Mono<byte[]> toBytes(){
+        return Mono.create(monoSink -> {
+            monoSink.success(null);
+        });
+    }
 
 
 }
