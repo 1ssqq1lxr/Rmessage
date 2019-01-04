@@ -3,6 +3,7 @@ package io.reactor.netty.api.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import lombok.Builder;
 import lombok.Data;
 import reactor.core.publisher.Mono;
 
@@ -22,6 +23,7 @@ import java.nio.Buffer;
  *
  */
 @Data
+@Builder
 public  class TransportMessage {
 
     private ProtocolCatagory type;

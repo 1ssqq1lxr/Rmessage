@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 import io.reactor.netty.api.codec.MessageUtils;
 import io.reactor.netty.api.codec.ProtocolCatagory;
+import io.reactor.netty.api.codec.TransportMessage;
 
 import java.util.List;
 
@@ -30,10 +31,22 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
         switch (state()){
             case FIXD_HEADER:
                 byte header=buf.readByte();
-                checkpoint();
-                MessageUtils.obtainLow(header);
-                out.add(buf);
-                checkpoint(Type.BODY);
+                ProtocolCatagory type;
+                switch ((type=MessageUtils.obtainLow(header))){
+                    case ONE:
+                        this.checkpoint(Type.BODY);
+                    case JOIN:
+                        this.checkpoint(Type.BODY);
+                    case PING:
+                        out.add(TransportMessage.builder().type(type).build());
+                        this.checkpoint(Type.FIXD_HEADER);
+                        return;
+                    case GROUP:
+                    case LEAVE:
+                    case CONFIRM:
+                    case ACCEPT:
+                    default: this.checkpoint(Type.FIXD_HEADER); return;
+                }
             case BODY:
             case ADDITIONAL:
             case CRC:
