@@ -25,17 +25,13 @@ public class ServerMessageDistribute {
         this.serverSocketAdapter = serverSocketAdapter;
     }
 
-    private UnicastProcessor<byte[]> offLine = UnicastProcessor.create();
-
-
-    public void  sendOne(String key, Mono<byte[]> msg){
+    public boolean  sendOne(String key, Mono<byte[]> msg){
        Optional<RConnection> rConnection= Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(key));
        if(rConnection.isPresent()){ // 发送
            rConnection.get().getOutbound().send(msg.map(Unpooled::wrappedBuffer)).then().subscribe();
+           return true;
        }
-       else { // 处理离线消息
-           offLine.startWith(msg);
-       }
+       return  false;
     }
 
     public void  sendGroup(String key, Mono<byte[]> msg){

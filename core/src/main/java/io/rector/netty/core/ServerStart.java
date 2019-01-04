@@ -66,10 +66,10 @@ public class ServerStart extends AbstractStart {
         ServerTransport<T> serverTransport =new ServerTransport(socketFactory()
                 .accept(consumer)
                 .getSocket(config.getProtocol())
-                .orElseThrow(()->new NotFindConfigException("协议不存在")),(ServerConfig)config);
+                .orElseThrow(()->new NotFindConfigException("协议不存在")));
         return rsocketAcceptor()
                 .map(rsocketAcceptor -> {
-                      ServerSocketAdapter<T> rsocket= (ServerSocketAdapter<T> )rsocketAcceptor.accept(() -> serverTransport,registry);
+                      ServerSocketAdapter<T> rsocket= (ServerSocketAdapter<T> )rsocketAcceptor.accept(() -> serverTransport,registry,(ServerConfig)config);
                          return   rsocket.start()
                                  .map(socket->new TcpServerSession(rsocket))
                                  .doOnError(ex-> log.error("connect error:",ex))

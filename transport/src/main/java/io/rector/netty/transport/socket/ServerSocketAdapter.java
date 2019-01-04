@@ -2,6 +2,7 @@ package io.rector.netty.transport.socket;
 
 import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.codec.TransportMessage;
+import io.rector.netty.config.ServerConfig;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.codec.Rdocoder;
@@ -39,15 +40,17 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private Map<String , List<RConnection>> keys = new ConcurrentHashMap<>(); // group -> channel
 
+    private ServerConfig config;
+
     private ServerMessageDistribute distribute;
 
-    public ServerSocketAdapter(Supplier<Transport> transport, PluginRegistry pluginRegistry) {
+    public ServerSocketAdapter(Supplier<Transport> transport, PluginRegistry pluginRegistry,ServerConfig config) {
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
         this.pluginRegistry =pluginRegistry;
+        this.config=config;
         this.distribute= new ServerMessageDistribute(this);
     }
-
 
 
     @Override
@@ -60,15 +63,15 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
         return transport->{
             Consumer<RConnection> rConnectionConsumer =rConnection -> {
                 connections.add(rConnection);// 维护客户端列表
-                rConnection.onReadIdle(transport.config().getReadIdle(),()->{
+                rConnection.onReadIdle(config.getReadIdle(),()->{
                     connections.remove(rConnection);
                     rConnection.dispose();
-                    transport.config().getReadEvent().get().run();
+                    config.getReadEvent().get().run();
                 }).subscribe();
-                rConnection.onWriteIdle(transport.config().getWriteIdle(),()->{
+                rConnection.onWriteIdle(config.getWriteIdle(),()->{
                     connections.remove(rConnection);
                     rConnection.dispose();
-                    transport.config().getWriteEvent().get().run();
+                    config.getWriteEvent().get().run();
                 }).subscribe();
                 rConnection.receiveMsg()
                         .map(this::apply)

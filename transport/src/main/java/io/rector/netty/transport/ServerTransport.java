@@ -19,15 +19,12 @@ import reactor.ipc.netty.NettyOutbound;
 public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements Transport {
 
 
-    private ServerConfig config;
-
     private Class<T> classT;
 
     private  NettyContext context;
 
 
-    public ServerTransport(Class<T> classT, ServerConfig config) {
-        this.config = config;
+    public ServerTransport(Class<T> classT) {
         this.classT=classT;
     }
 
@@ -41,13 +38,9 @@ public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? 
         });
     }
 
-    @Override
-    public Config config() {
-        return this.config;
-    }
 
     @Override
-    public Flux<RConnection> connect() {
+    public Flux<RConnection> connect(Config config) {
        return Flux.create(fluxSink -> this.context=ReflectUtil.staticMethod(classT,config.getOptions()).newHandler((in, out)->{
            RConnection duplexConnection = new RConnection(in,out,out.context());
            fluxSink.next(duplexConnection);
