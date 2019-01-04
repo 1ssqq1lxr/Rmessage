@@ -13,21 +13,48 @@ import java.util.List;
  * @Auther: lxr
  * @Date: 2018/12/19 10:59
  * @Description:
- *   ****  ONE   GROUP
- *  * +-----1byte--------------------|---1 byte --|--1 byte -| --------4 byte-----|------2byte---|-----n byte------ | ----n byte-----|-----n byte----- |--------nbyte---- |  timestamp |
- *  * |固定头高4bit| 消息类型低 4bit  |from目的key| to目的key |     发送body长度   | 附加字段      | from发送kjey     |  to发送kjey     |   body          |additional fields |   8byte    |
+ *   type:  ONE   GROUP
+ *   FIXHEADER
+ *   |-----1byte--------------------|
+ *   |固定头高4bit| 消息类型低 4bit    |
  *
- *  ****  PING  PONG
+ *  TOPICHEADER
+ *   |---1 byte ---------|--1 byte ------------|
+ *   |--from目的length----|---目的key length-----|
+ *
+ *   |-----n byte--------|-------n byte--------|
+ *   |-----from目的-------|-------目的key--------|
+ *
+ *  MESSAGEBODY
+ *   |--------4 byte-----------|------2byte---------------------------|
+ *   |----- 消息body length----- |-------additional fields  length---- |
+ *   |-----n byte--------|-------n byte--------------------|
+ *   |-----消息body-------|-------additional fields --------|
+ *
+ *  CRC
+ *   |  timestamp 8byte |
+ *   |---时间戳----------|
+ *
+ *
+ *
+ *  type:   PING  PONG
+ *   FIXHEADER
  *   +-----1byte--------------------|
  *   |固定头高4bit| 消息类型低 4bit  |
  *
- *  ****  JOIN   LEAVE
- *    * +-----1byte--------------------|---1 byte --|--1 byte -|-----n byte------ | ----n byte-----|
- *     |固定头高4bit| 消息类型低 4bit  |from目的key | to目的key-| from发送kjey     |  to发送kjey     |
  *
- *  ****  ADDUSER  DELUSER
- *  * * +-----1byte--------------------|---1 byte --|--1 byte -|-----n byte------ | ----n byte-----|
- *  *  |固定头高4bit| 消息类型低 4bit  |from目的key | to目的key-| from发送kjey     |  to发送kjey     |
+ *  type:  JOIN   LEAVE  ADDUSER  DELUSER
+ *
+ *   FIXHEADER
+ *   |-----1byte--------------------|
+ *   |固定头高4bit| 消息类型低 4bit    |
+ *
+ *  TOPICHEADER
+ *   |---1 byte ---------|--1 byte ------------|
+ *   |--from目的length----|---目的key length-----|
+ *
+ *   |-----n byte--------|-------n byte--------|
+ *   |-----from目的-------|-------目的key--------|
  *
  *
  * @see ProtocolCatagory
@@ -48,16 +75,21 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
             case FIXD_HEADER:
                 byte header=buf.readByte();
                 switch ((type=MessageUtils.obtainLow(header))){
-                    case ONE:
-                        type = ProtocolCatagory.ONE;
-                        this.checkpoint(Type.BODY);
-                    case JOIN:
-                        this.checkpoint(Type.BODY);
                     case PING:
                         out.add(TransportMessage.builder().type(type).build());
                         this.checkpoint(Type.FIXD_HEADER);
-                        return;
+                        break;
+                    case ONE:
+                        type = ProtocolCatagory.ONE;
+                        this.checkpoint(Type.BODY);
+                        break;
                     case GROUP:
+                        type = ProtocolCatagory.GROUP;
+                        this.checkpoint(Type.BODY);
+                        break;
+                    case JOIN:
+                        this.checkpoint(Type.BODY);
+                        break;
                     case LEAVE:
                     case CONFIRM:
                     case ACCEPT:
