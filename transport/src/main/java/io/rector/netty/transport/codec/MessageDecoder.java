@@ -81,33 +81,43 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         break;
                     case ONE:
                         type = ProtocolCatagory.ONE;
-                        this.checkpoint(Type.BODY);
+                        this.checkpoint(Type.TOPICHEADER);
                         break;
                     case GROUP:
                         type = ProtocolCatagory.GROUP;
-                        this.checkpoint(Type.BODY);
+                        this.checkpoint(Type.TOPICHEADER);
                         break;
                     case JOIN:
-                        this.checkpoint(Type.BODY);
+                        this.checkpoint(Type.TOPICHEADER);
                         break;
                     case LEAVE:
-                    case CONFIRM:
+                        this.checkpoint(Type.TOPICHEADER);
+                        break;
+                    case ADDUSER:
+                        break;
+                    case ONLINE:
+                        break;
+                    case DELUSER:
+                        break;
+                    case PONG:
+                        break;
                     case ACCEPT:
+                        break;
                     default:
                         super.discardSomeReadBytes();
                         this.checkpoint(Type.FIXD_HEADER);
                         return;
                 }
-            case BODY:
-            case ADDITIONAL:
+            case TOPICHEADER:
+            case MESSAGEBODY:
             case CRC:
         }
     }
 
     enum Type{
         FIXD_HEADER,
-        BODY,
-        ADDITIONAL,
+        TOPICHEADER,
+        MESSAGEBODY,
         CRC
     }
 
