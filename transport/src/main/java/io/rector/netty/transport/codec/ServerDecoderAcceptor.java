@@ -33,7 +33,7 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
         }
         else {
             switch (message.getType()){
-                case CONFIRM:
+//                case CONFIRM:
                 case LEAVE:
                 case GROUP:
                     distribute.sendGroup(message.getTo(),message.toBytes());

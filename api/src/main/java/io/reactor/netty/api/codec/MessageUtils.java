@@ -26,7 +26,7 @@ public class MessageUtils {
             case 2:
                 return ProtocolCatagory.GROUP;
             case 3:
-                return ProtocolCatagory.CONFIRM;
+//                return ProtocolCatagory.;
 
             case 12:
                 return ProtocolCatagory.JOIN;
