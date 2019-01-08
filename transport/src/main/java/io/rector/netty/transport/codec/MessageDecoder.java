@@ -7,6 +7,7 @@ import io.reactor.netty.api.codec.MessageUtils;
 import io.reactor.netty.api.codec.ProtocolCatagory;
 import io.reactor.netty.api.codec.TransportMessage;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 /**
@@ -56,7 +57,9 @@ import java.util.List;
  *   |-----n byte--------|-------n byte--------|
  *   |-----from目的-------|-------目的key--------|
  *
- *
+ *   CRC
+ *   |  timestamp 8byte |
+ *   |---时间戳----------|
  * @see ProtocolCatagory
  */
 
@@ -68,6 +71,12 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
     }
 
     private ProtocolCatagory type;
+
+    private String from;
+
+    private String to;
+
+
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) {
@@ -108,9 +117,22 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         return;
                 }
             case TOPICHEADER:
-                switch (type){
-
+                short fromlength= buf.readByte();
+                short tolength= buf.readByte();
+                byte[] fromBytes = new byte[fromlength];
+                byte[] toBytes = new byte[tolength];
+                buf.readBytes(fromBytes);
+                buf.readBytes(toBytes);
+                from =new String(fromBytes, Charset.defaultCharset());
+                to   =new String(toBytes, Charset.defaultCharset());
+                if( type == ProtocolCatagory.JOIN
+                        || type == ProtocolCatagory.LEAVE
+                        || type == ProtocolCatagory.ADDUSER
+                        || type == ProtocolCatagory. DELUSER ){
+                     this.checkpoint(Type.CRC);
                 }
+                else
+                    this.checkpoint(Type.MESSAGEBODY);
             case MESSAGEBODY:
             case CRC:
         }
