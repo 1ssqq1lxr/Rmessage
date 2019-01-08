@@ -32,7 +32,7 @@ public  class TransportMessage {
 
     private String to;
 
-    private String messgae;
+    private MessageBody messageBody;
 
     private long   timestammp;
 

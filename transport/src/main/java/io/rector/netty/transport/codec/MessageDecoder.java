@@ -3,6 +3,7 @@ package io.rector.netty.transport.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
+import io.reactor.netty.api.codec.MessageBody;
 import io.reactor.netty.api.codec.MessageUtils;
 import io.reactor.netty.api.codec.ProtocolCatagory;
 import io.reactor.netty.api.codec.TransportMessage;
@@ -76,6 +77,8 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
 
     private String to;
 
+    private MessageBody messageBody;
+
 
 
     @Override
@@ -129,12 +132,37 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         || type == ProtocolCatagory.LEAVE
                         || type == ProtocolCatagory.ADDUSER
                         || type == ProtocolCatagory. DELUSER ){
-                     this.checkpoint(Type.CRC);
+                    out.add(TransportMessage.builder().type(type)
+                            .from(from)
+                            .to(to)
+                            .build());
+                     this.checkpoint(Type.FIXD_HEADER);
+                     break  header;
                 }
                 else
                     this.checkpoint(Type.MESSAGEBODY);
             case MESSAGEBODY:
+                int bodyLength= buf.readInt();
+                short  additionalLength= buf.readShort();
+                byte[]  body = new byte[bodyLength];
+                byte[]  addtional = new byte[additionalLength];
+                buf.readBytes(body);
+                buf.readBytes(addtional);
+                this.messageBody=
+                        MessageBody.builder()
+                        .body(new String(body,Charset.defaultCharset()))
+                        .addtional(new String(addtional,Charset.defaultCharset()))
+                        .build();
+                 this.checkpoint(Type.CRC);
+
             case CRC:
+                out.add(TransportMessage.builder().type(type)
+                        .from(from)
+                        .to(to)
+                        .messageBody(messageBody)
+                        .timestammp(buf.readLong())
+                        .build());
+                this.checkpoint(Type.FIXD_HEADER);
         }
     }
 
