@@ -8,7 +8,7 @@ import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.codec.Rdocoder;
 import io.rector.netty.transport.codec.ServerDecoderAcceptor;
 import io.rector.netty.transport.connction.RConnection;
-import io.rector.netty.transport.distribute.ServerMessageDistribute;
+import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import lombok.Data;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
@@ -42,14 +42,14 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private ServerConfig config;
 
-    private ServerMessageDistribute distribute;
+    private DirectServerMessageDistribute distribute;
 
     public ServerSocketAdapter(Supplier<Transport> transport, PluginRegistry pluginRegistry,ServerConfig config) {
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
         this.pluginRegistry =pluginRegistry;
         this.config=config;
-        this.distribute= new ServerMessageDistribute(this);
+        this.distribute= new DirectServerMessageDistribute(this);
     }
 
 

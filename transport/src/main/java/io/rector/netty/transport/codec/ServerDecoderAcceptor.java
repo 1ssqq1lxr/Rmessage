@@ -1,7 +1,7 @@
 package io.rector.netty.transport.codec;
 
 import io.reactor.netty.api.codec.TransportMessage;
-import io.rector.netty.transport.distribute.ServerMessageDistribute;
+import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.UnicastProcessor;
 
@@ -14,11 +14,11 @@ import reactor.core.publisher.UnicastProcessor;
 @Slf4j
 public class ServerDecoderAcceptor implements DecoderAcceptor{
 
-    private ServerMessageDistribute distribute;
+    private DirectServerMessageDistribute distribute;
 
     private TransportMessage  message;
 
-    public ServerDecoderAcceptor(ServerMessageDistribute distribute, TransportMessage message) {
+    public ServerDecoderAcceptor(DirectServerMessageDistribute distribute, TransportMessage message) {
         this.distribute = distribute;
         this.message = message;
     }

@@ -1,7 +1,7 @@
 package io.rector.netty.transport.codec;
 
 import io.reactor.netty.api.codec.TransportMessage;
-import io.rector.netty.transport.distribute.ServerMessageDistribute;
+import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 
 /**
  * @Auther: lxr
@@ -9,5 +9,5 @@ import io.rector.netty.transport.distribute.ServerMessageDistribute;
  * @Description:
  */
 public interface Rdocoder {
-    DecoderAcceptor decoder(ServerMessageDistribute serverSocketAdapter, TransportMessage message);
+    DecoderAcceptor decoder(DirectServerMessageDistribute serverSocketAdapter, TransportMessage message);
 }

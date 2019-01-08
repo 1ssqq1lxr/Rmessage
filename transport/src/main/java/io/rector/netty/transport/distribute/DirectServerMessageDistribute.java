@@ -16,12 +16,12 @@ import java.util.Optional;
  * @Description: 消息传输逻辑
  */
 @Data
-public class ServerMessageDistribute {
+public class DirectServerMessageDistribute {
 
     private final ServerSocketAdapter serverSocketAdapter;
 
 
-    public ServerMessageDistribute(ServerSocketAdapter serverSocketAdapter) {
+    public DirectServerMessageDistribute(ServerSocketAdapter serverSocketAdapter) {
         this.serverSocketAdapter = serverSocketAdapter;
     }
 
