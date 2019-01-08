@@ -18,7 +18,7 @@ import java.util.List;
  *   type:  ONE   GROUP
  *   FIXHEADER
  *   |-----1byte--------------------|
- *   |固定头高4bit| 消息类型低 4bit    |
+ *   |客户端类型| 消息类型低 4bit    |
  *
  *  TOPICHEADER
  *   |---1 byte ---------|--1 byte ------------|

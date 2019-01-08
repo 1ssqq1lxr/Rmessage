@@ -11,10 +11,18 @@ package io.reactor.netty.api.codec;
 public class MessageUtils {
 
 
-    public static  final  byte MESSAGE_HEADER = 0x0F;
 
-    public  static  boolean  obtainHigh(byte b){
-        return  (b>>4 & 0xFF) ==  MESSAGE_HEADER;
+    public  static  ClientType  obtainHigh(byte b){
+        switch ((b>>4 & 0xFF)){
+            case 1:
+                return ClientType.Web;
+            case 2:
+                return ClientType.Android;
+            case 3:
+                return ClientType.Ios;
+            default:
+                return ClientType.Other;
+        }
     }
 
     public  static ProtocolCatagory obtainLow(byte b) {
@@ -26,8 +34,11 @@ public class MessageUtils {
             case 2:
                 return ProtocolCatagory.GROUP;
             case 3:
-//                return ProtocolCatagory.;
-
+                return ProtocolCatagory.ONLINE;
+            case 4:
+                return  ProtocolCatagory.ADDUSER;
+            case 5:
+                return  ProtocolCatagory.DELUSER;
             case 12:
                 return ProtocolCatagory.JOIN;
             case 13:
