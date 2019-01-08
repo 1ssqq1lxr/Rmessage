@@ -71,14 +71,14 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) {
-        switch (state()){
+        header:switch (state()){
             case FIXD_HEADER:
                 byte header=buf.readByte();
                 switch ((type=MessageUtils.obtainLow(header))){
                     case PING:
                         out.add(TransportMessage.builder().type(type).build());
                         this.checkpoint(Type.FIXD_HEADER);
-                        break;
+                        break header;
                     case ONE:
                         type = ProtocolCatagory.ONE;
                         this.checkpoint(Type.TOPICHEADER);
@@ -94,14 +94,13 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         this.checkpoint(Type.TOPICHEADER);
                         break;
                     case ADDUSER:
+                        this.checkpoint(Type.TOPICHEADER);
                         break;
                     case ONLINE:
+                        this.checkpoint(Type.TOPICHEADER);
                         break;
                     case DELUSER:
-                        break;
-                    case PONG:
-                        break;
-                    case ACCEPT:
+                        this.checkpoint(Type.TOPICHEADER);
                         break;
                     default:
                         super.discardSomeReadBytes();
@@ -109,6 +108,9 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         return;
                 }
             case TOPICHEADER:
+                switch (type){
+
+                }
             case MESSAGEBODY:
             case CRC:
         }
