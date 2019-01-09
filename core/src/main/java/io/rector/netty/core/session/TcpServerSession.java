@@ -1,6 +1,7 @@
 package io.rector.netty.core.session;
 
 import io.rector.netty.transport.connction.RConnection;
+import io.rector.netty.transport.distribute.OfflineMessageDistribute;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
@@ -14,7 +15,7 @@ import java.util.List;
  * @Date: 2018/12/7 17:33
  * @Description:
  */
-public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements ServerSession {
+public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements ServerSession<T> {
 
     private ServerSocketAdapter<T> rsocket;
 
@@ -27,6 +28,8 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
     }
 
 
+
+
     @Override
     public Mono<List<RConnection>> listConnection() {
         return Mono.just(rsocket.getConnections());
@@ -36,6 +39,8 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
     public Mono<Void> removeConnection(RConnection duplexConnection) {
         return rsocket.removeConnection(duplexConnection);
     }
+
+
 
 
 
@@ -51,6 +56,11 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
 
     @Override
     public Mono<List<RConnection>> keys(String key) {
+        return null;
+    }
+
+    @Override
+    public Mono<Void> addOfflineHandler(OfflineMessageDistribute offlineMessageDistribute) {
         return null;
     }
 }

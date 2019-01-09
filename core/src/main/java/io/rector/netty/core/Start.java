@@ -2,6 +2,7 @@ package io.rector.netty.core;
 
 
 import io.netty.channel.Channel;
+import io.rector.netty.core.session.ServerSession;
 import io.rector.netty.core.session.TcpServerSession;
 import io.rector.netty.flow.plugin.FrameInterceptor;
 import reactor.core.publisher.Mono;
@@ -37,6 +38,6 @@ public interface Start {
     Start onWriteIdle(Long l, Supplier<Runnable> writeLe);
 
 
-    <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<TcpServerSession<T>> connect();
+    <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<ServerSession<T>> connect();
 
 }
