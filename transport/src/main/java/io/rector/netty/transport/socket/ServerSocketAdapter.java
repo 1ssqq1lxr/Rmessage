@@ -10,10 +10,16 @@ import io.rector.netty.transport.codec.ServerDecoderAcceptor;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import lombok.Data;
+import reactor.core.Disposable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.UnicastProcessor;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
+import reactor.util.concurrent.Queues;
 
 import java.io.Closeable;
 import java.util.List;
@@ -43,6 +49,8 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     private ServerConfig config;
 
     private DirectServerMessageDistribute distribute;
+
+    private UnicastProcessor<TransportMessage>  offlineMessagePipeline=  UnicastProcessor.create();
 
     public ServerSocketAdapter(Supplier<Transport> transport, PluginRegistry pluginRegistry,ServerConfig config) {
         this.transport = transport;
@@ -75,7 +83,8 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                 }).subscribe();
                 rConnection.receiveMsg()
                         .map(this::apply)
-                        .subscribe(message -> decoder().decoder(distribute,message).transportMessage());
+                        .subscribeOn(Schedulers.elastic())
+                        .subscribe(message -> decoder().decoder(distribute,message).transportMessage(offlineMessagePipeline).subscribe());
                 rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
             };
             return  rConnectionConsumer;
@@ -95,4 +104,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
         return ServerDecoderAcceptor::new;
     }
 
+    public Flux<TransportMessage> reciveOffline() {
+      return   Flux.concat(offlineMessagePipeline);
+    }
 }

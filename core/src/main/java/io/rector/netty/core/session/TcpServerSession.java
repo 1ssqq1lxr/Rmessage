@@ -28,6 +28,9 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
     }
 
 
+    private OfflineMessageDistribute offlineMessageDistribute;
+
+
 
 
     @Override
@@ -56,11 +59,12 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
 
     @Override
     public Mono<List<RConnection>> keys(String key) {
-        return null;
+        return  Mono.just(rsocket.getConnections());
     }
 
     @Override
-    public Mono<Void> addOfflineHandler(OfflineMessageDistribute offlineMessageDistribute) {
-        return null;
+    public void addOfflineHandler(OfflineMessageDistribute offlineMessageDistribute) {
+        this.offlineMessageDistribute=offlineMessageDistribute;
+        offlineMessageDistribute.storageOfflineMessage(rsocket.reciveOffline());
     }
 }

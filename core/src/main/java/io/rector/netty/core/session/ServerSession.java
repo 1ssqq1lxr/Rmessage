@@ -32,7 +32,7 @@ public interface ServerSession<T extends NettyConnector< ? extends NettyInbound,
     Mono<List<RConnection>> keys(String key);
 
 
-    Mono<Void>  addOfflineHandler(OfflineMessageDistribute offlineMessageDistribute);
+    void   addOfflineHandler(OfflineMessageDistribute offlineMessageDistribute);
 
 
 

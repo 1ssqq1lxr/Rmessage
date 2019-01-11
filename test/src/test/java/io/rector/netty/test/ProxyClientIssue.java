@@ -75,15 +75,15 @@ public class ProxyClientIssue {
 		random.nextBytes(content);
 
 		HttpServer server = HttpServer.create(options -> options.host("0.0.0.0")
-		                                                        .port(CONTENT_SERVER_PORT)
-		                                                        .option(ChannelOption.SO_LINGER,
-				                                                        -1));
+				.port(CONTENT_SERVER_PORT)
+				.option(ChannelOption.SO_LINGER,
+						-1));
 
 		server.startRouterAndAwait(routes -> routes.get("/**",
 				(req, res) -> res.header("Content-length", String.valueOf(content.length))
-				                 .header("Content-type", "application/octet-stream")
-				                 .header("Connection", "Close")
-				                 .sendByteArray(Flux.just(content))));
+						.header("Content-type", "application/octet-stream")
+						.header("Connection", "Close")
+						.sendByteArray(Flux.just(content))));
 
 	}
 

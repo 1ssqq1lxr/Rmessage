@@ -3,6 +3,7 @@ package io.rector.netty.transport.codec;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
 
 
@@ -23,32 +24,35 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
         this.message = message;
     }
 
-   private UnicastProcessor<TransportMessage> messages = UnicastProcessor.create();
+
 
 
     @Override
-    public void transportMessage() { // 分发消息
-        if(message.isDiscard()){
-            log.info("message is discard {}",message);
-        }
-        else {
-            switch (message.getType()){
-//                case CONFIRM:
-                case LEAVE:
-                case GROUP:
-                    distribute.sendGroup(message.getTo(),message.toBytes());
-                    break;
-                case PING:
-                case JOIN:
-                case ONE:
-                    if(!distribute.sendOne(message.getTo(),message.toBytes())){ //发送失败
-                        messages.onNext(message);
-                    }
-                    break;
-                case ACCEPT:
+    public Mono<Void> transportMessage(UnicastProcessor<TransportMessage> offlineMessagePipeline) { // 分发消息
+       return Mono.create(monoSink -> {
+            if(message.isDiscard()){
+                log.info("message is discard {}",message);
             }
+            else {
+                switch (message.getType()){
+//                case CONFIRM:
+                    case LEAVE:
+                    case GROUP:
+                        distribute.sendGroup(message.getTo(),message.toBytes());
+                        break;
+                    case PING:
+                    case JOIN:
+                    case ONE:
+                        if(!distribute.sendOne(message.getTo(),message.toBytes())){ //发送失败
+                            offlineMessagePipeline.onNext(message);
+                        }
+                        break;
+                    case ACCEPT:
+                }
 
-        }
+            }
+            monoSink.success();
+        });
     }
 
 
