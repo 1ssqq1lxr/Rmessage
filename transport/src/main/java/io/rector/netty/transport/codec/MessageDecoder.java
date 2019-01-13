@@ -21,8 +21,8 @@ import java.util.List;
  *   |客户端类型| 消息类型低 4bit    |
  *
  *  TOPICHEADER
- *   |---1 byte ---------|--1 byte ------------|
- *   |--from目的length----|---目的key length-----|
+ *   |---4 byte ---------|---1 byte ---------|--1 byte ------------|
+ *   |--mesageId --------|--from目的length----|---目的key length-----|
  *
  *   |-----n byte--------|-------n byte--------|
  *   |-----from目的-------|-------目的key--------|
@@ -120,6 +120,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         return;
                 }
             case TOPICHEADER:
+                long messageId =buf.readUnsignedInt(); // 消息id
                 short fromlength= buf.readByte();
                 short tolength= buf.readByte();
                 byte[] fromBytes = new byte[fromlength];

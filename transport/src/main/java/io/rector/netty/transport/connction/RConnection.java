@@ -55,7 +55,7 @@ public class RConnection implements Connection {
 
     @Override
     public Flux<TransportMessage> receiveMsg() {
-        return inbound.receiveObject().cast(TransportMessage.class);
+        return inbound.receiveObject().cast(TransportMessage.class).map(message -> message.setOutbound(this.outbound));
     }
 
     @Override

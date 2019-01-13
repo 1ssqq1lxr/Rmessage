@@ -4,6 +4,7 @@ package io.reactor.netty.api.codec;
 import lombok.Builder;
 import lombok.Data;
 import reactor.core.publisher.Mono;
+import reactor.ipc.netty.NettyOutbound;
 
 /**
  * @Auther: lxr
@@ -21,6 +22,8 @@ import reactor.core.publisher.Mono;
 @Data
 @Builder
 public  class TransportMessage {
+
+    private transient NettyOutbound outbound;
 
     private ProtocolCatagory type;
 
@@ -40,5 +43,8 @@ public  class TransportMessage {
         });
     }
 
-
+    public TransportMessage setOutbound(NettyOutbound outbound) {
+        this.outbound = outbound;
+        return this;
+    }
 }
