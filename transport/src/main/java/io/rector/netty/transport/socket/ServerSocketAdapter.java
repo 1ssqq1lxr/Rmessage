@@ -84,14 +84,14 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                     rConnection.dispose();
                     methodExtend.getWriteIdle().getEvent().get().run();
                 }).subscribe();
-                DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline,distribute);
                 Disposable disposable=Mono.defer(()-> rConnection.dispose())
-                        .delaySubscription(Duration.ofSeconds(5))
-                        .subscribe();
+                    .delaySubscription(Duration.ofSeconds(5))
+                    .subscribe();
+                DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline,distribute,disposable);
                 rConnection.receiveMsg()
                         .map(this::apply)
                         .subscribeOn(Schedulers.elastic())
-                        .map(message ->decoderAcceptor.transportMessage(message,disposable).subscribe());
+                        .map(message ->decoderAcceptor.transportMessage(message).subscribe());
                 rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
             };
     }

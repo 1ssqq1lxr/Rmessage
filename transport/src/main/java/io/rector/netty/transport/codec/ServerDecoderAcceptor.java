@@ -22,14 +22,17 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
 
     private UnicastProcessor<TransportMessage> offlineMessagePipeline;
 
-    public ServerDecoderAcceptor(UnicastProcessor<TransportMessage> offlineMessagePipeline,DirectServerMessageDistribute distribute) {
+    private Disposable disposable;
+
+    public ServerDecoderAcceptor(UnicastProcessor<TransportMessage> offlineMessagePipeline,DirectServerMessageDistribute distribute,Disposable disposable) {
         this.distribute = distribute;
         this.offlineMessagePipeline=offlineMessagePipeline;
+        this.disposable=disposable;
     }
 
 
     @Override
-    public Mono<Void> transportMessage(TransportMessage message, Disposable disposable) { // 分发消息
+    public Mono<Void> transportMessage(TransportMessage message) { // 分发消息
        return Mono.create(monoSink -> {
             if(message.isDiscard()){
                 log.info("message is discard {}",message);
@@ -37,22 +40,26 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
             else {
                 switch (message.getType()){
                     case ONLINE:
-                        disposable.dispose(); //取消关闭连接
+                        if(!disposable.isDisposed()){
+                            disposable.dispose(); //取消关闭连接
+                        }
                         break;
-                    case ADDUSER:
-                    case DELUSER:
-                    case LEAVE:
-                    case GROUP:
-                        distribute.sendGroup(message.getTo(),message.toBytes());
-                        break;
-                    case PING:
-
-                    case JOIN:
-                    case ONE:
+                    case ONE: // 单发
                         if(!distribute.sendOne(message.getTo(),message.toBytes())){ //发送失败
                             offlineMessagePipeline.onNext(message);
                         }
                         break;
+
+                    case GROUP:  //群发
+                        distribute.sendGroup(message.getTo(),message.toBytes());
+                        break;
+                    case PING:  //回复pong
+
+                    case LEAVE: // 离开群组
+
+
+                    case JOIN:  // 加入群组
+
                     case ACCEPT:
                 }
 
