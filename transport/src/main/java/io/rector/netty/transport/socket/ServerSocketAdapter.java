@@ -13,6 +13,7 @@ import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import io.rector.netty.transport.distribute.OfflineMessageDistribute;
 import io.rector.netty.transport.method.MethodExtend;
 import lombok.Data;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
@@ -22,6 +23,7 @@ import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
 import java.io.Closeable;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,13 +85,18 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                     methodExtend.getWriteIdle().getEvent().get().run();
                 }).subscribe();
                 DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline,distribute);
+                Disposable disposable=Mono.defer(()-> rConnection.dispose())
+                        .delaySubscription(Duration.ofSeconds(5))
+                        .subscribe();
                 rConnection.receiveMsg()
                         .map(this::apply)
                         .subscribeOn(Schedulers.elastic())
-                        .subscribe(message ->decoderAcceptor.transportMessage(message).subscribe());
+                        .map(message ->decoderAcceptor.transportMessage(message,disposable).subscribe());
                 rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
             };
     }
+
+
 
     @Override
     public Mono<Void> removeConnection(RConnection duplexConnection) {

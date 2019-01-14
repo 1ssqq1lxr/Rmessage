@@ -3,8 +3,8 @@ package io.rector.netty.transport.codec;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.MonoProcessor;
 import reactor.core.publisher.UnicastProcessor;
 
 
@@ -29,7 +29,7 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
 
 
     @Override
-    public Mono<Void> transportMessage(TransportMessage message) { // 分发消息
+    public Mono<Void> transportMessage(TransportMessage message, Disposable disposable) { // 分发消息
        return Mono.create(monoSink -> {
             if(message.isDiscard()){
                 log.info("message is discard {}",message);
@@ -37,6 +37,8 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
             else {
                 switch (message.getType()){
                     case ONLINE:
+                        disposable.dispose(); //取消关闭连接
+                        break;
                     case ADDUSER:
                     case DELUSER:
                     case LEAVE:

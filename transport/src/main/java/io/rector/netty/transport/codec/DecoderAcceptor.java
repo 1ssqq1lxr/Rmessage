@@ -2,8 +2,8 @@ package io.rector.netty.transport.codec;
 
 
 import io.reactor.netty.api.codec.TransportMessage;
+import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.UnicastProcessor;
 
 /**
  * @Auther: lxr
@@ -12,7 +12,7 @@ import reactor.core.publisher.UnicastProcessor;
  */
 public interface DecoderAcceptor {
 
-     Mono<Void> transportMessage( TransportMessage message);
+     Mono<Void> transportMessage(TransportMessage message, Disposable disposable);
 
 
 }
