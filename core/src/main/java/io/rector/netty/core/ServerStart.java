@@ -9,6 +9,8 @@ import io.rector.netty.flow.plugin.FrameInterceptor;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.flow.plugin.Plugins;
 import io.rector.netty.transport.ServerTransport;
+import io.rector.netty.transport.distribute.DirectOfflineMessageDistribute;
+import io.rector.netty.transport.distribute.OfflineMessageDistribute;
 import io.rector.netty.transport.socket.RsocketAcceptor;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.Data;
@@ -24,6 +26,7 @@ import reactor.ipc.netty.udp.UdpServer;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 
 /**
@@ -45,16 +48,22 @@ public class ServerStart extends AbstractStart {
         super(ServerConfig.builder().build());
     }
 
+    private Supplier<OfflineMessageDistribute> offlineMessage = ()->new DirectOfflineMessageDistribute();
+
     private static class StartBuilder{
         private static ServerStart start = new ServerStart();
     }
+
 
     public static ServerStart builder(){
         return StartBuilder.start;
     }
 
 
-
+    public  ServerStart offlineHandler(Supplier<OfflineMessageDistribute> distribute){
+        this.offlineMessage=distribute;
+        return this;
+    }
 
 
     @Override
@@ -74,7 +83,7 @@ public class ServerStart extends AbstractStart {
         return rsocketAcceptor()
                 .map(rsocketAcceptor -> {
                       ServerSocketAdapter<T> rsocket= (ServerSocketAdapter<T> )rsocketAcceptor.accept(() -> serverTransport,registry,(ServerConfig)config);
-                         return   rsocket.start()
+                         return   rsocket.start(offlineMessage)
                                  .map(socket->new TcpServerSession(rsocket))
                                  .doOnError(ex-> log.error("connect error:",ex))
                                  .retry()

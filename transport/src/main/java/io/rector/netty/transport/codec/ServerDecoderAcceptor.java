@@ -4,6 +4,7 @@ import io.reactor.netty.api.codec.TransportMessage;
 import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoProcessor;
 import reactor.core.publisher.UnicastProcessor;
 
 
@@ -15,6 +16,8 @@ import reactor.core.publisher.UnicastProcessor;
 @Slf4j
 public class ServerDecoderAcceptor implements DecoderAcceptor{
 
+
+
     private DirectServerMessageDistribute distribute;
 
     private TransportMessage  message;
@@ -22,6 +25,7 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
     public ServerDecoderAcceptor(DirectServerMessageDistribute distribute, TransportMessage message) {
         this.distribute = distribute;
         this.message = message;
+
     }
 
 
@@ -35,12 +39,15 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
             }
             else {
                 switch (message.getType()){
-//                case CONFIRM:
+                    case ONLINE:
+                    case ADDUSER:
+                    case DELUSER:
                     case LEAVE:
                     case GROUP:
                         distribute.sendGroup(message.getTo(),message.toBytes());
                         break;
                     case PING:
+
                     case JOIN:
                     case ONE:
                         if(!distribute.sendOne(message.getTo(),message.toBytes())){ //发送失败

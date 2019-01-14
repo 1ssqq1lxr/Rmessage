@@ -68,8 +68,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     @Override
     public Function<Transport,Consumer<RConnection>> next() {
-        return transport->{
-            Consumer<RConnection> rConnectionConsumer =rConnection -> {
+        return transport-> rConnection -> {
                 connections.add(rConnection);// 维护客户端列表
                 rConnection.onReadIdle(config.getReadIdle(),()->{
                     connections.remove(rConnection);
@@ -87,8 +86,6 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                         .subscribe(message -> decoder().decoder(distribute,message).transportMessage(offlineMessagePipeline).subscribe());
                 rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
             };
-            return  rConnectionConsumer;
-        };
     }
 
     @Override
@@ -105,6 +102,6 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     }
 
     public Flux<TransportMessage> reciveOffline() {
-      return   Flux.concat(offlineMessagePipeline);
+      return   Flux.from(offlineMessagePipeline);
     }
 }

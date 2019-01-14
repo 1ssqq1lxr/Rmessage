@@ -65,6 +65,6 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
     @Override
     public void addOfflineHandler(OfflineMessageDistribute offlineMessageDistribute) {
         this.offlineMessageDistribute=offlineMessageDistribute;
-        offlineMessageDistribute.storageOfflineMessage(rsocket.reciveOffline());
+        offlineMessageDistribute.storageOfflineMessage(rsocket.reciveOffline()).subscribe();
     }
 }

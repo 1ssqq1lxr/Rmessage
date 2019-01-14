@@ -5,6 +5,7 @@ import io.rector.netty.config.Config;
 import io.rector.netty.config.ServerConfig;
 import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.connction.RConnection;
+import io.rector.netty.transport.distribute.OfflineMessageDistribute;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
@@ -29,7 +30,7 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
 
     public abstract Supplier<Protocol> getPrptocol();
 
-    public Mono<Rsocket<T>> start() {
+    public Mono<Rsocket<T>> start(Supplier<OfflineMessageDistribute> offlineMessage) {
         return  Mono.defer(this::get);
     }
 
