@@ -9,6 +9,9 @@ import lombok.Data;
 public class MessageBody {
 
 
+    private long messageId;
+
+
     private String  body;
 
     private String  addtional;

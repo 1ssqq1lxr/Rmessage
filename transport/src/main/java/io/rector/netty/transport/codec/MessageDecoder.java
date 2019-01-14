@@ -77,6 +77,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
 
     private String to;
 
+
     private MessageBody messageBody;
 
 
@@ -120,7 +121,6 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         return;
                 }
             case TOPICHEADER:
-                long messageId =buf.readUnsignedInt(); // 消息id
                 short fromlength= buf.readByte();
                 short tolength= buf.readByte();
                 byte[] fromBytes = new byte[fromlength];
@@ -137,12 +137,13 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                             .from(from)
                             .to(to)
                             .build());
-                     this.checkpoint(Type.FIXD_HEADER);
-                     break  header;
+                    this.checkpoint(Type.FIXD_HEADER);
+                    break  header;
                 }
                 else
                     this.checkpoint(Type.MESSAGEBODY);
             case MESSAGEBODY:
+                long messageId=buf.readLong(); // 消息id
                 int bodyLength= buf.readInt();
                 short  additionalLength= buf.readShort();
                 byte[]  body = new byte[bodyLength];
@@ -151,10 +152,11 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 buf.readBytes(addtional);
                 this.messageBody=
                         MessageBody.builder()
-                        .body(new String(body,Charset.defaultCharset()))
-                        .addtional(new String(addtional,Charset.defaultCharset()))
-                        .build();
-                 this.checkpoint(Type.CRC);
+                                .messageId(messageId)
+                                .body(new String(body,Charset.defaultCharset()))
+                                .addtional(new String(addtional,Charset.defaultCharset()))
+                                .build();
+                this.checkpoint(Type.CRC);
 
             case CRC:
                 out.add(TransportMessage.builder().type(type)
