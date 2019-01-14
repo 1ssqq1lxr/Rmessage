@@ -10,16 +10,13 @@ import io.rector.netty.transport.codec.ServerDecoderAcceptor;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import lombok.Data;
-import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
-import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
-import reactor.util.concurrent.Queues;
 
 import java.io.Closeable;
 import java.util.List;
@@ -67,8 +64,8 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     }
 
     @Override
-    public Function<Transport,Consumer<RConnection>> next() {
-        return transport-> rConnection -> {
+    public Supplier<Consumer<RConnection>> next() {
+        return ()-> rConnection -> {
                 connections.add(rConnection);// 维护客户端列表
                 rConnection.onReadIdle(config.getReadIdle(),()->{
                     connections.remove(rConnection);

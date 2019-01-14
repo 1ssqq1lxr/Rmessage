@@ -40,12 +40,11 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
 
 
     private Mono<? extends Rsocket<T>> get() {
-        Transport tTransport=transport.get();
         return  transport.get()
-                .connect(getConfig()).doOnNext(next().apply(tTransport)).then(Mono.just(this));
+                .connect(getConfig()).doOnNext(next().get()::accept).then(Mono.just(this));
     }
 
-    public abstract Function<Transport,Consumer<RConnection>>  next();
+    public abstract Supplier<Consumer<RConnection>>  next();
 
 
     public abstract Mono<Void>  removeConnection(RConnection duplexConnection);
