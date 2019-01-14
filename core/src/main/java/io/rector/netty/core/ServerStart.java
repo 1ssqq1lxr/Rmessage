@@ -11,6 +11,7 @@ import io.rector.netty.flow.plugin.Plugins;
 import io.rector.netty.transport.ServerTransport;
 import io.rector.netty.transport.distribute.DirectOfflineMessageDistribute;
 import io.rector.netty.transport.distribute.OfflineMessageDistribute;
+import io.rector.netty.transport.method.ReactorMethodExtend;
 import io.rector.netty.transport.socket.RsocketAcceptor;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.Data;
@@ -21,12 +22,10 @@ import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 import reactor.ipc.netty.tcp.TcpServer;
-import reactor.ipc.netty.udp.UdpServer;
 
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 
 /**
@@ -44,11 +43,12 @@ public class ServerStart extends AbstractStart {
 
     private PluginRegistry registry = Plugins.defaultPlugins();
 
+
     public ServerStart() {
-        super(ServerConfig.builder().build());
+        super(ServerConfig.builder().build(), ReactorMethodExtend.builder().offlineMessageDistribute(new DirectOfflineMessageDistribute()).build());
     }
 
-    private Supplier<OfflineMessageDistribute> offlineMessage = ()->new DirectOfflineMessageDistribute();
+
 
     private static class StartBuilder{
         private static ServerStart start = new ServerStart();
@@ -60,8 +60,8 @@ public class ServerStart extends AbstractStart {
     }
 
 
-    public  ServerStart offlineHandler(Supplier<OfflineMessageDistribute> distribute){
-        this.offlineMessage=distribute;
+    public  ServerStart offlineHandler(OfflineMessageDistribute distribute){
+        methodExtend.setOfflineMessageDistribute(distribute);
         return this;
     }
 
@@ -82,8 +82,8 @@ public class ServerStart extends AbstractStart {
                 .orElseThrow(()->new NotFindConfigException("协议不存在")));
         return rsocketAcceptor()
                 .map(rsocketAcceptor -> {
-                      ServerSocketAdapter<T> rsocket= (ServerSocketAdapter<T> )rsocketAcceptor.accept(() -> serverTransport,registry,(ServerConfig)config);
-                         return   rsocket.start(offlineMessage)
+                      ServerSocketAdapter<T> rsocket= (ServerSocketAdapter<T> )rsocketAcceptor.accept(() -> serverTransport,registry,(ServerConfig)config,methodExtend);
+                         return   rsocket.start()
                                  .map(socket->new TcpServerSession(rsocket))
                                  .doOnError(ex-> log.error("connect error:",ex))
                                  .retry()
@@ -103,7 +103,7 @@ public class ServerStart extends AbstractStart {
                 .builder()
                 .tcp()
                 .ip("127.0.0.1")
-                .port(1884)
+                .port(1888)
                 .interceptor(frame -> frame,frame -> frame)
                 .setAfterChannelInit(channel -> {
 

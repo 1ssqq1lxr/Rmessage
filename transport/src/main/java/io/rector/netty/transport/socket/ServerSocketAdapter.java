@@ -9,6 +9,8 @@ import io.rector.netty.transport.codec.Rdocoder;
 import io.rector.netty.transport.codec.ServerDecoderAcceptor;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
+import io.rector.netty.transport.distribute.OfflineMessageDistribute;
+import io.rector.netty.transport.method.MethodExtend;
 import lombok.Data;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,7 +26,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -49,11 +50,14 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private UnicastProcessor<TransportMessage>  offlineMessagePipeline=  UnicastProcessor.create();
 
-    public ServerSocketAdapter(Supplier<Transport> transport, PluginRegistry pluginRegistry,ServerConfig config) {
+    private MethodExtend methodExtend;
+
+    public ServerSocketAdapter(Supplier<Transport> transport, PluginRegistry pluginRegistry,ServerConfig config, MethodExtend methodExtend) {
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
         this.pluginRegistry =pluginRegistry;
         this.config=config;
+        this.methodExtend=methodExtend;
         this.distribute= new DirectServerMessageDistribute(this);
     }
 
@@ -67,15 +71,15 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     public Supplier<Consumer<RConnection>> next() {
         return ()-> rConnection -> {
                 connections.add(rConnection);// 维护客户端列表
-                rConnection.onReadIdle(config.getReadIdle(),()->{
+                rConnection.onReadIdle(methodExtend.getReadIdle().getTime(),()->{
                     connections.remove(rConnection);
                     rConnection.dispose();
-                    config.getReadEvent().get().run();
+                    methodExtend.getReadIdle().getEvent().get().run();
                 }).subscribe();
-                rConnection.onWriteIdle(config.getWriteIdle(),()->{
+                rConnection.onWriteIdle(methodExtend.getWriteIdle().getTime(),()->{
                     connections.remove(rConnection);
                     rConnection.dispose();
-                    config.getWriteEvent().get().run();
+                    methodExtend.getWriteIdle().getEvent().get().run();
                 }).subscribe();
                 rConnection.receiveMsg()
                         .map(this::apply)

@@ -20,31 +20,13 @@ public interface Config {
 
     void setPort(int port);
 
-    Protocol getProtocol();
+    String getIp();
 
+    int getPort();
+
+    Protocol getProtocol();
 
     void setProtocol(Protocol protocol);
 
-    void setOptions(Consumer<ServerOptions.Builder<?>> options);
-
-    Consumer<? extends ServerOptions.Builder<?>> getOptions();
-
-    void setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit);
-
-    void setAfterChannelInit(Consumer<? super Channel> afterChannelInit);
-
-
-    void onReadIdle(Long l, Supplier< Runnable> readLe);
-
-    void onWriteIdle(Long l, Supplier< Runnable> writeLe);
-
-
-    Long getReadIdle() ;
-
-    Supplier<Runnable> getReadEvent();
-
-    Long getWriteIdle();
-
-    Supplier<Runnable> getWriteEvent();
 
 }

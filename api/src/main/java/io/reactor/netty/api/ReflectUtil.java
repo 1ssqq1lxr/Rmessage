@@ -18,6 +18,7 @@ import java.util.function.Consumer;
 public class ReflectUtil {
 
 
+
     public static  <T  extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>   T  staticMethod(Class<T> tClass, Object obj){
         try {
             Method newInstanceMethod = tClass.getDeclaredMethod("create", Consumer.class);

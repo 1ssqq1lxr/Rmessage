@@ -1,11 +1,14 @@
 package io.rector.netty.core;
 
 import io.netty.channel.Channel;
+import io.reactor.netty.api.Idle;
 import io.reactor.netty.api.codec.Protocol;
 import io.rector.netty.config.Config;
+import io.rector.netty.transport.method.MethodExtend;
 import io.rector.netty.transport.codec.MessageDecoder;
 import io.rector.netty.transport.socket.SocketFactory;
 import reactor.ipc.netty.NettyConnector;
+import reactor.ipc.netty.NettyContext;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -20,14 +23,18 @@ abstract class AbstractStart implements Start {
 
     protected final Config config;
 
-    public AbstractStart(Config config) {
+    protected final MethodExtend methodExtend;
+
+    public AbstractStart(Config config, MethodExtend methodExtend) {
         this.config = config;
+        this.methodExtend = methodExtend;
+        methodExtend.setConfig(config);
     }
 
     @Override
     public Start tcp() {
         config.setProtocol(Protocol.TCP);
-        config.setAfterNettyContextInit(nettyContext -> nettyContext.addHandler("decoder",new MessageDecoder()));
+        methodExtend.setAfterNettyContextInit(nettyContext -> nettyContext.addHandler("decoder",new MessageDecoder()));
         return this;
     }
 
@@ -37,6 +44,7 @@ abstract class AbstractStart implements Start {
         config.setProtocol(Protocol.WS);
         return this;
     }
+
 
 
 
@@ -61,7 +69,7 @@ abstract class AbstractStart implements Start {
 
     @Override
     public Start onReadIdle(Long l, Supplier< Runnable> readLe) {
-        config.onReadIdle(l,readLe);
+        methodExtend.setReadIdle(Idle.builder().time(l).event(readLe).build());
         return this;
     }
 
@@ -73,7 +81,7 @@ abstract class AbstractStart implements Start {
 
     @Override
     public Start onWriteIdle(Long l, Supplier<Runnable> write) {
-        config.onWriteIdle(l,write);
+        methodExtend.setReadIdle(Idle.builder().time(l).event(write).build());
         return this;
     }
 
@@ -81,13 +89,13 @@ abstract class AbstractStart implements Start {
 
 //    @Override
 //    public Start setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit) {
-//        config.setAfterNettyContextInit(afterNettyContextInit);
+//        methodExtend.setAfterNettyContextInit(afterNettyContextInit);
 //        return this;
 //    }
 
     @Override
     public Start setAfterChannelInit(Consumer<? super Channel> afterChannelInit) {
-        config.setAfterChannelInit(afterChannelInit);
+        methodExtend.setAfterChannelInit(afterChannelInit);
         return this;
     }
 
