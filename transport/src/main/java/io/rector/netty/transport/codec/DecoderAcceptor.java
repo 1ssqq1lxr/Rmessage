@@ -12,7 +12,7 @@ import reactor.core.publisher.UnicastProcessor;
  */
 public interface DecoderAcceptor {
 
-     Mono<Void> transportMessage(UnicastProcessor<TransportMessage> offlineMessagePipeline);
+     Mono<Void> transportMessage( TransportMessage message);
 
 
 }

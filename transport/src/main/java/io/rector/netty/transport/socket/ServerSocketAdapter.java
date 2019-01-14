@@ -5,6 +5,7 @@ import io.reactor.netty.api.codec.TransportMessage;
 import io.rector.netty.config.ServerConfig;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.transport.Transport;
+import io.rector.netty.transport.codec.DecoderAcceptor;
 import io.rector.netty.transport.codec.Rdocoder;
 import io.rector.netty.transport.codec.ServerDecoderAcceptor;
 import io.rector.netty.transport.connction.RConnection;
@@ -81,10 +82,11 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                     rConnection.dispose();
                     methodExtend.getWriteIdle().getEvent().get().run();
                 }).subscribe();
+                DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline,distribute);
                 rConnection.receiveMsg()
                         .map(this::apply)
                         .subscribeOn(Schedulers.elastic())
-                        .subscribe(message -> decoder().decoder(distribute,message).transportMessage(offlineMessagePipeline).subscribe());
+                        .subscribe(message ->decoderAcceptor.transportMessage(message).subscribe());
                 rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
             };
     }

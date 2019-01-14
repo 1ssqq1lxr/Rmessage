@@ -20,19 +20,16 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
 
     private DirectServerMessageDistribute distribute;
 
-    private TransportMessage  message;
+    private UnicastProcessor<TransportMessage> offlineMessagePipeline;
 
-    public ServerDecoderAcceptor(DirectServerMessageDistribute distribute, TransportMessage message) {
+    public ServerDecoderAcceptor(UnicastProcessor<TransportMessage> offlineMessagePipeline,DirectServerMessageDistribute distribute) {
         this.distribute = distribute;
-        this.message = message;
-
+        this.offlineMessagePipeline=offlineMessagePipeline;
     }
 
 
-
-
     @Override
-    public Mono<Void> transportMessage(UnicastProcessor<TransportMessage> offlineMessagePipeline) { // 分发消息
+    public Mono<Void> transportMessage(TransportMessage message) { // 分发消息
        return Mono.create(monoSink -> {
             if(message.isDiscard()){
                 log.info("message is discard {}",message);
