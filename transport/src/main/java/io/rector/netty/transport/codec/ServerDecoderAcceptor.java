@@ -1,7 +1,9 @@
 package io.rector.netty.transport.codec;
 
 import io.reactor.netty.api.codec.MessageBody;
+import io.reactor.netty.api.codec.OnlineMessage;
 import io.reactor.netty.api.codec.TransportMessage;
+import io.rector.netty.transport.distribute.ConnectionStateDistribute;
 import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.Disposable;
@@ -19,42 +21,52 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
 
 
 
-    private DirectServerMessageDistribute distribute;
+    private DirectServerMessageDistribute directServerMessageDistribute;
 
     private UnicastProcessor<TransportMessage> offlineMessagePipeline;
 
     private Disposable disposable;
 
-    public ServerDecoderAcceptor(UnicastProcessor<TransportMessage> offlineMessagePipeline,DirectServerMessageDistribute distribute,Disposable disposable) {
-        this.distribute = distribute;
+    private ConnectionStateDistribute connectionStateDistribute;
+
+    public ServerDecoderAcceptor(UnicastProcessor<TransportMessage> offlineMessagePipeline, DirectServerMessageDistribute directServerMessageDistribute, ConnectionStateDistribute connectionStateDistribute,Disposable disposable) {
+        this.directServerMessageDistribute = directServerMessageDistribute;
         this.offlineMessagePipeline=offlineMessagePipeline;
+        this.connectionStateDistribute=connectionStateDistribute;
         this.disposable=disposable;
     }
 
 
     @Override
     public Mono<Void> transportMessage(TransportMessage message) { // 分发消息
-       return Mono.create(monoSink -> {
+        return Mono.create(monoSink -> {
             if(message.isDiscard()){
                 log.info("message is discard {}",message);
             }
             else {
                 switch (message.getType()){
                     case ONLINE:
-                        if(!disposable.isDisposed()){
-                            disposable.dispose(); //取消关闭连接
-                        }
+                        OnlineMessage onlineMessage=(OnlineMessage) message.getMessageBody();
+                        Mono.fromRunnable(()->{
+                            if(!disposable.isDisposed()){
+                                disposable.dispose(); //取消关闭连接
+                            }
+                        }).then(connectionStateDistribute.init(onlineMessage)).subscribe();
                         break;
                     case ONE: // 单发
-                        if(!distribute.sendOne(((MessageBody)message.getMessageBody()).getTo(),message.toBytes())){ //发送失败
+                        MessageBody oneBody = (MessageBody)message.getMessageBody();
+                        Mono<Void>  offline=Mono.create(sink ->{
                             offlineMessagePipeline.onNext(message);
-                        }
+                            sink.success();
+                        });
+                        directServerMessageDistribute.sendOne(oneBody,offline).subscribe();
                         break;
-
                     case GROUP:  //群发
-                        distribute.sendGroup(((MessageBody)message.getMessageBody()).getTo(),message.toBytes());
+                        MessageBody groupBody = (MessageBody)message.getMessageBody();
+                        directServerMessageDistribute.sendGroup(groupBody).subscribe();
                         break;
                     case PING:  //回复pong
+
 
                     case LEAVE: // 离开群组
 
@@ -62,6 +74,7 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                     case JOIN:  // 加入群组
 
                     case ACCEPT:
+
                 }
 
             }

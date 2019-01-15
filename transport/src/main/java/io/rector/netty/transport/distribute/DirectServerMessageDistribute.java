@@ -1,9 +1,11 @@
 package io.rector.netty.transport.distribute;
 
 import io.netty.buffer.Unpooled;
+import io.reactor.netty.api.codec.MessageBody;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.Data;
+import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
 
@@ -25,20 +27,29 @@ public class DirectServerMessageDistribute {
         this.serverSocketAdapter = serverSocketAdapter;
     }
 
-    public boolean  sendOne(String key, Mono<byte[]> msg){
-       Optional<RConnection> rConnection= Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(key));
-       if(rConnection.isPresent()){ // 发送
-           rConnection.get().getOutbound().send(msg.map(Unpooled::wrappedBuffer)).then().subscribe();
-           return true;
-       }
-       return  false;
+    public Mono<Void>  sendOne(MessageBody body, Mono<Void> offline){
+        return   Mono.create(monoSink -> {
+            Optional<RConnection> rConnection= Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(body.getTo()));
+            if(rConnection.isPresent()){ // 发送
+//                rConnection.get().getOutbound().then().subscribe();
+            }
+            else
+                offline.subscribe();
+            monoSink.success();
+        });
     }
 
-    public void  sendGroup(String key, Mono<byte[]> msg){
-        Optional.ofNullable((List<RConnection>) serverSocketAdapter.getKeys().get(key))
-                .ifPresent(rConnections -> rConnections.stream().forEach(rConnection -> {
-                    rConnection.getOutbound().send(msg.map(Unpooled::wrappedBuffer)).then().subscribe();
-                }));
+    public Mono<Void>  sendGroup(MessageBody body){
+//        Optional.ofNullable((List<RConnection>) serverSocketAdapter.getKeys().get(key))
+//                .ifPresent(rConnections -> rConnections.stream().forEach(rConnection -> {
+//                    rConnection.getOutbound().send(msg.map(Unpooled::wrappedBuffer)).then().subscribe();
+//                }));
+
+        return   Mono.create(monoSink -> {
+//            Optional<RConnection> rConnection= Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(body.getTo()));
+
+            monoSink.success();
+        });
     }
 
 }

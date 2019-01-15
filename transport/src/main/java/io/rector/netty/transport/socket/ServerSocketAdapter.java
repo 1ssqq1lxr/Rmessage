@@ -9,6 +9,7 @@ import io.rector.netty.transport.codec.DecoderAcceptor;
 import io.rector.netty.transport.codec.Rdocoder;
 import io.rector.netty.transport.codec.ServerDecoderAcceptor;
 import io.rector.netty.transport.connction.RConnection;
+import io.rector.netty.transport.distribute.ConnectionStateDistribute;
 import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import io.rector.netty.transport.distribute.OfflineMessageDistribute;
 import io.rector.netty.transport.method.MethodExtend;
@@ -49,11 +50,13 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private ServerConfig config;
 
-    private DirectServerMessageDistribute distribute;
+    private DirectServerMessageDistribute directServerMessageDistribute;
 
     private UnicastProcessor<TransportMessage>  offlineMessagePipeline=  UnicastProcessor.create();
 
     private MethodExtend methodExtend;
+
+    private ConnectionStateDistribute connectionStateDistribute;
 
     public ServerSocketAdapter(Supplier<Transport> transport, PluginRegistry pluginRegistry,ServerConfig config, MethodExtend methodExtend) {
         this.transport = transport;
@@ -61,7 +64,8 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
         this.pluginRegistry =pluginRegistry;
         this.config=config;
         this.methodExtend=methodExtend;
-        this.distribute= new DirectServerMessageDistribute(this);
+        this.directServerMessageDistribute= new DirectServerMessageDistribute(this);
+        this.connectionStateDistribute= new ConnectionStateDistribute(this);
     }
 
 
@@ -87,7 +91,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                 Disposable disposable=Mono.defer(()-> rConnection.dispose())
                     .delaySubscription(Duration.ofSeconds(5))
                     .subscribe();
-                DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline,distribute,disposable);
+                DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline,directServerMessageDistribute,connectionStateDistribute,disposable);
                 rConnection.receiveMsg()
                         .map(this::apply)
                         .subscribeOn(Schedulers.elastic())
