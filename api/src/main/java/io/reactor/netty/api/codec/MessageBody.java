@@ -8,13 +8,17 @@ import lombok.Data;
 @Builder
 public class MessageBody {
 
+    private String from;
+
+    private String to;
 
     private long messageId;
-
 
     private String  body;
 
     private String  addtional;
+
+    private long   timestammp;
 
 
 }

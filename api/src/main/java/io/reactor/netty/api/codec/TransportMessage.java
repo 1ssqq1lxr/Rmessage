@@ -27,13 +27,8 @@ public  class TransportMessage {
 
     private ProtocolCatagory type;
 
-    private String from;
+    private Object messageBody;
 
-    private String to;
-
-    private MessageBody messageBody;
-
-    private long   timestammp;
 
     private boolean discard;
 

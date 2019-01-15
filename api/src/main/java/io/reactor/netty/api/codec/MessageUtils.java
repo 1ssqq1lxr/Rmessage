@@ -25,16 +25,21 @@ public class MessageUtils {
         }
     }
 
+
     public  static ProtocolCatagory obtainLow(byte b) {
         switch (b & 0x0F) {
             case 0:
-                return ProtocolCatagory.ACCEPT;
+                return ProtocolCatagory.ONLINE;
             case 1:
                 return ProtocolCatagory.ONE;
             case 2:
                 return ProtocolCatagory.GROUP;
             case 3:
-                return ProtocolCatagory.ONLINE;
+                return ProtocolCatagory.ACCEPT;
+            case 10:
+                return ProtocolCatagory.ONEACK;
+            case 11:
+                return ProtocolCatagory.GROUPACK;
             case 12:
                 return ProtocolCatagory.JOIN;
             case 13:

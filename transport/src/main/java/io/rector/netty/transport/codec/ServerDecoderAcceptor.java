@@ -1,5 +1,6 @@
 package io.rector.netty.transport.codec;
 
+import io.reactor.netty.api.codec.MessageBody;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import lombok.extern.slf4j.Slf4j;
@@ -45,13 +46,13 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                         }
                         break;
                     case ONE: // 单发
-                        if(!distribute.sendOne(message.getTo(),message.toBytes())){ //发送失败
+                        if(!distribute.sendOne(((MessageBody)message.getMessageBody()).getTo(),message.toBytes())){ //发送失败
                             offlineMessagePipeline.onNext(message);
                         }
                         break;
 
                     case GROUP:  //群发
-                        distribute.sendGroup(message.getTo(),message.toBytes());
+                        distribute.sendGroup(((MessageBody)message.getMessageBody()).getTo(),message.toBytes());
                         break;
                     case PING:  //回复pong
 

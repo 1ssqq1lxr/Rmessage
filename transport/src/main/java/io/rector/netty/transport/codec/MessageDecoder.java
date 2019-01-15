@@ -3,10 +3,7 @@ package io.rector.netty.transport.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
-import io.reactor.netty.api.codec.MessageBody;
-import io.reactor.netty.api.codec.MessageUtils;
-import io.reactor.netty.api.codec.ProtocolCatagory;
-import io.reactor.netty.api.codec.TransportMessage;
+import io.reactor.netty.api.codec.*;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -21,13 +18,15 @@ import java.util.List;
  *   |客户端类型| 消息类型低 4bit    |
  *
  *  TOPICHEADER
- *   |---4 byte ---------|---1 byte ---------|--1 byte ------------|
+ *   ---1 byte ---------|--1 byte ------------|
  *   |--mesageId --------|--from目的length----|---目的key length-----|
  *
  *   |-----n byte--------|-------n byte--------|
  *   |-----from目的-------|-------目的key--------|
  *
- *  MESSAGEBODY
+ *   MESSAGEBODY
+ *   |---4 byte ---------|
+ *   |---messageId ---------|
  *   |--------4 byte-----------|------2byte---------------------------|
  *   |----- 消息body length----- |-------additional fields  length---- |
  *   |-----n byte--------|-------n byte--------------------|
@@ -58,6 +57,25 @@ import java.util.List;
  *   |-----n byte--------|-------n byte--------|
  *   |-----from目的-------|-------目的key--------|
  *
+ *
+ *   ACK
+ *    *   FIXHEADER
+ *  *   |-----1byte--------------------|
+ *  *   |固定头高4bit| 消息类型低 4bit    |
+ *       * ACKBODY
+ *  *   |-----1byte--------------------|
+ *  *   |固定头高4bit| 消息类型低 4bit    |
+ *
+ *
+ *   ONLINE
+ *
+ *    *    *   FIXHEADER
+ *  *  *   |-----1byte--------------------|
+ *  *  *   |固定头高4bit| 消息类型低 4bit    |
+ *  *       *  ON
+ *  *  *   |-----1byte--------------------|
+ *  *  *   |固定头高4bit| 消息类型低 4bit    |
+ *
  * @see ProtocolCatagory
  */
 
@@ -75,7 +93,13 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
     private String to;
 
 
-    private MessageBody messageBody;
+    private long  messageId;
+
+    private String body;
+
+    private String  addtional;
+
+
 
 
 
@@ -106,11 +130,24 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                     case ONLINE:
                         this.checkpoint(Type.TOPICHEADER);
                         break;
+                    case GROUPACK:
+                        this.checkpoint(Type.ACKBODY);
+                        break ;
+                    case ACCEPT:
+                        this.checkpoint(Type.ACKBODY);
+                        break ;
                     default:
                         super.discardSomeReadBytes();
                         this.checkpoint(Type.FIXD_HEADER);
                         return;
                 }
+            case ACKBODY:
+                messageId=buf.readLong();
+                out.add(TransportMessage.builder().type(type)
+                        .messageBody(AckMessage.builder().messageId(messageId).build())
+                        .build());
+                this.checkpoint(Type.FIXD_HEADER);
+                break  header;
             case TOPICHEADER:
                 short fromlength= buf.readByte();
                 short tolength= buf.readByte();
@@ -123,8 +160,9 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 if( type == ProtocolCatagory.JOIN
                         || type == ProtocolCatagory.LEAVE){
                     out.add(TransportMessage.builder().type(type)
-                            .from(from)
-                            .to(to)
+                            .messageBody(MessageBody.builder()
+                             .from(from)
+                              .to(to))
                             .build());
                     this.checkpoint(Type.FIXD_HEADER);
                     break  header;
@@ -132,27 +170,25 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 else
                     this.checkpoint(Type.MESSAGEBODY);
             case MESSAGEBODY:
-                long messageId=buf.readLong(); // 消息id
+                messageId=buf.readLong(); // 消息id
                 int bodyLength= buf.readInt();
                 short  additionalLength= buf.readShort();
-                byte[]  body = new byte[bodyLength];
-                byte[]  addtional = new byte[additionalLength];
-                buf.readBytes(body);
-                buf.readBytes(addtional);
-                this.messageBody=
-                        MessageBody.builder()
-                                .messageId(messageId)
-                                .body(new String(body,Charset.defaultCharset()))
-                                .addtional(new String(addtional,Charset.defaultCharset()))
-                                .build();
+                byte[]  bodyBytes = new byte[bodyLength];
+                byte[]  addtionalBytes = new byte[additionalLength];
+                buf.readBytes(bodyBytes);
+                buf.readBytes(addtionalBytes);
+                body=new String(bodyBytes,Charset.defaultCharset());
+                addtional=new String(addtionalBytes,Charset.defaultCharset());
                 this.checkpoint(Type.CRC);
 
             case CRC:
                 out.add(TransportMessage.builder().type(type)
-                        .from(from)
-                        .to(to)
-                        .messageBody(messageBody)
-                        .timestammp(buf.readLong())
+                        .messageBody(MessageBody.builder()
+                                .messageId(messageId)
+                                .body(body)
+                                .addtional(addtional)
+                                .timestammp(buf.readLong())
+                                .build())
                         .build());
                 this.checkpoint(Type.FIXD_HEADER);
         }
@@ -162,6 +198,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
         FIXD_HEADER,
         TOPICHEADER,
         MESSAGEBODY,
+        ACKBODY,
         CRC
     }
 
