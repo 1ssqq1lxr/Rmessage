@@ -7,6 +7,8 @@ import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
+import java.net.InetSocketAddress;
+
 
 /**
  * @Auther: lxr
@@ -29,5 +31,9 @@ public interface Connection {
 
     Flux<TransportMessage> receiveMsg();
 
+    Mono<InetSocketAddress> address();
+
     void onClose(Runnable remove);
+
+
 }

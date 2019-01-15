@@ -8,6 +8,8 @@ import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
+import java.net.InetSocketAddress;
+
 
 /**
  * @Auther: lxr
@@ -56,6 +58,11 @@ public class RConnection implements Connection {
     @Override
     public Flux<TransportMessage> receiveMsg() {
         return inbound.receiveObject().cast(TransportMessage.class).map(message -> message.setOutbound(this.outbound));
+    }
+
+    @Override
+    public Mono<InetSocketAddress> address() {
+        return Mono.just(context.address());
     }
 
     @Override
