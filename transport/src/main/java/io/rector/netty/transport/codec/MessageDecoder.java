@@ -6,7 +6,9 @@ import io.netty.handler.codec.ReplayingDecoder;
 import io.reactor.netty.api.codec.*;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Auther: lxr
@@ -73,8 +75,8 @@ import java.util.List;
  *  *  *   |-----1byte--------------------|
  *  *  *   |固定头高4bit| 消息类型低 4bit    |
  *  *       *  ON
- *  *  *   |-----1byte--------------------|
- *  *  *   |固定头高4bit| 消息类型低 4bit    |
+ *  *  *   |-----1byte---------|-----2byte------------|
+ *  *  *   |     userId        |  groupId(多个逗号隔开)-|
  *
  * @see ProtocolCatagory
  */
@@ -128,7 +130,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         this.checkpoint(Type.TOPICHEADER);
                         break;
                     case ONLINE:
-                        this.checkpoint(Type.TOPICHEADER);
+                        this.checkpoint(Type.ONLINE);
                         break;
                     case GROUPACK:
                         this.checkpoint(Type.ACKBODY);
@@ -141,6 +143,23 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         this.checkpoint(Type.FIXD_HEADER);
                         return;
                 }
+            case ONLINE:
+                short userIdLength= buf.readByte();
+                int   groupIdsLength= buf.readShort();
+                byte[] userIdBytes = new byte[userIdLength];
+                byte[] groupsBytes = new byte[groupIdsLength];
+                buf.readBytes(userIdBytes);
+                buf.readBytes(groupsBytes);
+                out.add(TransportMessage.builder().type(type)
+                        .messageBody(
+                                OnlineMessage.builder()
+                                        .userId(new String(userIdBytes,Charset.defaultCharset()))
+                                .groups(Arrays.stream(new String(userIdBytes,Charset.defaultCharset()).split(",")).collect(Collectors.toList()))
+                                .build()
+                        )
+                        .build());
+                this.checkpoint(Type.FIXD_HEADER);
+                break  header;
             case ACKBODY:
                 messageId=buf.readLong();
                 out.add(TransportMessage.builder().type(type)
@@ -198,6 +217,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
         FIXD_HEADER,
         TOPICHEADER,
         MESSAGEBODY,
+        ONLINE,
         ACKBODY,
         CRC
     }
