@@ -45,22 +45,19 @@ import java.util.List;
  *   |固定头高4bit| 消息类型低 4bit  |
  *
  *
- *  type:  JOIN   LEAVE  ADDUSER  DELUSER
+ *  type:  JOIN   LEAVE
  *
  *   FIXHEADER
  *   |-----1byte--------------------|
  *   |固定头高4bit| 消息类型低 4bit    |
  *
- *  TOPICHEADER
+ *   TOPICHEADER
  *   |---1 byte ---------|--1 byte ------------|
  *   |--from目的length----|---目的key length-----|
  *
  *   |-----n byte--------|-------n byte--------|
  *   |-----from目的-------|-------目的key--------|
  *
- *   CRC
- *   |  timestamp 8byte |
- *   |---时间戳----------|
  * @see ProtocolCatagory
  */
 
@@ -106,13 +103,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                     case LEAVE:
                         this.checkpoint(Type.TOPICHEADER);
                         break;
-                    case ADDUSER:
-                        this.checkpoint(Type.TOPICHEADER);
-                        break;
                     case ONLINE:
-                        this.checkpoint(Type.TOPICHEADER);
-                        break;
-                    case DELUSER:
                         this.checkpoint(Type.TOPICHEADER);
                         break;
                     default:
@@ -130,9 +121,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 from =new String(fromBytes, Charset.defaultCharset());
                 to   =new String(toBytes, Charset.defaultCharset());
                 if( type == ProtocolCatagory.JOIN
-                        || type == ProtocolCatagory.LEAVE
-                        || type == ProtocolCatagory.ADDUSER
-                        || type == ProtocolCatagory. DELUSER ){
+                        || type == ProtocolCatagory.LEAVE){
                     out.add(TransportMessage.builder().type(type)
                             .from(from)
                             .to(to)

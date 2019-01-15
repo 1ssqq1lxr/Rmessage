@@ -9,6 +9,7 @@ import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * @Auther: lxr
@@ -28,7 +29,7 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
     }
 
 
-    private OfflineMessageDistribute offlineMessageDistribute;
+    private Supplier<OfflineMessageDistribute> offlineMessageDistribute;
 
 
 
@@ -42,8 +43,6 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
     public Mono<Void> removeConnection(RConnection duplexConnection) {
         return rsocket.removeConnection(duplexConnection);
     }
-
-
 
 
 
@@ -63,8 +62,16 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
     }
 
     @Override
-    public void addOfflineHandler(OfflineMessageDistribute offlineMessageDistribute) {
+    public Mono<Void> addOfflineHandler(Supplier<OfflineMessageDistribute> offlineMessageDistribute) {
         this.offlineMessageDistribute=offlineMessageDistribute;
-        offlineMessageDistribute.storageOfflineMessage(rsocket.reciveOffline()).subscribe();
+        if(offlineMessageDistribute.get() == null){
+            throw  new RuntimeException("");
+        }
+        return offlineMessageDistribute.get().storageOfflineMessage(rsocket.reciveOffline());
+    }
+
+    @Override
+    public Mono<Void> closeServer() {
+        return Mono.fromRunnable(()->rsocket.getConnections().forEach(rConnection -> rConnection.dispose())).then(rsocket.closeServer());
     }
 }

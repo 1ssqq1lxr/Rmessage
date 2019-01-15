@@ -8,6 +8,7 @@ import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * @Auther: lxr
@@ -32,7 +33,9 @@ public interface ServerSession<T extends NettyConnector< ? extends NettyInbound,
     Mono<List<RConnection>> keys(String key);
 
 
-    void   addOfflineHandler(OfflineMessageDistribute offlineMessageDistribute);
+    Mono<Void>   addOfflineHandler(Supplier<OfflineMessageDistribute> offlineMessageDistribute);
+
+    Mono<Void>   closeServer();
 
 
 

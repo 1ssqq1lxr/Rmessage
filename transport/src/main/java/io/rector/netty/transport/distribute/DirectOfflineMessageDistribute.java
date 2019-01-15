@@ -14,7 +14,7 @@ public class DirectOfflineMessageDistribute implements OfflineMessageDistribute 
 
     @Override
     public Mono<Void> storageOfflineMessage(Flux<TransportMessage> message) {
-        return null;
+        return message.doOnNext(s->{}).then();
     }
 
     @Override

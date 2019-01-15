@@ -50,5 +50,10 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
 
     public abstract MethodExtend getMethodExtend();
 
+
+    public  Mono<Void> closeServer(){
+       return transport.get().close();
+    }
+
     public abstract Mono<Void>  removeConnection(RConnection duplexConnection);
 }

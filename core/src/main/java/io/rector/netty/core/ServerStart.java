@@ -22,6 +22,7 @@ import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 import reactor.ipc.netty.tcp.TcpServer;
+import reactor.util.Logger;
 
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -85,7 +86,11 @@ public class ServerStart extends AbstractStart {
                       ServerSocketAdapter<T> rsocket= (ServerSocketAdapter<T> )rsocketAcceptor.accept(() -> serverTransport,registry,(ServerConfig)config,methodExtend);
                          return   rsocket.start()
                                  .map(socket->new TcpServerSession(rsocket))
-                                 .doOnError(ex-> log.error("connect error:",ex))
+                                 .doOnError(ex-> {
+                                     serverTransport.close().subscribe();
+                                     log.error("connect error:",ex);
+                                 })
+                                 .log("server")
                                  .retry()
                                  .block();
                 });
@@ -110,6 +115,7 @@ public class ServerStart extends AbstractStart {
                     //  channel设置
                 })
                 .<TcpServer>connect().subscribe(session->{
+                    session.addOfflineHandler(()->new DirectOfflineMessageDistribute());
                 });
         byte b =117;
         int high= b>>4 & 0x0F ;
