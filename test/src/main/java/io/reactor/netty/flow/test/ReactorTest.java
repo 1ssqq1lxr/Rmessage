@@ -1,13 +1,11 @@
-package io.rector.netty.test;
+package io.reactor.netty.flow.test;
 
 import org.junit.Test;
 import reactor.core.Disposable;
 import reactor.core.publisher.UnicastProcessor;
 import reactor.util.concurrent.Queues;
 
-import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
-import java.util.function.Consumer;
 
 public class ReactorTest {
 

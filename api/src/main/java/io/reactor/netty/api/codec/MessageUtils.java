@@ -35,10 +35,6 @@ public class MessageUtils {
                 return ProtocolCatagory.GROUP;
             case 3:
                 return ProtocolCatagory.ONLINE;
-            case 4:
-                return  ProtocolCatagory.ADDUSER;
-            case 5:
-                return  ProtocolCatagory.DELUSER;
             case 12:
                 return ProtocolCatagory.JOIN;
             case 13:

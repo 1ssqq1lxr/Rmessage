@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.rector.netty.test;
+package io.reactor.netty.flow.test;
 
 import java.nio.charset.Charset;
 import java.time.Duration;
@@ -27,7 +27,6 @@ import java.util.function.BiFunction;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -66,12 +65,12 @@ public class WebsocketTest {
 	public void simpleTest() {
 		httpServer = HttpServer.create(0)
 		                       .newHandler((in, out) -> out.sendWebsocket((i, o) -> o.sendString(
-				                       Mono.just("test"))))
+				                       Mono.just("io/reactor/netty/flow/test"))))
 		                       .block(Duration.ofSeconds(30));
 
 		String res = HttpClient.create(httpServer.address()
 		                                  .getPort())
-		                .get("/test",
+		                .get("/io/reactor/netty/flow/test",
 				                out -> out.addHeader("Authorization", auth)
 				                          .sendWebsocket())
 		                .flatMapMany(in -> in.receive()
@@ -81,7 +80,7 @@ public class WebsocketTest {
 		                .block(Duration.ofSeconds(30))
 		                .get(0);
 
-		Assert.assertThat(res, is("test"));
+		Assert.assertThat(res, is("io/reactor/netty/flow/test"));
 	}
 
 	@Test
@@ -93,14 +92,14 @@ public class WebsocketTest {
 				                      return out.status(401);
 				                  }
 				                  else {
-				                      return out.sendWebsocket((i, o) -> o.sendString(Mono.just("test")));
+				                      return out.sendWebsocket((i, o) -> o.sendString(Mono.just("io/reactor/netty/flow/test")));
 				                  }
 				          })
 				          .block(Duration.ofSeconds(30));
 
 		Mono<String> res =
 				HttpClient.create(httpServer.address().getPort())
-				          .get("/test", out -> out.failOnClientError(false)
+				          .get("/io/reactor/netty/flow/test", out -> out.failOnClientError(false)
 				                                      .sendWebsocket())
 				          .flatMap(in -> in.receive().aggregate().asString());
 	}
@@ -145,7 +144,7 @@ public class WebsocketTest {
 		                       .newHandler((in, out) -> out.sendWebsocket(
 				                       (i, o) -> o.options(opt -> opt.flushOnEach())
 				                                  .sendString(
-						                                  Mono.just("test")
+						                                  Mono.just("io/reactor/netty/flow/test")
 						                                      .delayElement(Duration.ofMillis(100))
 						                                      .repeat())))
 		                       .block(Duration.ofSeconds(30));
@@ -168,7 +167,7 @@ public class WebsocketTest {
 		                       .newHandler((in, out) -> out.sendWebsocket(
 				                       (i, o) -> o.options(opt -> opt.flushOnEach())
 				                                  .sendByteArray(
-						                                  Mono.just("test".getBytes(Charset.defaultCharset()))
+						                                  Mono.just("io/reactor/netty/flow/test".getBytes(Charset.defaultCharset()))
 						                                      .delayElement(Duration.ofMillis(100))
 						                                      .repeat())))
 		                       .block(Duration.ofSeconds(30));
@@ -214,7 +213,7 @@ public class WebsocketTest {
 
 		HttpClient.create(httpServer.address()
 		                            .getPort())
-		          .ws("/test")
+		          .ws("/io/reactor/netty/flow/test")
 		          .flatMap(in -> in.receiveWebsocket((i, o) -> o.options(opt -> opt.flushOnEach())
 		                                                     .sendString(i.receive()
 		                                                                  .asString()
@@ -230,7 +229,7 @@ public class WebsocketTest {
 	public void simpleSubprotocolServerNoSubprotocol() throws Exception {
 		httpServer = HttpServer.create(0)
 		                                    .newHandler((in, out) -> out.sendWebsocket((i, o) -> o.sendString(
-				                                    Mono.just("test"))))
+				                                    Mono.just("io/reactor/netty/flow/test"))))
 		                                    .block(Duration.ofSeconds(30));
 //
 //		StepVerifier.create(
@@ -249,7 +248,7 @@ public class WebsocketTest {
 		httpServer = HttpServer.create(0)
 		                       .newHandler((in, out) -> out.sendWebsocket(
 				                       "protoA,protoB",
-				                       (i, o) -> o.sendString(Mono.just("test"))))
+				                       (i, o) -> o.sendString(Mono.just("io/reactor/netty/flow/test"))))
 		                       .block(Duration.ofSeconds(30));
 //
 //		StepVerifier.create(
@@ -270,16 +269,16 @@ public class WebsocketTest {
 		                       .newHandler((in, out) -> out.sendWebsocket(
 				                       "SUBPROTOCOL",
 				                       (i, o) -> o.sendString(
-						                       Mono.just("test"))))
+						                       Mono.just("io/reactor/netty/flow/test"))))
 		                       .block(Duration.ofSeconds(30));
 
 		String res = HttpClient.create(httpServer.address().getPort())
-		                       .get("/test",
+		                       .get("/io/reactor/netty/flow/test",
 				                out -> out.addHeader("Authorization", auth)
 				                          .sendWebsocket("SUBPROTOCOL,OTHER"))
 		                .flatMapMany(in -> in.receive().asString()).log().collectList().block(Duration.ofSeconds(30)).get(0);
 
-		Assert.assertThat(res, is("test"));
+		Assert.assertThat(res, is("io/reactor/netty/flow/test"));
 	}
 
 	@Test
@@ -292,7 +291,7 @@ public class WebsocketTest {
 		                       .block(Duration.ofSeconds(30));
 
 		String res = HttpClient.create(httpServer.address().getPort())
-		                       .get("/test",
+		                       .get("/io/reactor/netty/flow/test",
 				                out -> out.addHeader("Authorization", auth)
 				                          .sendWebsocket("Common,OTHER"))
 		                       .map(HttpClientResponse::receiveWebsocket)
@@ -312,7 +311,7 @@ public class WebsocketTest {
 
 		String res = HttpClient.create(httpServer.address()
 		                                         .getPort())
-		                       .get("/test",
+		                       .get("/io/reactor/netty/flow/test",
 				                       out -> out.addHeader("Authorization", auth)
 				                                 .sendWebsocket())
 		                       .map(HttpClientResponse::receiveWebsocket)
@@ -336,7 +335,7 @@ public class WebsocketTest {
 
 		String res = HttpClient.create(httpServer.address()
 		                                         .getPort())
-		                       .get("/test",
+		                       .get("/io/reactor/netty/flow/test",
 				                       out -> out.addHeader("Authorization", auth)
 				                                 .sendWebsocket("proto1, proto2"))
 		                       .map(HttpClientResponse::receiveWebsocket)
@@ -373,7 +372,7 @@ public class WebsocketTest {
 
 		HttpClient.create(httpServer.address()
 		                            .getPort())
-		          .ws("/test", "proto1,proto2")
+		          .ws("/io/reactor/netty/flow/test", "proto1,proto2")
 		          .flatMap(in -> {
 			          clientSelectedProtocolWhenSimplyUpgrading.set(in.receiveWebsocket().selectedSubprotocol());
 			          return in.receiveWebsocket((i, o) -> {
@@ -397,7 +396,7 @@ public class WebsocketTest {
 		                       .newHandler((in, out) -> out.sendWebsocket(
 				                       (i, o) -> o.options(opt -> opt.flushOnEach())
 				                                  .sendString(
-						                                  Mono.just("test")
+						                                  Mono.just("io/reactor/netty/flow/test")
 						                                      .delayElement(Duration.ofMillis(100))
 						                                      .repeat())))
 		                       .block(Duration.ofSeconds(30));
@@ -544,7 +543,7 @@ public class WebsocketTest {
 		CountDownLatch latch = new CountDownLatch(3);
 		AtomicBoolean error = new AtomicBoolean();
 		HttpClient.create(httpServer.address().getPort())
-		          .ws("/test")
+		          .ws("/io/reactor/netty/flow/test")
 		          .flatMap(res -> res.receiveWebsocket((in, out) -> {
 		                  NettyContext context = in.context();
 		                  Mono.delay(Duration.ofSeconds(3))
@@ -591,13 +590,13 @@ public class WebsocketTest {
 				HttpServer.create(0)
 				          .newHandler((req, res) ->
 				              res.sendWebsocket((in, out) ->
-				                  out.sendString(Mono.just("test"))))
+				                  out.sendString(Mono.just("io/reactor/netty/flow/test"))))
 				          .block(Duration.ofSeconds(30));
 
 		CountDownLatch latch = new CountDownLatch(2);
 		AtomicBoolean error = new AtomicBoolean();
 		HttpClient.create(httpServer.address().getPort())
-		          .ws("/test")
+		          .ws("/io/reactor/netty/flow/test")
 		          .flatMap(res -> res.receiveWebsocket((in, out) -> {
 		              NettyContext context = in.context();
 		              context.onClose()

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.rector.netty.test;
+package io.reactor.netty.flow.test;
 
 import java.net.URI;
 import java.util.ArrayList;
