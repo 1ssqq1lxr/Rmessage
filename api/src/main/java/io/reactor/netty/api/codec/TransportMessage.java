@@ -50,4 +50,21 @@ public  class TransportMessage {
         this.inbound = inbound;
         return this;
     }
+
+
+    public byte[] getBytes(){
+        switch (type){
+            case ONLINE:
+            case ACCEPT:
+            case GROUPACK:
+            case PONG:
+            case GROUP:
+            case PING:
+            case ONE:
+            case ONEACK:
+        }
+        return null;
+    }
+
+
 }

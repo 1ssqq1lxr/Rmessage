@@ -1,6 +1,8 @@
 package io.rector.netty.transport.distribute;
 
+import io.netty.buffer.Unpooled;
 import io.reactor.netty.api.codec.MessageBody;
+import io.reactor.netty.api.codec.TransportMessage;
 import io.reactor.netty.api.exception.NoGroupCollectorException;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
@@ -25,11 +27,12 @@ public class DirectServerMessageDistribute {
         this.serverSocketAdapter = serverSocketAdapter;
     }
 
-    public Mono<Void>  sendOne(MessageBody body, Mono<Void> offline){
+    public Mono<Void>  sendOne(TransportMessage body, Mono<Void> offline){
         return   Mono.create(monoSink -> {
-            Optional<RConnection> rConnection= Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(body.getTo()));
+            MessageBody messageBody=(MessageBody) body.getMessageBody();
+            Optional<RConnection> rConnection= Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(messageBody.getTo()));
             if(rConnection.isPresent()){ // 发送
-//                rConnection.get().getOutbound().then().subscribe();
+                rConnection.get().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(body.getBytes()))).then().subscribe();
             }
             else
                 offline.subscribe();

@@ -46,8 +46,7 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
             else {
                 switch (message.getType()){
                     case ONLINE:
-                        OnlineMessage onlineMessage=(OnlineMessage) message.getMessageBody();
-                        connectionStateDistribute.init(onlineMessage,message.getInbound())
+                        connectionStateDistribute.init(message)
                                 .then(Mono.fromRunnable(()->{
                                     if(!disposable.isDisposed()){
                                         disposable.dispose(); //取消关闭连接
@@ -55,12 +54,11 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                                 })).subscribe();
                         break;
                     case ONE: // 单发
-                        MessageBody oneBody = (MessageBody)message.getMessageBody();
                         Mono<Void>  offline=Mono.create(sink ->{
                             offlineMessagePipeline.onNext(message);
                             sink.success();
                         });
-                        directServerMessageDistribute.sendOne(oneBody,offline).subscribe();
+                        directServerMessageDistribute.sendOne(message,offline).subscribe();
                         break;
                     case GROUP:  //群发
                         MessageBody groupBody = (MessageBody)message.getMessageBody();
