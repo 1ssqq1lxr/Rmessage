@@ -27,6 +27,7 @@ public class ReactorMethodExtend implements MethodExtend {
 
     private  Idle writeIdle;
 
+
     private  OfflineMessageDistribute offlineMessageDistribute;
 
     private Consumer<? super Channel> afterChannelInit;

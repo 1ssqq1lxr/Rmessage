@@ -46,18 +46,6 @@ import java.util.stream.Collectors;
  *   |固定头高4bit| 消息类型低 4bit  |
  *
  *
- *  type:  JOIN   LEAVE
- *
- *   FIXHEADER
- *   |-----1byte--------------------|
- *   |固定头高4bit| 消息类型低 4bit    |
- *
- *   TOPICHEADER
- *   |---1 byte ---------|--1 byte ------------|
- *   |--from目的length----|---目的key length-----|
- *
- *   |-----n byte--------|-------n byte--------|
- *   |-----from目的-------|-------目的key--------|
  *
  *
  *   ACK
@@ -73,10 +61,10 @@ import java.util.stream.Collectors;
  *
  *    *    *   FIXHEADER
  *  *  *   |-----1byte--------------------|
- *  *  *   |固定头高4bit| 消息类型低 4bit    |
+ *  *  *   |固定头高4bit| 消息类型低 4bit  |
  *  *       *  ON
- *  *  *   |-----1byte---------|-----2byte------------|
- *  *  *   |     userId        |  groupId(多个逗号隔开)-|
+ *  *  *   |-----1byte---------|
+ *  *  *   |     userId        |
  *
  * @see ProtocolCatagory
  */
@@ -93,7 +81,6 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
     private String from;
 
     private String to;
-
 
     private long  messageId;
 
@@ -123,12 +110,6 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         type = ProtocolCatagory.GROUP;
                         this.checkpoint(Type.TOPICHEADER);
                         break;
-                    case JOIN:
-                        this.checkpoint(Type.TOPICHEADER);
-                        break;
-                    case LEAVE:
-                        this.checkpoint(Type.TOPICHEADER);
-                        break;
                     case ONLINE:
                         this.checkpoint(Type.ONLINE);
                         break;
@@ -145,17 +126,13 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 }
             case ONLINE:
                 short userIdLength= buf.readByte();
-                int   groupIdsLength= buf.readShort();
                 byte[] userIdBytes = new byte[userIdLength];
-                byte[] groupsBytes = new byte[groupIdsLength];
                 buf.readBytes(userIdBytes);
-                buf.readBytes(groupsBytes);
                 out.add(TransportMessage.builder().type(type)
                         .messageBody(
                                 OnlineMessage.builder()
                                         .userId(new String(userIdBytes,Charset.defaultCharset()))
-                                .groups(Arrays.stream(new String(userIdBytes,Charset.defaultCharset()).split(",")).collect(Collectors.toList()))
-                                .build()
+                                        .build()
                         )
                         .build());
                 this.checkpoint(Type.FIXD_HEADER);
@@ -176,18 +153,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 buf.readBytes(toBytes);
                 from =new String(fromBytes, Charset.defaultCharset());
                 to   =new String(toBytes, Charset.defaultCharset());
-                if( type == ProtocolCatagory.JOIN
-                        || type == ProtocolCatagory.LEAVE){
-                    out.add(TransportMessage.builder().type(type)
-                            .messageBody(MessageBody.builder()
-                             .from(from)
-                              .to(to))
-                            .build());
-                    this.checkpoint(Type.FIXD_HEADER);
-                    break  header;
-                }
-                else
-                    this.checkpoint(Type.MESSAGEBODY);
+                this.checkpoint(Type.MESSAGEBODY);
             case MESSAGEBODY:
                 messageId=buf.readLong(); // 消息id
                 int bodyLength= buf.readInt();

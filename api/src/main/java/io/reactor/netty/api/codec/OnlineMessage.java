@@ -11,6 +11,5 @@ public class OnlineMessage {
 
     private String userId;
 
-    List<String> groups;
 
 }

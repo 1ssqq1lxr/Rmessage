@@ -12,8 +12,6 @@ public enum  ProtocolCatagory {
     ACCEPT((byte)3),// 客户端接受消息
     ONEACK((byte)10),
     GROUPACK((byte)11),
-    JOIN((byte)12), //加入群组
-    LEAVE((byte)13),//离开群组
     PING((byte)14),  //心跳
     PONG((byte)15) //回复
     ;

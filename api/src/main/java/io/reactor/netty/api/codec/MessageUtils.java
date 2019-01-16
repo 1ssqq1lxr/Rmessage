@@ -40,10 +40,6 @@ public class MessageUtils {
                 return ProtocolCatagory.ONEACK;
             case 11:
                 return ProtocolCatagory.GROUPACK;
-            case 12:
-                return ProtocolCatagory.JOIN;
-            case 13:
-                return ProtocolCatagory.LEAVE;
             case 14:
                 return ProtocolCatagory.PING;
             case 15:

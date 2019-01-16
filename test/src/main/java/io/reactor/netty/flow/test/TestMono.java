@@ -43,4 +43,23 @@ public class TestMono {
         countDownLatch.await();
     }
 
+    @Test
+    public void test3() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+
+        Mono.<String>create(objectMonoSink -> {
+            System.out.println("123123");
+            objectMonoSink.success("1");
+        }).then(Mono.<String>create(objectMonoSink -> {
+            System.out.println("345334");
+            objectMonoSink.success("2");
+        })).subscribe(System.out::println);
+      ;
+         Flux.interval(Duration.ofSeconds(2)).then(Mono.<String>create(objectMonoSink -> {
+             System.out.println("345334");
+             objectMonoSink.success("2");
+         })).doOnNext(System.out::println).subscribe(System.out::println);
+        countDownLatch.await();
+    }
+
 }
