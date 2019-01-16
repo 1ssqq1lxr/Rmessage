@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 离线通知
  */
-public class DirectOfflineMessageDistribute implements OfflineMessageDistribute {
+public class DefaultOfflineMessageDistribute implements OfflineMessageDistribute {
 
     /**
      *

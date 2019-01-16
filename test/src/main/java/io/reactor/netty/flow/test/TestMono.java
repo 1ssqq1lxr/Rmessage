@@ -4,6 +4,7 @@ import org.junit.Test;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.MonoProcessor;
 
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
@@ -46,7 +47,9 @@ public class TestMono {
     @Test
     public void test3() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-
+        System.out.println(System.currentTimeMillis());
+        System.out.println(System.nanoTime());
+        System.out.println(1615141078220345552l);
         Mono.<String>create(objectMonoSink -> {
             System.out.println("123123");
             objectMonoSink.success("1");
@@ -61,5 +64,33 @@ public class TestMono {
          })).doOnNext(System.out::println).subscribe(System.out::println);
         countDownLatch.await();
     }
+
+    @Test
+    public void test4() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        Mono mono=Mono.create(objectMonoSink -> {
+            System.out.println();
+            objectMonoSink.success(new Object());
+        });
+        mono.subscribe(System.out::println);
+        mono.subscribe(System.out::println);
+        countDownLatch.await();
+    }
+
+
+    @Test
+    public void test5() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        Mono mono=Mono.create(objectMonoSink -> {
+            System.out.println();
+            objectMonoSink.success(new Object());
+        });
+        MonoProcessor.from(mono);
+        mono.subscribe(System.out::println);
+        mono.subscribe(System.out::println);
+        countDownLatch.await();
+    }
+
+
 
 }

@@ -19,10 +19,6 @@ public interface MethodExtend {
 
     Idle getWriteIdle();
 
-    void setOfflineMessageDistribute(OfflineMessageDistribute offlineMessageDistribute);
-
-    OfflineMessageDistribute getOfflineMessageDistribute();
-
     void setAfterChannelInit(Consumer<? super Channel> afterChannelInit);
 
     void setOptions(Consumer<ServerOptions.Builder<?>> options);
