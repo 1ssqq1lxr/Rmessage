@@ -11,6 +11,6 @@ import reactor.core.publisher.UnicastProcessor;
  * @Date: 2018/12/26 17:11
  * @Description:
  */
-public interface Rdocoder {
+public interface ReactorDecoder {
     DecoderAcceptor decode(UnicastProcessor<TransportMessage> offlineMessagePipeline, DirectServerMessageDistribute distribute, ConnectionStateDistribute connectionStateDistribute, Disposable disposable);
 }
