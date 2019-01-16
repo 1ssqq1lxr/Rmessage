@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  * @Date: 2018/12/6 19:21
  * @Description:
  */
-public interface ServerSession<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>  {
+public interface ServerSession  <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> {
 
     //查看所有连接
     Mono<List<RConnection>> listConnection();
@@ -34,9 +34,9 @@ public interface ServerSession<T extends NettyConnector< ? extends NettyInbound,
     Mono<List<RConnection>> keys(String key);
 
 
-    Mono<Void>   addOfflineHandler(Supplier<OfflineMessageDistribute> offlineMessageDistribute);
+    Mono<Void>   addOfflineHandler(OfflineMessageDistribute offlineMessageDistribute);
 
-    Mono<Void>   groupHandler(GroupCollector collector);
+    Mono<Void>   addGroupHandler(GroupCollector collector);
 
     Mono<Void>   closeServer();
 

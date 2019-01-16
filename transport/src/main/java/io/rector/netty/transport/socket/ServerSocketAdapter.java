@@ -11,6 +11,7 @@ import io.rector.netty.transport.codec.ServerDecoderAcceptor;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.ConnectionStateDistribute;
 import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
+import io.rector.netty.transport.distribute.OfflineMessageDistribute;
 import io.rector.netty.transport.group.GroupCollector;
 import io.rector.netty.transport.method.MethodExtend;
 import lombok.Data;
@@ -46,7 +47,6 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private Map<String , RConnection> ids = new ConcurrentHashMap<>(); // id -> channel
 
-    private Map<String , List<RConnection>> keys = new ConcurrentHashMap<>(); // group -> channel
 
     private ServerConfig config;
 
@@ -60,10 +60,19 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private GroupCollector groupCollector;
 
+    private OfflineMessageDistribute offlineMessageDistribute;
+
 
 
     public Mono<Void> setGroupCollector(GroupCollector groupCollector){
        return Mono.fromRunnable(()->this.groupCollector=groupCollector);
+    }
+
+    public Mono<Void> setOfflineMessageDistribute(final OfflineMessageDistribute offlineMessageDistribute){
+        return Mono.fromRunnable(()->{
+            this.offlineMessageDistribute=offlineMessageDistribute;
+            offlineMessageDistribute.storageOfflineMessage(reciveOffline());
+        });
     }
 
 

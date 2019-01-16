@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * @Date: 2018/12/7 17:33
  * @Description:
  */
-public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements ServerSession<T> {
+public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements ServerSession <T>{
 
     private ServerSocketAdapter<T> rsocket;
 
@@ -29,10 +29,6 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
         return rsocket;
     }
 
-
-    private Supplier<OfflineMessageDistribute> offlineMessageDistribute;
-
-    private GroupCollector groupCollector;
 
 
 
@@ -65,16 +61,12 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
     }
 
     @Override
-    public Mono<Void> addOfflineHandler(Supplier<OfflineMessageDistribute> offlineMessageDistribute) {
-        this.offlineMessageDistribute=offlineMessageDistribute;
-        if(offlineMessageDistribute.get() == null){
-            throw  new RuntimeException("offlineMessageDistribute is not null");
-        }
-        return offlineMessageDistribute.get().storageOfflineMessage(rsocket.reciveOffline());
+    public Mono<Void> addOfflineHandler(OfflineMessageDistribute offlineMessageDistribute) {
+        return  rsocket.setOfflineMessageDistribute(offlineMessageDistribute);
     }
 
     @Override
-    public Mono<Void> groupHandler(GroupCollector collector) {
+    public Mono<Void> addGroupHandler(GroupCollector collector) {
         return rsocket.setGroupCollector(collector);
     }
 

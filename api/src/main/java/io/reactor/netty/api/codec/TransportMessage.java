@@ -4,6 +4,7 @@ package io.reactor.netty.api.codec;
 import lombok.Builder;
 import lombok.Data;
 import reactor.core.publisher.Mono;
+import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
 /**
@@ -25,6 +26,8 @@ public  class TransportMessage {
 
     private transient NettyOutbound outbound;
 
+    private transient NettyInbound  inbound;
+
     private ProtocolCatagory type;
 
     private Object messageBody;
@@ -40,6 +43,11 @@ public  class TransportMessage {
 
     public TransportMessage setOutbound(NettyOutbound outbound) {
         this.outbound = outbound;
+        return this;
+    }
+
+    public TransportMessage setInbound(NettyInbound inbound) {
+        this.inbound = inbound;
         return this;
     }
 }

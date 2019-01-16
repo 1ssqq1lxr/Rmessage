@@ -11,6 +11,7 @@ import io.rector.netty.flow.plugin.Plugins;
 import io.rector.netty.transport.ServerTransport;
 import io.rector.netty.transport.distribute.DefaultOfflineMessageDistribute;
 import io.rector.netty.transport.distribute.OfflineMessageDistribute;
+import io.rector.netty.transport.group.GroupCollector;
 import io.rector.netty.transport.method.ReactorMethodExtend;
 import io.rector.netty.transport.socket.RsocketAcceptor;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
@@ -24,6 +25,7 @@ import reactor.ipc.netty.NettyOutbound;
 import reactor.ipc.netty.tcp.TcpServer;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
@@ -37,7 +39,6 @@ import java.util.function.Consumer;
 @Slf4j
 public class ServerStart extends AbstractStart {
 
-    private static UnicastProcessor<Operation> operations =UnicastProcessor.create();
 
     private Consumer<Map<Protocol,Class<? extends NettyConnector>>> consumer = classes-> classes.put(Protocol.TCP,TcpServer.class);
 
@@ -47,8 +48,6 @@ public class ServerStart extends AbstractStart {
     public ServerStart() {
         super(ServerConfig.builder().build(), ReactorMethodExtend.builder().build());
     }
-
-
 
     private static class StartBuilder{
         private static ServerStart start = new ServerStart();
@@ -105,8 +104,9 @@ public class ServerStart extends AbstractStart {
                     //  channel设置
                 })
                 .<TcpServer>connect().subscribe(session->{
-                    session.addOfflineHandler(()->new DefaultOfflineMessageDistribute());
-
+                    session.addOfflineHandler(new DefaultOfflineMessageDistribute())
+                            .then(session.addGroupHandler(groupId -> null))
+                            .subscribe();
                 });
         byte b =117;
         int high= b>>4 & 0x0F ;

@@ -15,8 +15,6 @@ public class ChannelAttr {
 
     private static final String   USER_ID   =  "USERID";
 
-    private static final String   GROUPS   =  "GROUPS";
-
     public static  void boundUserId(NettyInbound inbound,String userId){
         AttributeKey<String> key = AttributeKey.valueOf(USER_ID);
         inbound.attr(key).getAndSet(userId);
@@ -28,20 +26,5 @@ public class ChannelAttr {
         return Optional.ofNullable(inbound.attr(key).get());
     }
 
-    public static  void boundGroups(NettyInbound inbound,List<String> groups){
-        AttributeKey<List<String>> key = AttributeKey.valueOf(GROUPS);
-        Optional<List<String>> ops=Optional.ofNullable(inbound.attr(key).get());
-        if(ops.isPresent()){
-            inbound.attr(key).set(groups);
-        }
-        else {
-            inbound.attr(key).get().addAll(groups);
-        }
-    }
-
-    public static  Optional<List<String> > getGroups(NettyInbound inbound){
-        AttributeKey<List<String>> key = AttributeKey.valueOf(GROUPS);
-        return Optional.ofNullable(inbound.attr(key).get());
-    }
 
 }

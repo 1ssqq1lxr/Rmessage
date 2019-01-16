@@ -47,11 +47,12 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                 switch (message.getType()){
                     case ONLINE:
                         OnlineMessage onlineMessage=(OnlineMessage) message.getMessageBody();
-                        Mono.fromRunnable(()->{
-                            if(!disposable.isDisposed()){
-                                disposable.dispose(); //取消关闭连接
-                            }
-                        }).then(connectionStateDistribute.init(onlineMessage)).subscribe();
+                        connectionStateDistribute.init(onlineMessage,message.getInbound())
+                                .then(Mono.fromRunnable(()->{
+                                    if(!disposable.isDisposed()){
+                                        disposable.dispose(); //取消关闭连接
+                                    }
+                                })).subscribe();
                         break;
                     case ONE: // 单发
                         MessageBody oneBody = (MessageBody)message.getMessageBody();
