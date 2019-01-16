@@ -43,6 +43,7 @@ public class DirectServerMessageDistribute {
         });
     }
 
+
     public Mono<Void>  sendGroup(TransportMessage message, Function<String, Mono<Void>> consumer){
         return   Mono.create(monoSink -> {
             MessageBody messageBody=(MessageBody) message.getMessageBody();
@@ -67,4 +68,8 @@ public class DirectServerMessageDistribute {
 
     }
 
+
+    public Mono<Void>  sendPong(TransportMessage message) {
+        return Mono.fromRunnable(()-> message.getOutbound().send(Mono.just(Unpooled.wrappedBuffer(message.getBytes()))).then().subscribe());
+    }
 }

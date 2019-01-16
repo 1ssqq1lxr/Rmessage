@@ -68,7 +68,7 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                                 .subscribe();
                         break;
                     case PING:  //回复pong
-
+                        directServerMessageDistribute.sendPong(message);
 
                     case ACCEPT:
 
