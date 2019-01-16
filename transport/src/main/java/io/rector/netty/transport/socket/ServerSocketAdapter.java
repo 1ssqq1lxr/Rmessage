@@ -1,5 +1,6 @@
 package io.rector.netty.transport.socket;
 
+import io.reactor.netty.api.codec.OfflineMessage;
 import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.rector.netty.config.ServerConfig;
@@ -52,7 +53,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private DirectServerMessageDistribute directServerMessageDistribute;
 
-    private UnicastProcessor<TransportMessage>  offlineMessagePipeline=  UnicastProcessor.create();
+    private UnicastProcessor<OfflineMessage>  offlineMessagePipeline=  UnicastProcessor.create();
 
     private MethodExtend methodExtend;
 
@@ -133,7 +134,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
         return ServerDecoderAcceptor::new;
     }
 
-    public Flux<TransportMessage> reciveOffline() {
+    public Flux<OfflineMessage> reciveOffline() {
       return   Flux.from(offlineMessagePipeline);
     }
 }

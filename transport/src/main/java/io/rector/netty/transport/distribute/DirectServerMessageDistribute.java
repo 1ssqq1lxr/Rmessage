@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * @Auther: lxr
@@ -42,7 +43,7 @@ public class DirectServerMessageDistribute {
         });
     }
 
-    public Mono<Void>  sendGroup(TransportMessage message){
+    public Mono<Void>  sendGroup(TransportMessage message, Function<String, Mono<Void>> consumer){
         return   Mono.create(monoSink -> {
             MessageBody messageBody=(MessageBody) message.getMessageBody();
             Optional<Set<String>> ids=Optional.ofNullable(serverSocketAdapter.getGroupCollector().loadGroupUser(messageBody.getTo()));
@@ -50,9 +51,10 @@ public class DirectServerMessageDistribute {
                 // 发送所有人 check在线状态
                 ids.get().stream().forEach(id->{
                     Optional<RConnection> connection=Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(id));
-                    if(connection.isPresent())
-                        //离线消息
+                    if(!connection.isPresent()){
+                        consumer.apply(id).subscribe();
                         log.info(" group offline message {}",message);
+                    }
                     else
                         connection.get().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(message.getBytes()))).then().subscribe();
                 });

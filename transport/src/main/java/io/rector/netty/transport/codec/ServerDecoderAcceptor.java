@@ -1,6 +1,7 @@
 package io.rector.netty.transport.codec;
 
 import io.reactor.netty.api.codec.MessageBody;
+import io.reactor.netty.api.codec.OfflineMessage;
 import io.reactor.netty.api.codec.OnlineMessage;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.rector.netty.transport.distribute.ConnectionStateDistribute;
@@ -9,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 
 /**
@@ -23,13 +27,13 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
 
     private DirectServerMessageDistribute directServerMessageDistribute;
 
-    private UnicastProcessor<TransportMessage> offlineMessagePipeline;
+    private UnicastProcessor<OfflineMessage> offlineMessagePipeline;
 
     private Disposable disposable;
 
     private ConnectionStateDistribute connectionStateDistribute;
 
-    public ServerDecoderAcceptor(UnicastProcessor<TransportMessage> offlineMessagePipeline, DirectServerMessageDistribute directServerMessageDistribute, ConnectionStateDistribute connectionStateDistribute,Disposable disposable) {
+    public ServerDecoderAcceptor(UnicastProcessor<OfflineMessage> offlineMessagePipeline, DirectServerMessageDistribute directServerMessageDistribute, ConnectionStateDistribute connectionStateDistribute,Disposable disposable) {
         this.directServerMessageDistribute = directServerMessageDistribute;
         this.offlineMessagePipeline=offlineMessagePipeline;
         this.connectionStateDistribute=connectionStateDistribute;
@@ -54,14 +58,12 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                                 })).subscribe();
                         break;
                     case ONE: // 单发
-                        Mono<Void>  offline=Mono.create(sink ->{
-                            offlineMessagePipeline.onNext(message);
-                            sink.success();
-                        });
+                        Mono<Void> offline= buildOffline(message, ((MessageBody)message.getMessageBody()).getTo());
                         directServerMessageDistribute.sendOne(message,offline).subscribe();
                         break;
                     case GROUP:  //群发
-                        directServerMessageDistribute.sendGroup(message)
+                        Function<String,Mono<Void>> consumer = uid->buildOffline(message,uid);
+                        directServerMessageDistribute.sendGroup(message,consumer)
                                 .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage】 {}",throwable))
                                 .subscribe();
                         break;
@@ -77,6 +79,15 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
         });
     }
 
+
+    private Mono<Void>  buildOffline(TransportMessage message,String userId){
+        return  Mono.fromRunnable(() ->
+            offlineMessagePipeline.onNext(
+                    OfflineMessage.builder()
+                            .userId(userId)
+                            .message(message)
+                            .build()));
+    }
 
 
 }
