@@ -12,6 +12,7 @@ import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.ConnectionStateDistribute;
 import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import io.rector.netty.transport.distribute.OfflineMessageDistribute;
+import io.rector.netty.transport.group.GroupCollector;
 import io.rector.netty.transport.method.MethodExtend;
 import lombok.Data;
 import reactor.core.Disposable;
@@ -57,6 +58,15 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     private MethodExtend methodExtend;
 
     private ConnectionStateDistribute connectionStateDistribute;
+
+    private GroupCollector groupCollector;
+
+
+
+    public Mono<Void> setGroupCollector(GroupCollector groupCollector){
+       return Mono.fromRunnable(()->this.groupCollector=groupCollector);
+    }
+
 
     public ServerSocketAdapter(Supplier<Transport> transport, PluginRegistry pluginRegistry,ServerConfig config, MethodExtend methodExtend) {
         this.transport = transport;

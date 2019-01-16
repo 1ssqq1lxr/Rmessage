@@ -2,6 +2,7 @@ package io.rector.netty.core.session;
 
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.OfflineMessageDistribute;
+import io.rector.netty.transport.group.GroupCollector;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
@@ -34,6 +35,8 @@ public interface ServerSession<T extends NettyConnector< ? extends NettyInbound,
 
 
     Mono<Void>   addOfflineHandler(Supplier<OfflineMessageDistribute> offlineMessageDistribute);
+
+    Mono<Void>   groupHandler(GroupCollector collector);
 
     Mono<Void>   closeServer();
 

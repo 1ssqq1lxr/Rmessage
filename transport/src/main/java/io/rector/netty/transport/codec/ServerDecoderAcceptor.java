@@ -63,15 +63,12 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                         break;
                     case GROUP:  //群发
                         MessageBody groupBody = (MessageBody)message.getMessageBody();
-                        directServerMessageDistribute.sendGroup(groupBody).subscribe();
+                        directServerMessageDistribute.sendGroup(groupBody)
+                                .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage】 {}",throwable))
+                                .subscribe();
                         break;
                     case PING:  //回复pong
 
-
-                    case LEAVE: // 离开群组
-
-
-                    case JOIN:  // 加入群组
 
                     case ACCEPT:
 

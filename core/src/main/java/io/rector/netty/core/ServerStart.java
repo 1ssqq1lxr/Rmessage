@@ -116,6 +116,7 @@ public class ServerStart extends AbstractStart {
                 })
                 .<TcpServer>connect().subscribe(session->{
                     session.addOfflineHandler(()->new DirectOfflineMessageDistribute());
+
                 });
         byte b =117;
         int high= b>>4 & 0x0F ;

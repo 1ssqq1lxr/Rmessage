@@ -2,6 +2,7 @@ package io.rector.netty.core.session;
 
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.OfflineMessageDistribute;
+import io.rector.netty.transport.group.GroupCollector;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
@@ -30,6 +31,8 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
 
 
     private Supplier<OfflineMessageDistribute> offlineMessageDistribute;
+
+    private GroupCollector groupCollector;
 
 
 
@@ -65,9 +68,14 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
     public Mono<Void> addOfflineHandler(Supplier<OfflineMessageDistribute> offlineMessageDistribute) {
         this.offlineMessageDistribute=offlineMessageDistribute;
         if(offlineMessageDistribute.get() == null){
-            throw  new RuntimeException("");
+            throw  new RuntimeException("offlineMessageDistribute is not null");
         }
         return offlineMessageDistribute.get().storageOfflineMessage(rsocket.reciveOffline());
+    }
+
+    @Override
+    public Mono<Void> groupHandler(GroupCollector collector) {
+        return rsocket.setGroupCollector(collector);
     }
 
     @Override

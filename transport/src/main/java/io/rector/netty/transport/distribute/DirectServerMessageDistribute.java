@@ -1,16 +1,14 @@
 package io.rector.netty.transport.distribute;
 
-import io.netty.buffer.Unpooled;
 import io.reactor.netty.api.codec.MessageBody;
+import io.reactor.netty.api.exception.NoGroupCollectorException;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.Data;
-import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.UnicastProcessor;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @Auther: lxr
@@ -40,16 +38,17 @@ public class DirectServerMessageDistribute {
     }
 
     public Mono<Void>  sendGroup(MessageBody body){
-//        Optional.ofNullable((List<RConnection>) serverSocketAdapter.getKeys().get(key))
-//                .ifPresent(rConnections -> rConnections.stream().forEach(rConnection -> {
-//                    rConnection.getOutbound().send(msg.map(Unpooled::wrappedBuffer)).then().subscribe();
-//                }));
-
-        return   Mono.create(monoSink -> {
-//            Optional<RConnection> rConnection= Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(body.getTo()));
-
-            monoSink.success();
+      return   Mono.create(monoSink -> {
+              Optional<Set<String>> ids=Optional.ofNullable(serverSocketAdapter.getGroupCollector().loadGroupUser(body.getTo()));
+                            if(ids.isPresent()){
+                                // 发送所有人 check在线状态
+                                monoSink.success();
+                            }
+                            else {
+                                monoSink.error(new NoGroupCollectorException("not find groupCollector"));
+                            }
         });
+
     }
 
 }

@@ -12,8 +12,14 @@ import java.util.List;
  */
 public class DirectOfflineMessageDistribute implements OfflineMessageDistribute {
 
+    /**
+     *
+     * @param message 离线消息 针对个人 from 来自哪里的 example 【 point -> point 】【 point -> group】
+     * @return
+     */
     @Override
     public Mono<Void> storageOfflineMessage(Flux<TransportMessage> message) {
+
         return message.doOnNext(s->{}).then();
     }
 
