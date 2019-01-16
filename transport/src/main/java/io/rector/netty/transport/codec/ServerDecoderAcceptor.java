@@ -61,8 +61,7 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                         directServerMessageDistribute.sendOne(message,offline).subscribe();
                         break;
                     case GROUP:  //群发
-                        MessageBody groupBody = (MessageBody)message.getMessageBody();
-                        directServerMessageDistribute.sendGroup(groupBody)
+                        directServerMessageDistribute.sendGroup(message)
                                 .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage】 {}",throwable))
                                 .subscribe();
                         break;

@@ -7,6 +7,7 @@ import io.reactor.netty.api.exception.NoGroupCollectorException;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
@@ -18,6 +19,7 @@ import java.util.Set;
  * @Description: 消息传输逻辑
  */
 @Data
+@Slf4j
 public class DirectServerMessageDistribute {
 
     private final ServerSocketAdapter serverSocketAdapter;
@@ -27,12 +29,12 @@ public class DirectServerMessageDistribute {
         this.serverSocketAdapter = serverSocketAdapter;
     }
 
-    public Mono<Void>  sendOne(TransportMessage body, Mono<Void> offline){
+    public Mono<Void>  sendOne(TransportMessage message, Mono<Void> offline){
         return   Mono.create(monoSink -> {
-            MessageBody messageBody=(MessageBody) body.getMessageBody();
+            MessageBody messageBody=(MessageBody) message.getMessageBody();
             Optional<RConnection> rConnection= Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(messageBody.getTo()));
             if(rConnection.isPresent()){ // 发送
-                rConnection.get().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(body.getBytes()))).then().subscribe();
+                rConnection.get().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(message.getBytes()))).then().subscribe();
             }
             else
                 offline.subscribe();
@@ -40,16 +42,25 @@ public class DirectServerMessageDistribute {
         });
     }
 
-    public Mono<Void>  sendGroup(MessageBody body){
-      return   Mono.create(monoSink -> {
-              Optional<Set<String>> ids=Optional.ofNullable(serverSocketAdapter.getGroupCollector().loadGroupUser(body.getTo()));
-                            if(ids.isPresent()){
-                                // 发送所有人 check在线状态
-                                monoSink.success();
-                            }
-                            else {
-                                monoSink.error(new NoGroupCollectorException("not find groupCollector"));
-                            }
+    public Mono<Void>  sendGroup(TransportMessage message){
+        return   Mono.create(monoSink -> {
+            MessageBody messageBody=(MessageBody) message.getMessageBody();
+            Optional<Set<String>> ids=Optional.ofNullable(serverSocketAdapter.getGroupCollector().loadGroupUser(messageBody.getTo()));
+            if(ids.isPresent()){
+                // 发送所有人 check在线状态
+                ids.get().stream().forEach(id->{
+                    Optional<RConnection> connection=Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(id));
+                    if(connection.isPresent())
+                        //离线消息
+                        log.info(" group offline message {}",message);
+                    else
+                        connection.get().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(message.getBytes()))).then().subscribe();
+                });
+                monoSink.success();
+            }
+            else {
+                monoSink.error(new NoGroupCollectorException("not find groupCollector"));
+            }
         });
 
     }
