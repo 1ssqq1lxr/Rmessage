@@ -108,11 +108,6 @@ public class ServerStart extends AbstractStart {
                             .then(session.addGroupHandler(groupId -> null))
                             .subscribe();
                 });
-        byte b =117;
-        int high= b>>4 & 0x0F ;
-        int low= b & 0x0F ;
-        System.out.println("high:"+high);
-        System.out.println("low:"+low);
         countDownLatch.await();
     }
 

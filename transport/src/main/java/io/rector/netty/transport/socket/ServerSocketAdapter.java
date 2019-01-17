@@ -16,6 +16,7 @@ import io.rector.netty.transport.distribute.OfflineMessageDistribute;
 import io.rector.netty.transport.group.GroupCollector;
 import io.rector.netty.transport.method.MethodExtend;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -40,6 +41,7 @@ import java.util.function.Supplier;
  * @Description:
  */
 @Data
+@Slf4j
 public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>  extends Rsocket<T> implements Closeable {
 
     private List<RConnection> connections ; // all channel

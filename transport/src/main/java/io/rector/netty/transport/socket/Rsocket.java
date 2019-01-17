@@ -41,8 +41,11 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
 
 
     private Mono<? extends Rsocket<T>> get() {
-        return  transport.get()
-                .connect(getMethodExtend()).doOnNext(next().get()::accept).then(Mono.just(this));
+        return Mono.defer(()->{
+            transport.get()
+                    .connect(getMethodExtend()).doOnNext(next().get()::accept).subscribe();
+            return Mono.just(this);
+        });
     }
 
     public abstract Supplier<Consumer<RConnection>>  next();

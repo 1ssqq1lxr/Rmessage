@@ -5,9 +5,9 @@ import io.reactor.netty.api.codec.OnlineMessage;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.Data;
+import lombok.Setter;
 import reactor.core.publisher.Mono;
 
-@Data
 public class ConnectionStateDistribute {
 
     private ServerSocketAdapter serverSocketAdapter;

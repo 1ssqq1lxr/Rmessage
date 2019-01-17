@@ -66,8 +66,10 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                                 .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage】 {}",throwable));
                     case PING:  //回复pong
                         return directServerMessageDistribute.sendPong(message);
-                    case ACCEPT:
-                        return null;
+                    case ONEACK:
+                         //暂时未实现
+                    case GROUPACK:
+                         //暂时未实现
                     default:
                         return Mono.empty();
                 }

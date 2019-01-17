@@ -7,6 +7,8 @@ import io.reactor.netty.api.exception.NoGroupCollectorException;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
@@ -19,7 +21,6 @@ import java.util.function.Function;
  * @Date: 2018/12/27 19:23
  * @Description: 消息传输逻辑
  */
-@Data
 @Slf4j
 public class DirectServerMessageDistribute {
 
@@ -49,6 +50,7 @@ public class DirectServerMessageDistribute {
             MessageBody messageBody=(MessageBody) message.getMessageBody();
             Optional<Set<String>> ids=Optional.ofNullable(serverSocketAdapter.getGroupCollector().loadGroupUser(messageBody.getTo()));
             if(ids.isPresent()){
+                byte[] bs=message.getBytes();
                 // 发送所有人 check在线状态
                 ids.get().stream().forEach(id->{
                     Optional<RConnection> connection=Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(id));
@@ -57,7 +59,7 @@ public class DirectServerMessageDistribute {
                         log.info(" group offline message {}",message);
                     }
                     else
-                        connection.get().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(message.getBytes()))).then().subscribe();
+                        connection.get().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(bs))).then().subscribe();
                 });
                 monoSink.success();
             }

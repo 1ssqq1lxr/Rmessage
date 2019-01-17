@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  *   type:  ONE   GROUP
  *   FIXHEADER
  *   |-----1byte--------------------|
- *   |客户端类型| 消息类型低 4bit    |
+ *   |客户端类型4bit| 消息类型低 4bit    |
  *
  *  TOPICHEADER
  *   ---1 byte ---------|--1 byte ------------|
@@ -88,6 +88,8 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
 
     private String  addtional;
 
+    private ClientType clientType;
+
 
 
 
@@ -97,6 +99,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
         header:switch (state()){
             case FIXD_HEADER:
                 byte header=buf.readByte();
+                ClientType clientType=MessageUtils.obtainHigh(header);
                 switch ((type=MessageUtils.obtainLow(header))){
                     case PING:
                         out.add(TransportMessage.builder().type(type).build());
