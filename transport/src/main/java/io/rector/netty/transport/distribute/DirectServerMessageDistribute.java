@@ -1,6 +1,7 @@
 package io.rector.netty.transport.distribute;
 
 import io.netty.buffer.Unpooled;
+import io.reactor.netty.api.ChannelAttr;
 import io.reactor.netty.api.codec.MessageBody;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.reactor.netty.api.exception.NoGroupCollectorException;
@@ -52,7 +53,7 @@ public class DirectServerMessageDistribute {
             if(ids.isPresent()){
                 byte[] bs=message.getBytes();
                 // 发送所有人 check在线状态
-                ids.get().stream().forEach(id->{
+                ids.get().stream().filter(id->!id.equals(ChannelAttr.getUserId(message.getInbound()))).forEach(id->{
                     Optional<RConnection> connection=Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(id));
                     if(!connection.isPresent()){
                         consumer.apply(id).subscribe();
