@@ -69,8 +69,6 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                         return directServerMessageDistribute.sendPong(message);
                     case PONG:
                         throw new NotSupportException("type PONG message not support");
-                    case ACCEPT:
-                        throw new NotSupportException("type ACCEPT message not support");
                     case ONEACK:
                          //暂时未实现
                     case GROUPACK:

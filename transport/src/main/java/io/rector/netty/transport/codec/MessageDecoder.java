@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
  *   |-----from目的-------|-------目的key--------|
  *
  *   MESSAGEBODY
- *   |---4 byte ---------|
+ *   |---8 byte ---------|
  *   |---messageId ---------|
- *   |--------4 byte-----------|------2byte---------------------------|
+ *   |--------2 byte-----------|------2byte---------------------------|
  *   |----- 消息body length----- |-------additional fields  length---- |
  *   |-----n byte--------|-------n byte--------------------|
  *   |-----消息body-------|-------additional fields --------|
@@ -63,8 +63,8 @@ import java.util.stream.Collectors;
  *  *  *   |-----1byte--------------------|
  *  *  *   |固定头高4bit| 消息类型低 4bit  |
  *  *       *  ON
- *  *  *   |-----1byte---------|
- *  *  *   |     userId        |
+ *  *  *   |-----1byte---------------| |-----=nbyte---------------|
+ *  *  *   |     userId length       |  userId
  *
  * @see ProtocolCatagory
  */
@@ -127,9 +127,6 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                     case GROUPACK://ack 暂时未实现
                         this.checkpoint(Type.ACKBODY);
                         break ;
-                    case ACCEPT:
-                        this.checkpoint(Type.ACKBODY);
-                        break ;
                     default:
                         super.discardSomeReadBytes();
                         this.checkpoint(Type.FIXD_HEADER);
@@ -167,8 +164,8 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 this.checkpoint(Type.MESSAGEBODY);
             case MESSAGEBODY:
                 messageId=buf.readLong(); // 消息id
-                int bodyLength= buf.readInt();
-                short  additionalLength= buf.readShort();
+                int bodyLength= buf.readUnsignedShort();
+                int  additionalLength= buf.readUnsignedShort();
                 byte[]  bodyBytes = new byte[bodyLength];
                 byte[]  addtionalBytes = new byte[additionalLength];
                 buf.readBytes(bodyBytes);

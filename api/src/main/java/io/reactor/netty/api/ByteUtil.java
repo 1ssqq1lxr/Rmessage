@@ -45,13 +45,14 @@ public class ByteUtil {
         };
     }
 
-    public static void byteToByteArray(byte high,byte low,List<Byte> list) {
+    public static void byteToByteList(byte high,byte low,List<Byte> list) {
        list.add((byte)((high << 4 )|(low & 0x0F)));
     }
 
 
 
-    public static void longToByteArray(long a, List<Byte> list) {
+
+    public static void longToByteList(long a, List<Byte> list) {
         list.add((byte) ((a >> 56) & 0xFF));
         list.add((byte) ((a >> 48) & 0xFF));
         list.add((byte) ((a >> 40) & 0xFF));
@@ -64,12 +65,16 @@ public class ByteUtil {
 
 
 
-    public static void intToByteArray(int a, List<Byte> list) {
+    public static void intToByteList(int a, List<Byte> list) {
         list.add((byte) ((a >> 24) & 0xFF));
         list.add((byte) ((a >> 16) & 0xFF));
         list.add((byte) ((a >> 8) & 0xFF));
         list.add((byte) (a  & 0xFF));
     }
+
+
+
+
 
     public static byte[] intToByteArray(int a) {
         return new byte[] {
@@ -86,9 +91,16 @@ public class ByteUtil {
         b[index + 0] = (byte) (s >> 0);
     }
 
+    public static void shortToByteList(short a, List<Byte> list) {
+        list.add((byte) ((a >> 8) & 0xFF));
+        list.add((byte) (a  & 0xFF));
+    }
+
     public static short byteArrToShort(byte[] b, int index) {
         return (short) (((b[index] << 8) | b[index + 1] & 0xff));
     }
+
+
 
     public static byte[] shortToByteArr(short s) {
         byte[] targets = new byte[2];
@@ -156,4 +168,10 @@ public class ByteUtil {
         return Integer.toBinaryString(i);
     }
 
+    public static void byteArrayToList(byte[] bytes, List<Byte> list) {
+        for (byte b:bytes){
+            list.add(b);
+        }
+
+    }
 }

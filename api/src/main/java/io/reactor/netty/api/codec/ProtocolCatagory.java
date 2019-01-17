@@ -12,7 +12,6 @@ public enum  ProtocolCatagory {
     ONLINE((byte)0),//在线
     ONE((byte)1),   // 单发
     GROUP((byte)2),// 群发
-    ACCEPT((byte)3),// 客户端接受消息
     ONEACK((byte)10),
     GROUPACK((byte)11),
     PING((byte)14),  //心跳

@@ -8,6 +8,7 @@ import lombok.Data;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,30 +51,46 @@ public  class TransportMessage {
         switch (type){
             case ONLINE:
                 OnlineMessage onlineMessage =(OnlineMessage) messageBody;
-
-            case ACCEPT:
-
-            case GROUPACK:
-                AckMessage groupAckMessage =(AckMessage)this.messageBody;
-                ByteUtil.byteToByteArray(clientType.getType(),type.getNumber(),list);
-                ByteUtil.longToByteArray(groupAckMessage.getMessageId(),list);
+                String userId = onlineMessage.getUserId();
+                ByteUtil.byteToByteList(clientType.getType(),type.getNumber(),list);
+                list.add((byte)userId.length());
+                ByteUtil.byteArrayToList(userId.getBytes(),list);
                 break;
             case PONG:
-                ByteUtil.byteToByteArray(clientType.getType(),type.getNumber(),list);
-                break;
-            case GROUP:
             case PING:
-
+                ByteUtil.byteToByteList(clientType.getType(),type.getNumber(),list);
+                break;
             case ONE:
-
+            case GROUP:
+                // 群聊
+                MessageBody body =(MessageBody)this.messageBody;
+                String from =body.getFrom();
+                String to   = body.getTo();
+                ByteUtil.byteToByteList(clientType.getType(),type.getNumber(),list);
+                list.add((byte)from.length());
+                list.add((byte)to.length());
+                ByteUtil.byteArrayToList(from.getBytes(),list);
+                ByteUtil.byteArrayToList(to.getBytes(),list);
+                ByteUtil.longToByteList(body.getMessageId(),list);
+                String by=body.getBody();
+                String ad=body.getAddtional();
+                ByteUtil.shortToByteList((short) by.length(),list);
+                ByteUtil.shortToByteList((short) ad.length(),list);
+                ByteUtil.byteArrayToList(by.getBytes(),list);
+                ByteUtil.byteArrayToList(ad.getBytes(),list);
+                ByteUtil.longToByteList(body.getTimestammp(),list);
+                break;
             case ONEACK:
-                AckMessage oneAckMessage =(AckMessage)this.messageBody;
-                ByteUtil.byteToByteArray(clientType.getType(),type.getNumber(),list);
-                ByteUtil.longToByteArray(oneAckMessage.getMessageId(),list);
+            case GROUPACK:
+                AckMessage groupAckMessage =(AckMessage)this.messageBody;
+                ByteUtil.byteToByteList(clientType.getType(),type.getNumber(),list);
+                ByteUtil.longToByteList(groupAckMessage.getMessageId(),list);
                 break;
         }
         return   getBytes(list) ;
     }
+
+
 
     private byte[] getBytes(List<Byte> list) {
         if( list==null ||  list.size()==0){
