@@ -4,6 +4,7 @@ import io.reactor.netty.api.codec.MessageBody;
 import io.reactor.netty.api.codec.OfflineMessage;
 import io.reactor.netty.api.codec.OnlineMessage;
 import io.reactor.netty.api.codec.TransportMessage;
+import io.reactor.netty.api.exception.NotSupportException;
 import io.rector.netty.transport.distribute.ConnectionStateDistribute;
 import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +67,10 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                                 .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage】 {}",throwable));
                     case PING:  //回复pong
                         return directServerMessageDistribute.sendPong(message);
+                    case PONG:
+                        throw new NotSupportException("type PONG message not support");
+                    case ACCEPT:
+                        throw new NotSupportException("type ACCEPT message not support");
                     case ONEACK:
                          //暂时未实现
                     case GROUPACK:

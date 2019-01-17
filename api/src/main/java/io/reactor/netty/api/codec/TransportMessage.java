@@ -49,17 +49,20 @@ public  class TransportMessage {
         List<Byte> list =  new LinkedList<>();
         switch (type){
             case ONLINE:
-                throw new NotSupportException("type ONLINE message not support");
+
             case ACCEPT:
-                throw new NotSupportException("type ACCEPT message not support");
+
             case GROUPACK:
                 AckMessage ackMessage =(AckMessage)this.messageBody;
                 ByteUtil.byteToByteArray(clientType.getType(),type.getNumber(),list);
                 ByteUtil.longToByteArray(ackMessage.getMessageId(),list);
+                break;
             case PONG:
+                ByteUtil.byteToByteArray(clientType.getType(),type.getNumber(),list);
+                break;
             case GROUP:
             case PING:
-                throw new NotSupportException("type PING message not support");
+
             case ONE:
             case ONEACK:
         }
