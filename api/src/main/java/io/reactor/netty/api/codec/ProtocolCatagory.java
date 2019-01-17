@@ -1,10 +1,13 @@
 package io.reactor.netty.api.codec;
 
+import lombok.Getter;
+
 /**
  * @Auther: lxr
  * @Date: 2018/12/19 14:25
  * @Description:
  */
+@Getter
 public enum  ProtocolCatagory {
     ONLINE((byte)0),//在线
     ONE((byte)1),   // 单发

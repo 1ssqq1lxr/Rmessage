@@ -100,7 +100,6 @@ public class ServerStart extends AbstractStart {
                 .port(1888)
                 .interceptor(frame -> frame,frame -> frame)
                 .setAfterChannelInit(channel -> {
-
                     //  channel设置
                 })
                 .<TcpServer>connect().subscribe(session->{

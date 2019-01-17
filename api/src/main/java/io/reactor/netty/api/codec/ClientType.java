@@ -1,9 +1,12 @@
 package io.reactor.netty.api.codec;
 
 
+import lombok.Getter;
+
 /**
  * 客户端类型
  */
+@Getter
 public enum  ClientType {
 
     Web((byte)1), //网页
@@ -17,4 +20,8 @@ public enum  ClientType {
     ClientType(byte type) {
         this.type = type;
     }
+
+
+
+
 }

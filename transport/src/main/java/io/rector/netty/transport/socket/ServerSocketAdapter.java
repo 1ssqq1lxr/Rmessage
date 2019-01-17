@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 /**
  * @Auther: lxr
  * @Date: 2018/12/9 22:53
- * @Description:
+ * @Description: 核心处理socket 连接
  */
 @Data
 @Slf4j
@@ -112,10 +112,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                     .subscribe();
                 DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline,directServerMessageDistribute,connectionStateDistribute,disposable);
                 rConnection.receiveMsg()
-                        .doOnError(throwable -> {
-                            log.error("connection url{} error {}",rConnection.address().block().getHostString(),throwable);
-                            rConnection.dispose();
-                        })
+                        .doOnError(throwable -> log.error("connection url{} error {}",rConnection.address().block().getHostString(),throwable))
                         .map(this::apply)
                         .subscribeOn(Schedulers.elastic())
                         .map(message ->decoderAcceptor.transportMessage(message).subscribe());

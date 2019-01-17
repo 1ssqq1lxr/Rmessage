@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
  *   |-----1byte--------------------|
  *   |客户端类型4bit| 消息类型低 4bit    |
  *
- *  TOPICHEADER
+ *    TOPICHEADER
  *   ---1 byte ---------|--1 byte ------------|
- *   |--mesageId --------|--from目的length----|---目的key length-----|
+ *   -from目的length----|---目的key length-----|
  *
  *   |-----n byte--------|-------n byte--------|
  *   |-----from目的-------|-------目的key--------|
@@ -51,10 +51,10 @@ import java.util.stream.Collectors;
  *   ACK
  *    *   FIXHEADER
  *  *   |-----1byte--------------------|
- *  *   |固定头高4bit| 消息类型低 4bit    |
+ *  *   |固定头高4bit| 消息类型低 4bit  |
  *       * ACKBODY
- *  *   |-----1byte--------------------|
- *  *   |固定头高4bit| 消息类型低 4bit    |
+ *  *   |-----8byte--------------------|
+ *  *   |------messageId------------  |
  *
  *
  *   ONLINE
@@ -99,10 +99,10 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
         header:switch (state()){
             case FIXD_HEADER:
                 byte header=buf.readByte();
-                ClientType clientType=MessageUtils.obtainHigh(header);
+                clientType=MessageUtils.obtainHigh(header);
                 switch ((type=MessageUtils.obtainLow(header))){
                     case PING:
-                        out.add(TransportMessage.builder().type(type).build());
+                        out.add(TransportMessage.builder().type(type).clientType(clientType).build());
                         this.checkpoint(Type.FIXD_HEADER);
                         break header;
                     case ONE:
@@ -131,7 +131,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 short userIdLength= buf.readByte();
                 byte[] userIdBytes = new byte[userIdLength];
                 buf.readBytes(userIdBytes);
-                out.add(TransportMessage.builder().type(type)
+                out.add(TransportMessage.builder().clientType(clientType).type(type)
                         .messageBody(
                                 OnlineMessage.builder()
                                         .userId(new String(userIdBytes,Charset.defaultCharset()))
@@ -142,7 +142,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 break  header;
             case ACKBODY:
                 messageId=buf.readLong();
-                out.add(TransportMessage.builder().type(type)
+                out.add(TransportMessage.builder().clientType(clientType).type(type)
                         .messageBody(AckMessage.builder().messageId(messageId).build())
                         .build());
                 this.checkpoint(Type.FIXD_HEADER);
@@ -170,7 +170,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 this.checkpoint(Type.CRC);
 
             case CRC:
-                out.add(TransportMessage.builder().type(type)
+                out.add(TransportMessage.builder().clientType(clientType).type(type)
                         .messageBody(MessageBody.builder()
                                 .messageId(messageId)
                                 .body(body)
