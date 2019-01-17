@@ -100,12 +100,10 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
         return ()-> rConnection -> {
                 connections.add(rConnection);// 维护客户端列表
                 rConnection.onReadIdle(methodExtend.getReadIdle().getTime(),()->{
-                    connections.remove(rConnection);
                     rConnection.dispose();
                     methodExtend.getReadIdle().getEvent().get().run();
                 }).subscribe();
                 rConnection.onWriteIdle(methodExtend.getWriteIdle().getTime(),()->{
-                    connections.remove(rConnection);
                     rConnection.dispose();
                     methodExtend.getWriteIdle().getEvent().get().run();
                 }).subscribe();
@@ -114,6 +112,10 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                     .subscribe();
                 DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline,directServerMessageDistribute,connectionStateDistribute,disposable);
                 rConnection.receiveMsg()
+                        .doOnError(throwable -> {
+                            log.error("connection url{} error {}",rConnection.address().block().getHostString(),throwable);
+                            rConnection.dispose();
+                        })
                         .map(this::apply)
                         .subscribeOn(Schedulers.elastic())
                         .map(message ->decoderAcceptor.transportMessage(message).subscribe());
