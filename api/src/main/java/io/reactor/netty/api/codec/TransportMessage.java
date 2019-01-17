@@ -49,13 +49,14 @@ public  class TransportMessage {
         List<Byte> list =  new LinkedList<>();
         switch (type){
             case ONLINE:
+                OnlineMessage onlineMessage =(OnlineMessage) messageBody;
 
             case ACCEPT:
 
             case GROUPACK:
-                AckMessage ackMessage =(AckMessage)this.messageBody;
+                AckMessage groupAckMessage =(AckMessage)this.messageBody;
                 ByteUtil.byteToByteArray(clientType.getType(),type.getNumber(),list);
-                ByteUtil.longToByteArray(ackMessage.getMessageId(),list);
+                ByteUtil.longToByteArray(groupAckMessage.getMessageId(),list);
                 break;
             case PONG:
                 ByteUtil.byteToByteArray(clientType.getType(),type.getNumber(),list);
@@ -64,7 +65,12 @@ public  class TransportMessage {
             case PING:
 
             case ONE:
+
             case ONEACK:
+                AckMessage oneAckMessage =(AckMessage)this.messageBody;
+                ByteUtil.byteToByteArray(clientType.getType(),type.getNumber(),list);
+                ByteUtil.longToByteArray(oneAckMessage.getMessageId(),list);
+                break;
         }
         return   getBytes(list) ;
     }

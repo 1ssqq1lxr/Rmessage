@@ -116,7 +116,15 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                     case ONLINE:
                         this.checkpoint(Type.ONLINE);
                         break;
-                    case GROUPACK:
+                    case PONG:
+                        out.add(TransportMessage.builder().type(type).clientType(clientType).build());
+                        this.checkpoint(Type.FIXD_HEADER);
+                        break header;
+                    case ONEACK:  //ack 暂时未实现
+                        out.add(TransportMessage.builder().type(type).clientType(clientType).build());
+                        this.checkpoint(Type.FIXD_HEADER);
+                        break header;
+                    case GROUPACK://ack 暂时未实现
                         this.checkpoint(Type.ACKBODY);
                         break ;
                     case ACCEPT:
