@@ -43,50 +43,47 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
 
     @Override
     public Mono<Void> transportMessage(TransportMessage message) { // 分发消息
-        return Mono.create(monoSink -> {
+        return Mono.defer(()->{
             if(message.isDiscard()){
                 log.info("message is discard {}",message);
+                return Mono.empty();
             }
             else {
                 switch (message.getType()){
                     case ONLINE:
-                        connectionStateDistribute.init(message)
+                        return connectionStateDistribute.init(message)
                                 .then(Mono.fromRunnable(()->{
                                     if(!disposable.isDisposed()){
                                         disposable.dispose(); //取消关闭连接
                                     }
-                                })).subscribe();
-                        break;
+                                }));
                     case ONE: // 单发
                         Mono<Void> offline= buildOffline(message, ((MessageBody)message.getMessageBody()).getTo());
-                        directServerMessageDistribute.sendOne(message,offline).subscribe();
-                        break;
+                        return directServerMessageDistribute.sendOne(message,offline);
                     case GROUP:  //群发
                         Function<String,Mono<Void>> consumer = uid->buildOffline(message,uid);
-                        directServerMessageDistribute.sendGroup(message,consumer)
-                                .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage】 {}",throwable))
-                                .subscribe();
-                        break;
+                        return directServerMessageDistribute.sendGroup(message,consumer)
+                                .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage】 {}",throwable));
                     case PING:  //回复pong
-                        directServerMessageDistribute.sendPong(message);
-
+                        return directServerMessageDistribute.sendPong(message);
                     case ACCEPT:
-
+                        return null;
+                    default:
+                        return Mono.empty();
                 }
 
             }
-            monoSink.success();
         });
     }
 
 
     private Mono<Void>  buildOffline(TransportMessage message,String userId){
         return  Mono.fromRunnable(() ->
-            offlineMessagePipeline.onNext(
-                    OfflineMessage.builder()
-                            .userId(userId)
-                            .message(message)
-                            .build()));
+                offlineMessagePipeline.onNext(
+                        OfflineMessage.builder()
+                                .userId(userId)
+                                .message(message)
+                                .build()));
     }
 
 
