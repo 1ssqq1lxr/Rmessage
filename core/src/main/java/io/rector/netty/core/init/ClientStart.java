@@ -5,23 +5,19 @@ import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.exception.NotFindConfigException;
 import io.reactor.netty.api.exception.NotSupportException;
 import io.rector.netty.config.ClientConfig;
-import io.rector.netty.config.ServerConfig;
-import io.rector.netty.core.session.ServerSession;
-import io.rector.netty.core.session.TcpServerSession;
+import io.rector.netty.core.session.TcpClientSession;
 import io.rector.netty.flow.plugin.FrameInterceptor;
 import io.rector.netty.transport.ClientTransport;
-import io.rector.netty.transport.ServerTransport;
 import io.rector.netty.transport.method.ReactorMethodExtend;
 import io.rector.netty.transport.socket.ClientSocketAdapter;
 import io.rector.netty.transport.socket.RsocketAcceptor;
-import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 import reactor.ipc.netty.tcp.TcpClient;
-import reactor.ipc.netty.tcp.TcpServer;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -32,11 +28,10 @@ import java.util.function.Consumer;
  * @Description: 客户端start
  **/
 @Slf4j
-public class ClientStart extends  AbstractStart {
+public class ClientStart   extends  AbstractStart {
 
 
-
-    private Consumer<Map<Protocol,Class<? extends NettyConnector>>> consumer = classes-> classes.put(Protocol.TCP, TcpClient.class);
+    private Consumer<Map<Protocol,Class<? extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> >> consumer = classes-> classes.put(Protocol.TCP, TcpClient.class);
 
     private static class StartBuilder{
         private static ClientStart start = new ClientStart();
@@ -48,8 +43,9 @@ public class ClientStart extends  AbstractStart {
     }
 
 
-    public  void setClientType(ClientType type){
+    public  Start setClientType(ClientType type){
         ((ClientConfig)config).setClientType(type);
+        return  this;
     }
 
     private ClientStart() {
@@ -62,30 +58,31 @@ public class ClientStart extends  AbstractStart {
         throw  new NotSupportException(" client not support frameInterceptor");
     }
 
+
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends NettyConnector<? extends NettyInbound, ? extends NettyOutbound>> Mono<ServerSession<T>> connect() {
-//        ClientTransport<T> clientTransport =new ClientTransport(socketFactory()
-//                .accept(consumer)
-//                .getSocket(config.getProtocol())
-//                .orElseThrow(()->new NotFindConfigException("协议不存在")));
-//        return rsocketAcceptor()
-//                .map(rsocketAcceptor -> {
-//                    ClientSocketAdapter<T> rsocket= (ClientSocketAdapter<T> )rsocketAcceptor.accept(() -> clientTransport,(ServerConfig)config,methodExtend);
-//                    return   rsocket.start()
-//                            .map(socket->new TcpServerSession(rsocket))
-//                            .doOnError(ex->log.error("connect error:",ex))
-//                            .log("server")
-//                            .block();
-//                });
+    public   Mono<Disposable> connect() {
+        ClientTransport clientTransport =new ClientTransport(socketFactory()
+                .accept(consumer)
+                .getSocket(config.getProtocol())
+                .orElseThrow(()->new NotFindConfigException("协议不存在")));
+        return rsocketAcceptor()
+                .map(rsocketAcceptor -> {
+                    ClientSocketAdapter rsocket= (ClientSocketAdapter )rsocketAcceptor.accept(() -> clientTransport,null,config,methodExtend);
+                    return   rsocket.start()
+                            .map(socket->new TcpClientSession(rsocket))
+                            .doOnError(ex->log.error("connect error:",ex))
+                            .retry(10)
+                            .log("server")
+                            .block();
+                });
 
-        return null;
     }
 
 
 
-//    private  Mono<RsocketAcceptor>  rsocketAcceptor(){
-//        return Mono.just(ClientSocketAdapter::new);
-//    }
+    private  Mono<RsocketAcceptor>  rsocketAcceptor(){
+        return Mono.just(ClientSocketAdapter::new);
+    }
 
 }

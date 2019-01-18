@@ -3,6 +3,7 @@ package io.rector.netty.transport.socket;
 import io.reactor.netty.api.codec.OfflineMessage;
 import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.codec.TransportMessage;
+import io.rector.netty.config.Config;
 import io.rector.netty.config.ServerConfig;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.transport.Transport;
@@ -30,6 +31,7 @@ import java.io.Closeable;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -42,7 +44,7 @@ import java.util.function.Supplier;
  */
 @Data
 @Slf4j
-public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>  extends Rsocket<T> implements Closeable {
+public class ServerSocketAdapter extends Rsocket  {
 
     private List<RConnection> connections ; // all channel
 
@@ -68,7 +70,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
 
     public Mono<Void> setGroupCollector(GroupCollector groupCollector){
-       return Mono.fromRunnable(()->this.groupCollector=groupCollector);
+        return Mono.fromRunnable(()->this.groupCollector=groupCollector);
     }
 
     public Mono<Void> setOffMessageHandler(final OffMessageHandler offMessageHandler){
@@ -79,11 +81,11 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     }
 
 
-    public ServerSocketAdapter(Supplier<Transport> transport, PluginRegistry pluginRegistry,ServerConfig config, MethodExtend methodExtend) {
+    public ServerSocketAdapter(Supplier<Transport> transport, PluginRegistry pluginRegistry, Config config, MethodExtend methodExtend) {
         this.transport = transport;
         this.connections = new CopyOnWriteArrayList<>();
         this.pluginRegistry =pluginRegistry;
-        this.config=config;
+        this.config=(ServerConfig) config;
         this.methodExtend=methodExtend;
         this.directServerMessageHandler = new DirectServerMessageHandler(this);
         this.connectionStateDistribute= new ConnectionStateDistribute(this);
@@ -98,32 +100,28 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     @Override
     public Supplier<Consumer<RConnection>> next() {
         return ()-> rConnection -> {
-                connections.add(rConnection);// 维护客户端列表
-                rConnection.onReadIdle(methodExtend.getReadIdle().getTime(),()->{
-                    rConnection.dispose();
-                    methodExtend.getReadIdle().getEvent().get().run();
-                }).subscribe();
-                rConnection.onWriteIdle(methodExtend.getWriteIdle().getTime(),()->{
-                    rConnection.dispose();
-                    methodExtend.getWriteIdle().getEvent().get().run();
-                }).subscribe();
-                Disposable disposable=Mono.defer(()-> rConnection.dispose())
+            connections.add(rConnection);// 维护客户端列表
+            Optional.ofNullable(methodExtend.getReadIdle())
+                    .ifPresent(read-> rConnection.onReadIdle(read.getTime(), () -> read.getEvent().get().run()).subscribe());
+            Optional.ofNullable(methodExtend.getWriteIdle())
+                    .ifPresent(write-> rConnection.onWriteIdle(methodExtend.getWriteIdle().getTime(),()-> methodExtend.getWriteIdle().getEvent().get().run()).subscribe());
+            Disposable disposable=Mono.defer(()-> rConnection.dispose())
                     .delaySubscription(Duration.ofSeconds(5))
                     .subscribe();
-                DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline, directServerMessageHandler,connectionStateDistribute,disposable);
-                rConnection.receiveMsg()
-                        .doOnError(throwable -> log.error("receiveMsg url{} error {}",rConnection.address().block().getHostString(),throwable))
-                        .map(this::apply)
-                        .subscribeOn(Schedulers.elastic())
-                        .map(message ->decoderAcceptor.transportMessage(message).subscribe());
-                rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
-            };
+            DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline, directServerMessageHandler,connectionStateDistribute,disposable);
+            rConnection.receiveMsg()
+                    .doOnError(throwable -> log.error("receiveMsg url{} error {}",rConnection.address().block().getHostString(),throwable))
+                    .map(this::apply)
+                    .subscribeOn(Schedulers.elastic())
+                    .map(message ->decoderAcceptor.transportMessage(message).subscribe());
+            rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
+        };
     }
 
 
 
     public Mono<Void> removeConnection(RConnection duplexConnection) {
-       return duplexConnection.dispose();
+        return duplexConnection.dispose();
     }
 
     private TransportMessage apply(TransportMessage message) {
@@ -135,6 +133,6 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
     }
 
     public Flux<OfflineMessage> reciveOffline() {
-      return   Flux.from(offlineMessagePipeline);
+        return   Flux.from(offlineMessagePipeline);
     }
 }

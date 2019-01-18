@@ -99,7 +99,7 @@ public  class TransportMessage {
         else {
             byte[]  bytes = new byte[list.size()];
             int index=0;
-            for(byte b:bytes){
+            for(byte b:list){
                 bytes[index]=b;
                 index++;
             }

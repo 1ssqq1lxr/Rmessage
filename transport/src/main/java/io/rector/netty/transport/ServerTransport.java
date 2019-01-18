@@ -19,15 +19,15 @@ import reactor.ipc.netty.tcp.TcpServer;
  * @Date: 2018/12/7 16:46
  * @Description:
  */
-public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements Transport {
+public class ServerTransport implements Transport {
 
 
-    private Class<T> classT;
+    private Class<? extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>  classT;
 
     private  NettyContext context;
 
 
-    public ServerTransport(Class<T> classT) {
+    public ServerTransport(Class<? extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> classT) {
         this.classT=classT;
     }
 

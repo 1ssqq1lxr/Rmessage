@@ -2,8 +2,10 @@ package io.rector.netty.core.init;
 
 
 import io.netty.channel.Channel;
+import io.reactor.netty.api.codec.ClientType;
 import io.rector.netty.core.session.ServerSession;
 import io.rector.netty.flow.plugin.FrameInterceptor;
+import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
@@ -37,6 +39,8 @@ public interface Start {
     Start onWriteIdle(Long l, Supplier<Runnable> writeLe);
 
 
-    <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<ServerSession<T>> connect();
+    Mono<Disposable> connect();
+
+    Start setClientType(ClientType type);
 
 }

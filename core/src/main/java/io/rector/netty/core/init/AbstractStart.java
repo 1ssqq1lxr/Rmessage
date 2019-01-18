@@ -2,12 +2,15 @@ package io.rector.netty.core.init;
 
 import io.netty.channel.Channel;
 import io.reactor.netty.api.Idle;
+import io.reactor.netty.api.codec.ClientType;
 import io.reactor.netty.api.codec.Protocol;
 import io.rector.netty.config.Config;
-import io.rector.netty.transport.method.MethodExtend;
 import io.rector.netty.transport.codec.MessageDecoder;
+import io.rector.netty.transport.method.MethodExtend;
 import io.rector.netty.transport.socket.SocketFactory;
 import reactor.ipc.netty.NettyConnector;
+import reactor.ipc.netty.NettyInbound;
+import reactor.ipc.netty.NettyOutbound;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -105,7 +108,13 @@ abstract class AbstractStart implements Start {
 
     protected @FunctionalInterface interface SocketFactoryAcceptor{
 
-        SocketFactory accept(Consumer<Map<Protocol,Class<? extends NettyConnector>>> consumer);
+        SocketFactory accept(Consumer<Map<Protocol,Class<? extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> >> consumer);
 
+    }
+
+    @Override
+    public Start setClientType(ClientType type) {
+           // null
+        return this;
     }
 }

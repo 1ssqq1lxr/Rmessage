@@ -3,7 +3,6 @@ package io.rector.netty.core.init;
 import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.exception.NotFindConfigException;
 import io.rector.netty.config.ServerConfig;
-import io.rector.netty.core.session.ServerSession;
 import io.rector.netty.core.session.TcpServerSession;
 import io.rector.netty.flow.plugin.FrameInterceptor;
 import io.rector.netty.flow.plugin.PluginRegistry;
@@ -14,6 +13,7 @@ import io.rector.netty.transport.socket.RsocketAcceptor;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
@@ -31,10 +31,10 @@ import java.util.function.Consumer;
  */
 @Data
 @Slf4j
-public class ServerStart extends AbstractStart {
+public class ServerStart    extends AbstractStart {
 
 
-    private Consumer<Map<Protocol,Class<? extends NettyConnector>>> consumer = classes-> classes.put(Protocol.TCP,TcpServer.class);
+    private Consumer<Map<Protocol,Class<? extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> >> consumer = classes-> classes.put(Protocol.TCP,TcpServer.class);
 
     private PluginRegistry registry = Plugins.defaultPlugins();
 
@@ -48,7 +48,7 @@ public class ServerStart extends AbstractStart {
     }
 
 
-    public static ServerStart builder(){
+    public static ServerStart  builder(){
         return StartBuilder.start;
     }
 
@@ -62,15 +62,15 @@ public class ServerStart extends AbstractStart {
 
 
     @SuppressWarnings("unchecked")
-    public <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> Mono<ServerSession<T>> connect(){
+    public   Mono<Disposable> connect(){
 
-        ServerTransport<T> serverTransport =new ServerTransport(socketFactory()
+        ServerTransport serverTransport =new ServerTransport(socketFactory()
                 .accept(consumer)
                 .getSocket(config.getProtocol())
                 .orElseThrow(()->new NotFindConfigException("协议不存在")));
         return rsocketAcceptor()
                 .map(rsocketAcceptor -> {
-                      ServerSocketAdapter<T> rsocket= (ServerSocketAdapter<T> )rsocketAcceptor.accept(() -> serverTransport,registry,(ServerConfig)config,methodExtend);
+                      ServerSocketAdapter rsocket= (ServerSocketAdapter )rsocketAcceptor.accept(() -> serverTransport,registry,(ServerConfig)config,methodExtend);
                          return   rsocket.start()
                                  .map(socket->new TcpServerSession(rsocket))
                                  .doOnError(ex->log.error("connect error:",ex))

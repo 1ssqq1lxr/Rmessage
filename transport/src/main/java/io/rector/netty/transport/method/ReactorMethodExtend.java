@@ -7,6 +7,8 @@ import io.rector.netty.config.Config;
 import io.rector.netty.config.ServerConfig;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.options.ClientOptions;
 import reactor.ipc.netty.options.ServerOptions;
@@ -18,7 +20,8 @@ import java.util.function.Consumer;
  * @Date: 2019/1/14 16:12
  * @Description:
  */
-@Data
+@Getter
+@Setter
 @Builder
 public class ReactorMethodExtend implements MethodExtend {
 

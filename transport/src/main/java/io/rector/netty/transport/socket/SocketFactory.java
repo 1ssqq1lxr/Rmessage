@@ -3,6 +3,8 @@ package io.rector.netty.transport.socket;
 import io.reactor.netty.api.codec.Protocol;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
+import reactor.ipc.netty.NettyInbound;
+import reactor.ipc.netty.NettyOutbound;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,13 +19,13 @@ import java.util.function.Consumer;
  */
 public class SocketFactory  {
 
-    private static Map<Protocol,Class<? extends NettyConnector>> sockets = new HashMap<>();
+    private static Map<Protocol,Class<? extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> > sockets = new HashMap<>();
 
-    public SocketFactory(Consumer<Map<Protocol,Class<? extends NettyConnector>>> consumer) {
+    public SocketFactory(Consumer<Map<Protocol,Class<? extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>>> consumer) {
         consumer.accept(sockets);
     }
 
-    public Optional<Class<? extends NettyConnector>> getSocket(Protocol protocol){
+    public Optional<Class<? extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> > getSocket(Protocol protocol){
         return  Optional.ofNullable(sockets.get(protocol));
     }
 

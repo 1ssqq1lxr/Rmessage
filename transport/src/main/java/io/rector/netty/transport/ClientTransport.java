@@ -16,14 +16,14 @@ import reactor.ipc.netty.NettyOutbound;
  * @Date: 2019/1/18 13:59
  * @Description:
  **/
-public class ClientTransport<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements Transport {
+public class ClientTransport implements Transport {
 
-    private Class<T> classT;
+    private Class<? extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>  classT;
 
     private NettyContext context;
 
 
-    public ClientTransport(Class<T> classT) {
+    public ClientTransport(Class<? extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>  classT) {
         this.classT=classT;
     }
 

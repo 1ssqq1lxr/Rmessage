@@ -1,6 +1,9 @@
 package io.reactor.netty.flow.test.tcp;
 
+import io.reactor.netty.api.codec.ClientType;
+import io.rector.netty.core.init.ClientStart;
 import io.rector.netty.core.init.ServerStart;
+import io.rector.netty.core.session.TcpClientSession;
 import io.rector.netty.core.session.TcpServerSession;
 import io.rector.netty.transport.distribute.DefaultOffMessageHandler;
 import org.junit.Test;
@@ -13,26 +16,26 @@ import java.util.concurrent.CountDownLatch;
  * @Description:
  **/
 
-public class ServerTest {
+public class ClientTest {
 
 
     @Test
-    public void  server() throws InterruptedException {
+    public void  client() throws InterruptedException {
         CountDownLatch countDownLatch = new CountDownLatch(1);
-        ServerStart
+        ClientStart
                 .builder()
                 .tcp()
                 .ip("127.0.0.1")
                 .port(1888)
-                .interceptor(frame -> frame,frame -> frame)
+                .setClientType(ClientType.Ios)
+//                .interceptor(frame -> frame,frame -> frame)
                 .setAfterChannelInit(channel -> {
                     //  channel设置
                 })
                 .connect()
-                .cast(TcpServerSession.class)
+                .cast(TcpClientSession.class)
                 .subscribe(session->{
-                    session.addGroupHandler(groupId -> null).subscribe();
-                    session.addOfflineHandler(new DefaultOffMessageHandler()).subscribe();
+
         });
         countDownLatch.await();
     }

@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * @Date: 2018/12/9 15:55
  * @Description:
  */
-public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> {
+public abstract class Rsocket {
 
 
     public abstract Config getConfig();
@@ -28,20 +28,16 @@ public abstract class Rsocket<T extends NettyConnector< ? extends NettyInbound,?
 
     public abstract Protocol getPrptocol();
 
-    public Mono<Rsocket<T>> start() {
+    public Mono<Rsocket> start() {
         return Mono.defer(()->{
             if(this instanceof ClientSocketAdapter){
-                transport.get().connect(getMethodExtend()).doOnNext(next().get()::accept);
+                return  transport.get().connect(getMethodExtend()).doOnNext(next().get()::accept).then(Mono.just(this));
             }
             else {
                 transport.get().start(getMethodExtend()).doOnNext(next().get()::accept).subscribe();
+                return Mono.just(this);
             }
-            return Mono.just(this);
         });
-    }
-
-    public void close() {
-       transport.get().close().subscribe();
     }
 
 

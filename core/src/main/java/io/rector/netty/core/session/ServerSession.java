@@ -3,6 +3,7 @@ package io.rector.netty.core.session;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.OffMessageHandler;
 import io.rector.netty.transport.group.GroupCollector;
+import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
@@ -15,7 +16,7 @@ import java.util.List;
  * @Date: 2018/12/6 19:21
  * @Description:
  */
-public interface ServerSession  <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> {
+public interface ServerSession  <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> extends Disposable {
 
     //查看所有连接
     Mono<List<RConnection>> listConnection();
@@ -37,7 +38,6 @@ public interface ServerSession  <T extends NettyConnector< ? extends NettyInboun
 
     Mono<Void>   addGroupHandler(GroupCollector collector);
 
-    Mono<Void>   closeServer();
 
 
 

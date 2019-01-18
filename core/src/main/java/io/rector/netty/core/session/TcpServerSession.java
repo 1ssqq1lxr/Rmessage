@@ -5,9 +5,6 @@ import io.rector.netty.transport.distribute.OffMessageHandler;
 import io.rector.netty.transport.group.GroupCollector;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import reactor.core.publisher.Mono;
-import reactor.ipc.netty.NettyConnector;
-import reactor.ipc.netty.NettyInbound;
-import reactor.ipc.netty.NettyOutbound;
 
 import java.util.List;
 
@@ -16,15 +13,15 @@ import java.util.List;
  * @Date: 2018/12/7 17:33
  * @Description:
  */
-public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>> implements ServerSession <T>{
+public class TcpServerSession implements ServerSession {
 
-    private ServerSocketAdapter<T> rsocket;
+    private ServerSocketAdapter rsocket;
 
-    public TcpServerSession(ServerSocketAdapter<T> rsocket) {
+    public TcpServerSession(ServerSocketAdapter rsocket) {
         this.rsocket =rsocket;
     }
 
-    public ServerSocketAdapter<T> getRsocket() {
+    public ServerSocketAdapter getRsocket() {
         return rsocket;
     }
 
@@ -69,8 +66,9 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
         return rsocket.setGroupCollector(collector);
     }
 
+
     @Override
-    public Mono<Void> closeServer() {
-        return Mono.fromRunnable(()->rsocket.getConnections().forEach(rConnection -> rConnection.dispose())).then(rsocket.closeServer());
+    public void dispose() {
+        Mono.fromRunnable(()->rsocket.getConnections().forEach(rConnection -> rConnection.dispose())).then(rsocket.closeServer()).subscribe();
     }
 }
