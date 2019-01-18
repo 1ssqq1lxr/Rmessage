@@ -2,17 +2,15 @@ package io.rector.netty.transport.codec;
 
 import io.reactor.netty.api.codec.MessageBody;
 import io.reactor.netty.api.codec.OfflineMessage;
-import io.reactor.netty.api.codec.OnlineMessage;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.reactor.netty.api.exception.NotSupportException;
 import io.rector.netty.transport.distribute.ConnectionStateDistribute;
-import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
+import io.rector.netty.transport.distribute.DirectServerMessageHandler;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 
@@ -26,7 +24,7 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
 
 
 
-    private DirectServerMessageDistribute directServerMessageDistribute;
+    private DirectServerMessageHandler directServerMessageHandler;
 
     private UnicastProcessor<OfflineMessage> offlineMessagePipeline;
 
@@ -34,8 +32,8 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
 
     private ConnectionStateDistribute connectionStateDistribute;
 
-    public ServerDecoderAcceptor(UnicastProcessor<OfflineMessage> offlineMessagePipeline, DirectServerMessageDistribute directServerMessageDistribute, ConnectionStateDistribute connectionStateDistribute,Disposable disposable) {
-        this.directServerMessageDistribute = directServerMessageDistribute;
+    public ServerDecoderAcceptor(UnicastProcessor<OfflineMessage> offlineMessagePipeline, DirectServerMessageHandler directServerMessageHandler, ConnectionStateDistribute connectionStateDistribute, Disposable disposable) {
+        this.directServerMessageHandler = directServerMessageHandler;
         this.offlineMessagePipeline=offlineMessagePipeline;
         this.connectionStateDistribute=connectionStateDistribute;
         this.disposable=disposable;
@@ -60,13 +58,13 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                                 }));
                     case ONE: // 单发
                         Mono<Void> offline= buildOffline(message, ((MessageBody)message.getMessageBody()).getTo());
-                        return directServerMessageDistribute.sendOne(message,offline);
+                        return directServerMessageHandler.sendOne(message,offline);
                     case GROUP:  //群发
                         Function<String,Mono<Void>> consumer = uid->buildOffline(message,uid);
-                        return directServerMessageDistribute.sendGroup(message,consumer)
+                        return directServerMessageHandler.sendGroup(message,consumer)
                                 .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage】 {}",throwable));
                     case PING:  //回复pong
-                        return directServerMessageDistribute.sendPong(message);
+                        return directServerMessageHandler.sendPong(message);
                     case PONG:
                         throw new NotSupportException("type PONG message not support");
                     case ONEACK:

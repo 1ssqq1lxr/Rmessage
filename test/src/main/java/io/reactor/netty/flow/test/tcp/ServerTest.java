@@ -1,7 +1,7 @@
 package io.reactor.netty.flow.test.tcp;
 
 import io.rector.netty.core.init.ServerStart;
-import io.rector.netty.transport.distribute.DefaultOfflineMessageDistribute;
+import io.rector.netty.transport.distribute.DefaultOffMessageHandler;
 import org.junit.Test;
 import reactor.ipc.netty.tcp.TcpServer;
 
@@ -30,7 +30,7 @@ public class ServerTest {
                 })
                 .<TcpServer>connect().subscribe(session->{
             session.addGroupHandler(groupId -> null).subscribe();
-            session.addOfflineHandler(new DefaultOfflineMessageDistribute()).subscribe();
+            session.addOfflineHandler(new DefaultOffMessageHandler()).subscribe();
         });
         countDownLatch.await();
     }

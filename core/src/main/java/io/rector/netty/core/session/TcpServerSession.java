@@ -1,7 +1,7 @@
 package io.rector.netty.core.session;
 
 import io.rector.netty.transport.connction.RConnection;
-import io.rector.netty.transport.distribute.OfflineMessageDistribute;
+import io.rector.netty.transport.distribute.OffMessageHandler;
 import io.rector.netty.transport.group.GroupCollector;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import reactor.core.publisher.Mono;
@@ -10,7 +10,6 @@ import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * @Auther: lxr
@@ -61,8 +60,8 @@ public class TcpServerSession<T extends NettyConnector< ? extends NettyInbound,?
     }
 
     @Override
-    public Mono<Void> addOfflineHandler(OfflineMessageDistribute offlineMessageDistribute) {
-        return  rsocket.setOfflineMessageDistribute(offlineMessageDistribute);
+    public Mono<Void> addOfflineHandler(OffMessageHandler offMessageHandler) {
+        return  rsocket.setOffMessageHandler(offMessageHandler);
     }
 
     @Override

@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 /**
  * 离线通知
  */
-public interface OfflineMessageDistribute {
+public interface OffMessageHandler {
 
 
      Mono<Void> storageOfflineMessage(Flux<OfflineMessage> message);

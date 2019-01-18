@@ -25,7 +25,7 @@ public class ConnectionStateDistribute {
             OnlineMessage onlineMessage=(OnlineMessage)message.getMessageBody();
             ChannelAttr.boundUserId(message.getInbound(),onlineMessage.getUserId()); //  绑定id
             // 拉取离线消息 每次10条
-            serverSocketAdapter.getOfflineMessageDistribute().getToMessages(onlineMessage.getUserId(),message.getClientType())
+            serverSocketAdapter.getOffMessageHandler().getToMessages(onlineMessage.getUserId(),message.getClientType())
              .buffer(10)
              .delayElements(Duration.ofMillis(100), Schedulers.elastic())
              .limitRate(10)

@@ -11,8 +11,8 @@ import io.rector.netty.transport.codec.ReactorDecoder;
 import io.rector.netty.transport.codec.ServerDecoderAcceptor;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.ConnectionStateDistribute;
-import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
-import io.rector.netty.transport.distribute.OfflineMessageDistribute;
+import io.rector.netty.transport.distribute.DirectServerMessageHandler;
+import io.rector.netty.transport.distribute.OffMessageHandler;
 import io.rector.netty.transport.group.GroupCollector;
 import io.rector.netty.transport.method.MethodExtend;
 import lombok.Data;
@@ -53,7 +53,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private ServerConfig config;
 
-    private DirectServerMessageDistribute directServerMessageDistribute;
+    private DirectServerMessageHandler directServerMessageHandler;
 
     private UnicastProcessor<OfflineMessage>  offlineMessagePipeline=  UnicastProcessor.create();
 
@@ -63,7 +63,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
     private GroupCollector groupCollector;
 
-    private OfflineMessageDistribute offlineMessageDistribute;
+    private OffMessageHandler offMessageHandler;
 
 
 
@@ -71,10 +71,10 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
        return Mono.fromRunnable(()->this.groupCollector=groupCollector);
     }
 
-    public Mono<Void> setOfflineMessageDistribute(final OfflineMessageDistribute offlineMessageDistribute){
+    public Mono<Void> setOffMessageHandler(final OffMessageHandler offMessageHandler){
         return Mono.fromRunnable(()->{
-            this.offlineMessageDistribute=offlineMessageDistribute;
-            offlineMessageDistribute.storageOfflineMessage(reciveOffline());
+            this.offMessageHandler = offMessageHandler;
+            offMessageHandler.storageOfflineMessage(reciveOffline());
         });
     }
 
@@ -85,7 +85,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
         this.pluginRegistry =pluginRegistry;
         this.config=config;
         this.methodExtend=methodExtend;
-        this.directServerMessageDistribute= new DirectServerMessageDistribute(this);
+        this.directServerMessageHandler = new DirectServerMessageHandler(this);
         this.connectionStateDistribute= new ConnectionStateDistribute(this);
     }
 
@@ -110,7 +110,7 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
                 Disposable disposable=Mono.defer(()-> rConnection.dispose())
                     .delaySubscription(Duration.ofSeconds(5))
                     .subscribe();
-                DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline,directServerMessageDistribute,connectionStateDistribute,disposable);
+                DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline, directServerMessageHandler,connectionStateDistribute,disposable);
                 rConnection.receiveMsg()
                         .doOnError(throwable -> log.error("receiveMsg url{} error {}",rConnection.address().block().getHostString(),throwable))
                         .map(this::apply)

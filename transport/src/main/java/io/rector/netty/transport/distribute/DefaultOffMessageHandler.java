@@ -7,12 +7,10 @@ import io.reactor.netty.api.codec.TransportMessage;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 /**
  * 离线通知
  */
-public class DefaultOfflineMessageDistribute implements OfflineMessageDistribute {
+public class DefaultOffMessageHandler implements OffMessageHandler {
 
     /**
      *

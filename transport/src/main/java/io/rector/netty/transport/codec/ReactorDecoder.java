@@ -2,7 +2,7 @@ package io.rector.netty.transport.codec;
 
 import io.reactor.netty.api.codec.OfflineMessage;
 import io.rector.netty.transport.distribute.ConnectionStateDistribute;
-import io.rector.netty.transport.distribute.DirectServerMessageDistribute;
+import io.rector.netty.transport.distribute.DirectServerMessageHandler;
 import reactor.core.Disposable;
 import reactor.core.publisher.UnicastProcessor;
 
@@ -12,5 +12,5 @@ import reactor.core.publisher.UnicastProcessor;
  * @Description:
  */
 public interface ReactorDecoder {
-    DecoderAcceptor decode(UnicastProcessor<OfflineMessage> offlineMessagePipeline, DirectServerMessageDistribute distribute, ConnectionStateDistribute connectionStateDistribute, Disposable disposable);
+    DecoderAcceptor decode(UnicastProcessor<OfflineMessage> offlineMessagePipeline, DirectServerMessageHandler distribute, ConnectionStateDistribute connectionStateDistribute, Disposable disposable);
 }

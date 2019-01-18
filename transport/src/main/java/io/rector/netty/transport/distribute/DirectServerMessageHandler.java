@@ -23,12 +23,12 @@ import java.util.function.Function;
  * @Description: 消息传输逻辑
  */
 @Slf4j
-public class DirectServerMessageDistribute {
+public class DirectServerMessageHandler {
 
     private final ServerSocketAdapter serverSocketAdapter;
 
 
-    public DirectServerMessageDistribute(ServerSocketAdapter serverSocketAdapter) {
+    public DirectServerMessageHandler(ServerSocketAdapter serverSocketAdapter) {
         this.serverSocketAdapter = serverSocketAdapter;
     }
 

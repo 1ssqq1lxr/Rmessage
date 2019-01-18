@@ -1,7 +1,7 @@
 package io.rector.netty.core.session;
 
 import io.rector.netty.transport.connction.RConnection;
-import io.rector.netty.transport.distribute.OfflineMessageDistribute;
+import io.rector.netty.transport.distribute.OffMessageHandler;
 import io.rector.netty.transport.group.GroupCollector;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
@@ -9,7 +9,6 @@ import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * @Auther: lxr
@@ -34,7 +33,7 @@ public interface ServerSession  <T extends NettyConnector< ? extends NettyInboun
     Mono<List<RConnection>> keys(String key);
 
 
-    Mono<Void>   addOfflineHandler(OfflineMessageDistribute offlineMessageDistribute);
+    Mono<Void>   addOfflineHandler(OffMessageHandler offMessageHandler);
 
     Mono<Void>   addGroupHandler(GroupCollector collector);
 
