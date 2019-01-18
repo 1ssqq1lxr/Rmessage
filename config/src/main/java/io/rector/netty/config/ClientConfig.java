@@ -1,5 +1,6 @@
 package io.rector.netty.config;
 
+import io.reactor.netty.api.codec.ClientType;
 import io.reactor.netty.api.codec.Protocol;
 import lombok.Builder;
 import lombok.Data;
@@ -15,8 +16,10 @@ public class ClientConfig  implements   Config{
 
     private Protocol protocol;
 
-    public   String ip;
+    public  String ip;
 
-    public   int port;
+    public  int port;
+
+    public  ClientType clientType;
 
 }

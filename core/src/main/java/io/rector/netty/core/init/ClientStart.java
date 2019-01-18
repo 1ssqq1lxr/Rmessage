@@ -1,5 +1,6 @@
 package io.rector.netty.core.init;
 
+import io.reactor.netty.api.codec.ClientType;
 import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.exception.NotFindConfigException;
 import io.reactor.netty.api.exception.NotSupportException;
@@ -46,6 +47,10 @@ public class ClientStart extends  AbstractStart {
         return ClientStart.StartBuilder.start;
     }
 
+
+    public  void setClientType(ClientType type){
+        ((ClientConfig)config).setClientType(type);
+    }
 
     private ClientStart() {
         super(ClientConfig.builder().build(), ReactorMethodExtend.builder().build());
