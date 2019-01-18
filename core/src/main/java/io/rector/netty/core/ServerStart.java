@@ -103,9 +103,8 @@ public class ServerStart extends AbstractStart {
                     //  channel设置
                 })
                 .<TcpServer>connect().subscribe(session->{
-                    session.addOfflineHandler(new DefaultOfflineMessageDistribute())
-                            .then(session.addGroupHandler(groupId -> null))
-                            .subscribe();
+                    session.addGroupHandler(groupId -> null).subscribe();
+                    session.addOfflineHandler(new DefaultOfflineMessageDistribute()).subscribe();
                 });
         countDownLatch.await();
     }

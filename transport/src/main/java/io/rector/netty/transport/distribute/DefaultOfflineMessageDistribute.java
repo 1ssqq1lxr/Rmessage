@@ -1,6 +1,7 @@
 package io.rector.netty.transport.distribute;
 
 
+import io.reactor.netty.api.codec.ClientType;
 import io.reactor.netty.api.codec.OfflineMessage;
 import io.reactor.netty.api.codec.TransportMessage;
 import reactor.core.publisher.Flux;
@@ -25,7 +26,7 @@ public class DefaultOfflineMessageDistribute implements OfflineMessageDistribute
     }
 
     @Override
-    public Mono<List<TransportMessage>> getToMessages(String to) {
+    public Flux<TransportMessage> getToMessages(String to, ClientType clientType) {
         return null;
     }
 }

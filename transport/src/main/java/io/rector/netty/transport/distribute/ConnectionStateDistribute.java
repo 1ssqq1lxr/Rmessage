@@ -4,9 +4,10 @@ import io.reactor.netty.api.ChannelAttr;
 import io.reactor.netty.api.codec.OnlineMessage;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
-import lombok.Data;
-import lombok.Setter;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+
+import java.time.Duration;
 
 public class ConnectionStateDistribute {
 
@@ -21,9 +22,14 @@ public class ConnectionStateDistribute {
      */
     public Mono<Void> init(TransportMessage message) {
         return Mono.create(sink->{
-            ChannelAttr.boundUserId(message.getInbound(),((OnlineMessage)message.getMessageBody()).getUserId()); //  绑定id
-            // 拉取离线消息
-//            serverSocketAdapter.getOfflineMessagePipeline().
+            OnlineMessage onlineMessage=(OnlineMessage)message.getMessageBody();
+            ChannelAttr.boundUserId(message.getInbound(),onlineMessage.getUserId()); //  绑定id
+            // 拉取离线消息 每次10条
+            serverSocketAdapter.getOfflineMessageDistribute().getToMessages(onlineMessage.getUserId(),message.getClientType())
+             .buffer(10)
+             .delayElements(Duration.ofMillis(100), Schedulers.elastic())
+             .limitRate(10)
+                    .subscribe(msg->{});
             sink.success();
         });
     }
