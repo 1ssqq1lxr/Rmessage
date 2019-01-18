@@ -73,11 +73,8 @@ public  class TransportMessage {
                 ByteUtil.byteArrayToList(to.getBytes(),list);
                 ByteUtil.longToByteList(body.getMessageId(),list);
                 String by=body.getBody();
-                String ad=body.getAddtional();
                 ByteUtil.shortToByteList((short) by.length(),list);
-                ByteUtil.shortToByteList((short) ad.length(),list);
                 ByteUtil.byteArrayToList(by.getBytes(),list);
-                ByteUtil.byteArrayToList(ad.getBytes(),list);
                 ByteUtil.longToByteList(body.getTimestammp(),list);
                 break;
             case ONEACK:

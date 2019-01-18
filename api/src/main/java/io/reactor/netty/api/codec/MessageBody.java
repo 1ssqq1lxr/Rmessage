@@ -16,8 +16,6 @@ public class MessageBody {
 
     private String  body;
 
-    private String  addtional;
-
     private long   timestammp;
 
 

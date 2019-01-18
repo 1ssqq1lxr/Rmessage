@@ -86,7 +86,6 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
 
     private String body;
 
-    private String  addtional;
 
     private ClientType clientType;
 
@@ -165,13 +164,9 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
             case MESSAGEBODY:
                 messageId=buf.readLong(); // 消息id
                 int bodyLength= buf.readUnsignedShort();
-                int  additionalLength= buf.readUnsignedShort();
                 byte[]  bodyBytes = new byte[bodyLength];
-                byte[]  addtionalBytes = new byte[additionalLength];
                 buf.readBytes(bodyBytes);
-                buf.readBytes(addtionalBytes);
                 body=new String(bodyBytes,Charset.defaultCharset());
-                addtional=new String(addtionalBytes,Charset.defaultCharset());
                 this.checkpoint(Type.CRC);
 
             case CRC:
@@ -179,7 +174,6 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         .messageBody(MessageBody.builder()
                                 .messageId(messageId)
                                 .body(body)
-                                .addtional(addtional)
                                 .timestammp(buf.readLong())
                                 .build())
                         .build());
