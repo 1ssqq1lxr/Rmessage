@@ -1,4 +1,4 @@
-package io.rector.netty.core;
+package io.rector.netty.core.init;
 
 import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.exception.NotFindConfigException;
@@ -9,24 +9,18 @@ import io.rector.netty.flow.plugin.FrameInterceptor;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.flow.plugin.Plugins;
 import io.rector.netty.transport.ServerTransport;
-import io.rector.netty.transport.distribute.DefaultOfflineMessageDistribute;
-import io.rector.netty.transport.distribute.OfflineMessageDistribute;
-import io.rector.netty.transport.group.GroupCollector;
 import io.rector.netty.transport.method.ReactorMethodExtend;
 import io.rector.netty.transport.socket.RsocketAcceptor;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.UnicastProcessor;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 import reactor.ipc.netty.tcp.TcpServer;
 
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
 
@@ -90,24 +84,6 @@ public class ServerStart extends AbstractStart {
     }
 
 
-
-    public static void  main(String[] a) throws InterruptedException {
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-          ServerStart
-                .builder()
-                .tcp()
-                .ip("127.0.0.1")
-                .port(1888)
-                .interceptor(frame -> frame,frame -> frame)
-                .setAfterChannelInit(channel -> {
-                    //  channel设置
-                })
-                .<TcpServer>connect().subscribe(session->{
-                    session.addGroupHandler(groupId -> null).subscribe();
-                    session.addOfflineHandler(new DefaultOfflineMessageDistribute()).subscribe();
-                });
-        countDownLatch.await();
-    }
 
 
 

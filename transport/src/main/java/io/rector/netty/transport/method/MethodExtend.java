@@ -5,6 +5,7 @@ import io.reactor.netty.api.Idle;
 import io.rector.netty.config.Config;
 import io.rector.netty.transport.distribute.OfflineMessageDistribute;
 import reactor.ipc.netty.NettyContext;
+import reactor.ipc.netty.options.ClientOptions;
 import reactor.ipc.netty.options.ServerOptions;
 
 import java.util.function.Consumer;
@@ -21,9 +22,12 @@ public interface MethodExtend {
 
     void setAfterChannelInit(Consumer<? super Channel> afterChannelInit);
 
-    void setOptions(Consumer<ServerOptions.Builder<?>> options);
+//    void setOptions(Consumer<ServerOptions.Builder<?>> options);
 
-    Consumer<? extends ServerOptions.Builder<?>> getOptions();
+    Consumer<? extends ServerOptions.Builder<?>> getServerOptions();
+
+
+    Consumer<? extends ClientOptions.Builder<?>> getClientOptions();
 
     void setAfterNettyContextInit(Consumer<? super NettyContext> afterNettyContextInit);
 

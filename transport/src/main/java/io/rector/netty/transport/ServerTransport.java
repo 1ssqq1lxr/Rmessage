@@ -1,6 +1,7 @@
 package io.rector.netty.transport;
 
 import io.reactor.netty.api.ReflectUtil;
+import io.reactor.netty.api.exception.NotSupportException;
 import io.rector.netty.config.Config;
 import io.rector.netty.config.ServerConfig;
 import io.rector.netty.transport.connction.RConnection;
@@ -42,11 +43,20 @@ public class ServerTransport<T extends NettyConnector< ? extends NettyInbound,? 
 
 
     @Override
-    public Flux<RConnection> connect(MethodExtend methodExtend) {
-       return Flux.create(fluxSink -> this.context=ReflectUtil.staticMethod(classT,methodExtend.getOptions()).newHandler((in, out)->{
+    public Flux<RConnection> start(MethodExtend methodExtend) {
+       return Flux.create(fluxSink -> this.context=ReflectUtil.staticMethod(classT,methodExtend.getServerOptions()).newHandler((in, out)->{
            RConnection duplexConnection = new RConnection(in,out,out.context());
            fluxSink.next(duplexConnection);
            return out.context().onClose();
        }).block());
     }
+
+
+    @Override
+    public Mono<RConnection> connect(MethodExtend methodExtend) {
+       throw  new NotSupportException("server not support connect operation");
+    }
+
+
+
 }

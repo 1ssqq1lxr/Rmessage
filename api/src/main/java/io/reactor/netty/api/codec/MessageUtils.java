@@ -34,8 +34,6 @@ public class MessageUtils {
                 return ProtocolCatagory.ONE;
             case 2:
                 return ProtocolCatagory.GROUP;
-            case 3:
-                return ProtocolCatagory.ACCEPT;
             case 10:
                 return ProtocolCatagory.ONEACK;
             case 11:

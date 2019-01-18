@@ -7,7 +7,9 @@ import reactor.core.publisher.Mono;
 
 public interface Transport{
 
-    Flux<RConnection> connect(MethodExtend methodExtend);
+    Flux<RConnection> start(MethodExtend methodExtend);
+
+    Mono<RConnection> connect(MethodExtend methodExtend);
 
     Mono<Void> close();
 
