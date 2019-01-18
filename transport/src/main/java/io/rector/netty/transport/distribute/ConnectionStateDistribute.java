@@ -9,6 +9,11 @@ import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
 
+ /**
+  * @Author luxurong
+  * @Description //TODO 2019/1/18
+  * @Date 15:38 2019/1/18  连接状态处理
+  **/
 public class ConnectionStateDistribute {
 
     private ServerSocketAdapter serverSocketAdapter;

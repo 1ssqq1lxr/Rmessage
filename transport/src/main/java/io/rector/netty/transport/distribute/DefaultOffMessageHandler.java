@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * 离线通知
+ * 默认离线消息
  */
 public class DefaultOffMessageHandler implements OffMessageHandler {
 
