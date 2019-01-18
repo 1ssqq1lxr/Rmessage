@@ -23,12 +23,6 @@ public class SocketFactory  {
         consumer.accept(sockets);
     }
 
-    public  Mono<Void> register(Protocol protocol, Class<NettyConnector> tClass){
-       return Mono.defer(()->{
-            sockets.put(protocol,tClass);
-            return Mono.empty();
-        });
-    }
     public Optional<Class<? extends NettyConnector>> getSocket(Protocol protocol){
         return  Optional.ofNullable(sockets.get(protocol));
     }

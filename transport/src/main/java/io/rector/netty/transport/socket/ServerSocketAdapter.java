@@ -91,8 +91,8 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
 
     @Override
-    public Supplier<Protocol> getPrptocol() {
-        return ()->Protocol.TCP;
+    public Protocol getPrptocol() {
+        return config.getProtocol();
     }
 
     @Override
@@ -122,7 +122,6 @@ public class ServerSocketAdapter<T extends NettyConnector< ? extends NettyInboun
 
 
 
-    @Override
     public Mono<Void> removeConnection(RConnection duplexConnection) {
        return duplexConnection.dispose();
     }
