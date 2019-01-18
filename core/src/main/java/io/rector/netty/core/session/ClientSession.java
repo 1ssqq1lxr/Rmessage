@@ -1,16 +1,22 @@
 package io.rector.netty.core.session;
 
+import io.reactor.netty.api.codec.TransportMessage;
 import reactor.core.Disposable;
-import reactor.ipc.netty.NettyConnector;
-import reactor.ipc.netty.NettyInbound;
-import reactor.ipc.netty.NettyOutbound;
+import reactor.core.publisher.Mono;
 
 /**
  * @Auther: luxurong
  * @Date: 2019/1/18 16:20
  * @Description: 客户端session操作类
  **/
-public interface ClientSession <T extends NettyConnector< ? extends NettyInbound,? extends NettyOutbound>>  extends Disposable {
+public interface ClientSession  extends Disposable {
+
+
+    Mono<Void>  sendPoint(String userId,String body);
+
+    Mono<Void>  sendGroup(String group,String body);
+
+    Mono<Void>  sendMessage(TransportMessage message);
 
 
 
