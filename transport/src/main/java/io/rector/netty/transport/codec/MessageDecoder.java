@@ -131,6 +131,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         this.checkpoint(Type.FIXD_HEADER);
                         return;
                 }
+                break header;
             case ONLINE:
                 short userIdLength= buf.readByte();
                 byte[] userIdBytes = new byte[userIdLength];
@@ -161,6 +162,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 from =new String(fromBytes, Charset.defaultCharset());
                 to   =new String(toBytes, Charset.defaultCharset());
                 this.checkpoint(Type.MESSAGEBODY);
+                break header;
             case MESSAGEBODY:
                 messageId=buf.readLong(); // 消息id
                 int bodyLength= buf.readUnsignedShort();
@@ -168,16 +170,19 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 buf.readBytes(bodyBytes);
                 body=new String(bodyBytes,Charset.defaultCharset());
                 this.checkpoint(Type.CRC);
-
+                break header;
             case CRC:
                 out.add(TransportMessage.builder().clientType(clientType).type(type)
                         .messageBody(MessageBody.builder()
+                                .from(from)
+                                .to(to)
                                 .messageId(messageId)
                                 .body(body)
                                 .timestammp(buf.readLong())
                                 .build())
                         .build());
                 this.checkpoint(Type.FIXD_HEADER);
+                break header;
         }
     }
 

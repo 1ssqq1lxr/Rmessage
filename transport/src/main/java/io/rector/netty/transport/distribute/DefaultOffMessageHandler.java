@@ -25,6 +25,6 @@ public class DefaultOffMessageHandler implements OffMessageHandler {
 
     @Override
     public Flux<TransportMessage> getToMessages(String to, ClientType clientType) {
-        return null;
+        return Flux.empty();
     }
 }

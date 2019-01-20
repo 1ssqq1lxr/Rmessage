@@ -28,12 +28,14 @@ import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
 import java.io.Closeable;
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -66,6 +68,7 @@ public class ServerSocketAdapter extends Rsocket  {
     private GroupCollector groupCollector;
 
     private OffMessageHandler offMessageHandler;
+
 
 
 
@@ -108,13 +111,17 @@ public class ServerSocketAdapter extends Rsocket  {
             Disposable disposable=Mono.defer(()-> rConnection.dispose())
                     .delaySubscription(Duration.ofSeconds(5))
                     .subscribe();
-            DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline, directServerMessageHandler,connectionStateDistribute,disposable);
+            DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline, directServerMessageHandler,connectionStateDistribute,disposable,user->ids.put(user,rConnection));
             rConnection.receiveMsg()
                     .doOnError(throwable -> log.error("receiveMsg url{} error {}",rConnection.address().block().getHostString(),throwable))
                     .map(this::apply)
                     .subscribeOn(Schedulers.elastic())
                     .subscribe(decoderAcceptor::transportMessage);
-            rConnection.onClose(()->connections.remove(rConnection)); // 关闭时删除连接
+            rConnection.onClose(()->{
+                InetSocketAddress socketAddres=rConnection.address().block();
+                log.info(" connection host:{} port {} closed", socketAddres.getHostString(),socketAddres.getPort());
+                connections.remove(rConnection);
+            }); // 关闭时删除连接
         };
     }
 

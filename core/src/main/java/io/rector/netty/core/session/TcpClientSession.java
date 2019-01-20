@@ -10,6 +10,7 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * @Auther: luxurong
@@ -22,6 +23,7 @@ public class TcpClientSession  implements ClientSession{
 
     private ClientConfig clientConfig;
 
+    private LongAdder longAdder  = new LongAdder();
 
     public TcpClientSession(ClientSocketAdapter clientSocketAdapter) {
         this.clientSocketAdapter = clientSocketAdapter;
@@ -66,6 +68,7 @@ public class TcpClientSession  implements ClientSession{
                         .builder()
                         .from(clientConfig.getUserId())
                         .to(to)
+                        .messageId(longAdder.longValue())
                         .body(body)
                         .timestammp(System.currentTimeMillis())
                         .build()

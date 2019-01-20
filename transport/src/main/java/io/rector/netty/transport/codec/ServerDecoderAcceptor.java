@@ -5,6 +5,7 @@ import io.reactor.netty.api.codec.OfflineMessage;
 import io.reactor.netty.api.codec.ProtocolCatagory;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.reactor.netty.api.exception.NotSupportException;
+import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.ConnectionStateDistribute;
 import io.rector.netty.transport.distribute.DirectServerMessageHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,8 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 
@@ -33,11 +36,14 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
 
     private ConnectionStateDistribute connectionStateDistribute;
 
-    public ServerDecoderAcceptor(UnicastProcessor<OfflineMessage> offlineMessagePipeline, DirectServerMessageHandler directServerMessageHandler, ConnectionStateDistribute connectionStateDistribute, Disposable disposable) {
+    private Consumer<String> consumer;
+
+    public ServerDecoderAcceptor(UnicastProcessor<OfflineMessage> offlineMessagePipeline, DirectServerMessageHandler directServerMessageHandler, ConnectionStateDistribute connectionStateDistribute, Disposable disposable,Consumer<String> consumer) {
         this.directServerMessageHandler = directServerMessageHandler;
         this.offlineMessagePipeline=offlineMessagePipeline;
         this.connectionStateDistribute=connectionStateDistribute;
         this.disposable=disposable;
+        this.consumer=consumer;
     }
 
 
@@ -53,7 +59,7 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                     Mono.fromRunnable(()->{
                         if(!disposable.isDisposed()){ disposable.dispose(); }//取消关闭连接
                     })
-                            .then(connectionStateDistribute.init(message))
+                            .then(connectionStateDistribute.init(message,consumer))
                             .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage ONLINE】 {}",throwable))
                             .subscribe();
                     break;

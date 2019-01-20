@@ -8,6 +8,8 @@ import lombok.Data;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +34,7 @@ public  class TransportMessage {
 
     private Object messageBody;
 
-    private boolean discard;
+    private transient boolean discard;
 
 
     public TransportMessage setOutbound(NettyOutbound outbound) {
@@ -51,10 +53,10 @@ public  class TransportMessage {
         switch (type){
             case ONLINE:
                 OnlineMessage onlineMessage =(OnlineMessage) messageBody;
-                String userId = onlineMessage.getUserId();
+                byte[] userId = onlineMessage.getUserId().getBytes();
                 ByteUtil.byteToByteList(clientType.getType(),type.getNumber(),list);
-                list.add((byte)userId.length());
-                ByteUtil.byteArrayToList(userId.getBytes(),list);
+                list.add((byte)userId.length);
+                ByteUtil.byteArrayToList(userId,list);
                 break;
             case PONG:
             case PING:
@@ -62,19 +64,18 @@ public  class TransportMessage {
                 break;
             case ONE:
             case GROUP:
-                // 群聊
                 MessageBody body =(MessageBody)this.messageBody;
-                String from =body.getFrom();
-                String to   = body.getTo();
+                byte[] from =body.getFrom().getBytes(Charset.defaultCharset());
+                byte[] to   = body.getTo().getBytes(Charset.defaultCharset());
                 ByteUtil.byteToByteList(clientType.getType(),type.getNumber(),list);
-                list.add((byte)from.length());
-                list.add((byte)to.length());
-                ByteUtil.byteArrayToList(from.getBytes(),list);
-                ByteUtil.byteArrayToList(to.getBytes(),list);
+                list.add((byte)from.length);
+                list.add((byte)to.length);
+                ByteUtil.byteArrayToList(from,list);
+                ByteUtil.byteArrayToList(to,list);
                 ByteUtil.longToByteList(body.getMessageId(),list);
-                String by=body.getBody();
-                ByteUtil.shortToByteList((short) by.length(),list);
-                ByteUtil.byteArrayToList(by.getBytes(),list);
+                byte[] by=body.getBody().getBytes();
+                ByteUtil.shortToByteList((short) by.length,list);
+                ByteUtil.byteArrayToList(by,list);
                 ByteUtil.longToByteList(body.getTimestammp(),list);
                 break;
             case ONEACK:

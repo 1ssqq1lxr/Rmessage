@@ -25,8 +25,7 @@ public class ServerTest {
                 .ip("127.0.0.1")
                 .port(1888)
                 .interceptor(frame -> frame,frame -> frame)
-                .setAfterChannelInit(channel -> {
-                    //  channel设置
+                .setAfterChannelInit(channel -> {//  channel设置
                 })
                 .connect()
                 .cast(TcpServerSession.class)
