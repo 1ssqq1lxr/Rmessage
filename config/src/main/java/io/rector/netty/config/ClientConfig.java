@@ -24,4 +24,8 @@ public class ClientConfig  implements   Config{
 
     private String  userId;
 
+    @Override
+    public boolean check() {
+        return true;
+    }
 }

@@ -19,4 +19,8 @@ public class ServerConfig implements Config{
 
     public   int port;
 
+    @Override
+    public boolean check() {
+        return true;
+    }
 }

@@ -42,13 +42,14 @@ public class ClientStart   extends  AbstractStart {
         return ClientStart.StartBuilder.start;
     }
 
-
+    @Override
     public  Start setClientType(ClientType type){
         ((ClientConfig)config).setClientType(type);
         return  this;
     }
 
-    public  Start setUserId(String userId){
+    @Override
+    public  Start userId(String userId){
         ((ClientConfig)config).setUserId(userId);
         return  this;
     }
@@ -67,6 +68,7 @@ public class ClientStart   extends  AbstractStart {
 
     @Override
     public   Mono<Disposable> connect() {
+        config.check();
         ClientTransport clientTransport =new ClientTransport(socketFactory()
                 .accept(consumer)
                 .getSocket(config.getProtocol())

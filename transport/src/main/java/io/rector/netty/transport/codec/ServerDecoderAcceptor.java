@@ -50,12 +50,9 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
         else {
             switch (message.getType()){
                 case ONLINE:
-                    connectionStateDistribute.init(message)
-                            .then(Mono.fromRunnable(()->{
-                                if(!disposable.isDisposed()){
-                                    disposable.dispose(); //取消关闭连接
-                                }
-                            }));
+                    Mono.fromRunnable(()->{
+                        if(!disposable.isDisposed()){ disposable.dispose(); }//取消关闭连接
+                    }).then(connectionStateDistribute.init(message)).subscribe();
                     break;
                 case ONE: // 单发
                     Mono<Void> offline= buildOffline(message, ((MessageBody)message.getMessageBody()).getTo());
@@ -69,11 +66,11 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                 case PING:  //回复pong
                     directServerMessageHandler.sendPong(
                             TransportMessage
-                            .builder()
-                            .outbound(message.getOutbound())
-                            .clientType(message.getClientType())
-                            .type(ProtocolCatagory.PONG)
-                            .build())
+                                    .builder()
+                                    .outbound(message.getOutbound())
+                                    .clientType(message.getClientType())
+                                    .type(ProtocolCatagory.PONG)
+                                    .build())
                             .subscribe();
                     break;
                 case PONG:

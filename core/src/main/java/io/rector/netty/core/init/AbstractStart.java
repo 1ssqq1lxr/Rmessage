@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import io.reactor.netty.api.Idle;
 import io.reactor.netty.api.codec.ClientType;
 import io.reactor.netty.api.codec.Protocol;
+import io.reactor.netty.api.exception.NotSupportException;
 import io.rector.netty.config.Config;
 import io.rector.netty.transport.codec.MessageDecoder;
 import io.rector.netty.transport.method.MethodExtend;
@@ -47,7 +48,10 @@ abstract class AbstractStart implements Start {
         return this;
     }
 
-
+    @Override
+    public Start userId(String userId) {
+       throw new NotSupportException("server not support set  userId");
+    }
 
 
     @Override

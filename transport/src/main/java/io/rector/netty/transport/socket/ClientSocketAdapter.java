@@ -1,5 +1,6 @@
 package io.rector.netty.transport.socket;
 
+import io.reactor.netty.api.codec.OnlineMessage;
 import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.codec.ProtocolCatagory;
 import io.reactor.netty.api.codec.TransportMessage;
@@ -61,14 +62,23 @@ public class ClientSocketAdapter  extends Rsocket {
             directClientMessageHandler = new DirectClientMessageHandler(rConnection);
             Optional.ofNullable(methodExtend.getReadIdle())
                     .ifPresent(read-> rConnection.onReadIdle(read.getTime(), () -> {
-                            sendPing();
-                            read.getEvent().get().run();
-                        }).subscribe());
+                        sendPing();
+                        read.getEvent().get().run();
+                    }).subscribe());
             Optional.ofNullable(methodExtend.getWriteIdle())
                     .ifPresent(write-> rConnection.onWriteIdle(methodExtend.getWriteIdle().getTime(),()->{
-                            sendPing();
-                            methodExtend.getWriteIdle().getEvent().get().run();
-                        }).subscribe());
+                        sendPing();
+                        methodExtend.getWriteIdle().getEvent().get().run();
+                    }).subscribe());
+            OnlineMessage onlineMessage= OnlineMessage
+                    .builder()
+                    .userId(config.getUserId())
+                    .build();
+            directClientMessageHandler.send(TransportMessage.builder()
+                    .clientType(config.getClientType())
+                    .type(ProtocolCatagory.ONLINE)
+                    .messageBody(onlineMessage)
+                    .build()).subscribe();
         };
     }
 

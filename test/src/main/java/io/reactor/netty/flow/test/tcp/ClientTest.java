@@ -27,6 +27,7 @@ public class ClientTest {
                 .tcp()
                 .ip("127.0.0.1")
                 .port(1888)
+                .userId("213")
                 .onReadIdle(10000l,()->()->System.out.println("心跳了"))
                 .setClientType(ClientType.Ios)
 //                .interceptor(frame -> frame,frame -> frame)
@@ -36,7 +37,6 @@ public class ClientTest {
                 .connect()
                 .cast(TcpClientSession.class)
                 .subscribe(session->{
-
         });
         countDownLatch.await();
     }

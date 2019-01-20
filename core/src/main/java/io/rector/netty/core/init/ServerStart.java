@@ -63,6 +63,7 @@ public class ServerStart    extends AbstractStart {
 
     @Override
     public   Mono<Disposable> connect(){
+        config.check();
         ServerTransport serverTransport =new ServerTransport(socketFactory()
                 .accept(consumer)
                 .getSocket(config.getProtocol())
@@ -77,6 +78,8 @@ public class ServerStart    extends AbstractStart {
                                  .block();
                 });
     }
+
+
 
     private  Mono<RsocketAcceptor>  rsocketAcceptor(){
         return Mono.just(ServerSocketAdapter::new);
