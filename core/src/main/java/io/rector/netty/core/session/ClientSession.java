@@ -1,6 +1,7 @@
 package io.rector.netty.core.session;
 
 import io.reactor.netty.api.codec.TransportMessage;
+import io.rector.netty.transport.listener.MessageListener;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 
@@ -17,6 +18,8 @@ public interface ClientSession  extends Disposable {
     Mono<Void>  sendGroup(String group,String body);
 
     Mono<Void>  sendMessage(TransportMessage message);
+
+    Disposable  accept(MessageListener messageListener);
 
 
 

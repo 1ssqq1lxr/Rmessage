@@ -1,21 +1,12 @@
 package io.rector.netty.transport.distribute;
 
 import io.netty.buffer.Unpooled;
-import io.reactor.netty.api.ChannelAttr;
-import io.reactor.netty.api.codec.MessageBody;
 import io.reactor.netty.api.codec.TransportMessage;
-import io.reactor.netty.api.exception.NoGroupCollectorException;
 import io.rector.netty.transport.connction.RConnection;
-import io.rector.netty.transport.socket.ClientSocketAdapter;
-import io.rector.netty.transport.socket.ServerSocketAdapter;
+import io.rector.netty.transport.listener.MessageListener;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
-import reactor.ipc.netty.NettyInbound;
-import reactor.ipc.netty.NettyOutbound;
-
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
 
 /**
  * @Auther: lxr
@@ -37,5 +28,11 @@ public class DirectClientMessageHandler {
     }
 
 
+    public Disposable receive(MessageListener messageListener) {
+       return connection.receiveMsg().subscribe(messageListener::accept);
+    }
 
+    public Mono<Void> send(TransportMessage buildMessage) {
+        return connection.getOutbound().send(Mono.just(Unpooled.wrappedBuffer(buildMessage.getBytes()))).then();
+    }
 }

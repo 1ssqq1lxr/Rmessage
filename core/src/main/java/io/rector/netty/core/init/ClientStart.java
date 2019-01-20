@@ -48,6 +48,12 @@ public class ClientStart   extends  AbstractStart {
         return  this;
     }
 
+    public  Start setUserId(String userId){
+        ((ClientConfig)config).setUserId(userId);
+        return  this;
+    }
+
+
     private ClientStart() {
         super(ClientConfig.builder().build(), ReactorMethodExtend.builder().build());
     }

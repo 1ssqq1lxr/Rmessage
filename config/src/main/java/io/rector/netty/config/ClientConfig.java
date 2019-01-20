@@ -22,4 +22,6 @@ public class ClientConfig  implements   Config{
 
     public  ClientType clientType;
 
+    private String  userId;
+
 }

@@ -10,6 +10,7 @@ import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.DirectClientMessageHandler;
 import io.rector.netty.transport.method.MethodExtend;
+import lombok.Getter;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -20,6 +21,7 @@ import java.util.function.Supplier;
  * @Date: 2019/1/18 14:37
  * @Description:
  **/
+@Getter
 public class ClientSocketAdapter  extends Rsocket {
 
 
