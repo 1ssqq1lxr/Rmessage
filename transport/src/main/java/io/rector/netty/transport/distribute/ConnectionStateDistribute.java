@@ -4,6 +4,7 @@ import io.reactor.netty.api.ChannelAttr;
 import io.reactor.netty.api.codec.OnlineMessage;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
   * @Description //TODO 2019/1/18
   * @Date 15:38 2019/1/18  连接状态处理
   **/
+@Slf4j
 public class ConnectionStateDistribute {
 
     private ServerSocketAdapter serverSocketAdapter;
@@ -36,6 +38,7 @@ public class ConnectionStateDistribute {
                             .buffer(10)
                             .delayElements(Duration.ofMillis(100), Schedulers.elastic())
                             .limitRate(10)
+                            .doOnError(throwable -> log.error("offline message handler {} ",throwable))
                             .subscribe(msg->{}));
             sink.success();
         });

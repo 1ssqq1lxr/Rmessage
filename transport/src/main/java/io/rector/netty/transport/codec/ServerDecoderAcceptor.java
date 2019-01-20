@@ -52,16 +52,22 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                 case ONLINE:
                     Mono.fromRunnable(()->{
                         if(!disposable.isDisposed()){ disposable.dispose(); }//取消关闭连接
-                    }).then(connectionStateDistribute.init(message)).subscribe();
+                    })
+                            .then(connectionStateDistribute.init(message))
+                            .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage ONLINE】 {}",throwable))
+                            .subscribe();
                     break;
                 case ONE: // 单发
                     Mono<Void> offline= buildOffline(message, ((MessageBody)message.getMessageBody()).getTo());
-                    directServerMessageHandler.sendOne(message,offline);
+                    directServerMessageHandler.sendOne(message,offline)
+                            .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage ONE】 {}",throwable))
+                            .subscribe();
                     break;
                 case GROUP:  //群发
                     Function<String,Mono<Void>> consumer = uid->buildOffline(message,uid);
                     directServerMessageHandler.sendGroup(message,consumer)
-                            .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage】 {}",throwable));
+                            .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage GROUP】 {}",throwable))
+                            .subscribe();
                     break;
                 case PING:  //回复pong
                     directServerMessageHandler.sendPong(

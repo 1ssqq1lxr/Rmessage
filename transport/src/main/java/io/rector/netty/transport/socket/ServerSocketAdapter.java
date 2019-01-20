@@ -105,10 +105,10 @@ public class ServerSocketAdapter extends Rsocket  {
                     .ifPresent(read-> rConnection.onReadIdle(read.getTime(), () -> read.getEvent().get().run()).subscribe());
             Optional.ofNullable(methodExtend.getWriteIdle())
                     .ifPresent(write-> rConnection.onWriteIdle(methodExtend.getWriteIdle().getTime(),()-> methodExtend.getWriteIdle().getEvent().get().run()).subscribe());
-//            Disposable disposable=Mono.defer(()-> rConnection.dispose())
-//                    .delaySubscription(Duration.ofSeconds(5))
-//                    .subscribe();
-            DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline, directServerMessageHandler,connectionStateDistribute,null);
+            Disposable disposable=Mono.defer(()-> rConnection.dispose())
+                    .delaySubscription(Duration.ofSeconds(5))
+                    .subscribe();
+            DecoderAcceptor decoderAcceptor= decoder().decode(offlineMessagePipeline, directServerMessageHandler,connectionStateDistribute,disposable);
             rConnection.receiveMsg()
                     .doOnError(throwable -> log.error("receiveMsg url{} error {}",rConnection.address().block().getHostString(),throwable))
                     .map(this::apply)

@@ -35,7 +35,7 @@ public class DirectServerMessageHandler {
     public Mono<Void>  sendOne(TransportMessage message, Mono<Void> offline){
         return   Mono.create(monoSink -> {
             MessageBody messageBody=(MessageBody) message.getMessageBody();
-            Optional<RConnection> rConnection= Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(messageBody.getTo()));
+            Optional<RConnection> rConnection= Optional.ofNullable(serverSocketAdapter.getIds().get(messageBody.getTo()));
             if(rConnection.isPresent()){ // 发送
                 rConnection.get().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(message.getBytes()))).then().subscribe();
             }

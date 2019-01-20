@@ -5,6 +5,7 @@ import io.rector.netty.config.Config;
 import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.method.MethodExtend;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
@@ -18,6 +19,7 @@ import java.util.function.Supplier;
  * @Date: 2018/12/9 15:55
  * @Description:
  */
+@Slf4j
 public abstract class Rsocket {
 
 
@@ -31,10 +33,10 @@ public abstract class Rsocket {
     public Mono<Rsocket> start() {
         return Mono.defer(()->{
             if(this instanceof ClientSocketAdapter){
-                return  transport.get().connect(getMethodExtend()).doOnNext(next().get()::accept).then(Mono.just(this));
+                return  transport.get().connect(getMethodExtend()).doOnNext(next().get()::accept).doOnError(throwable -> log.error("Rsocket {}",throwable)).then(Mono.just(this));
             }
             else {
-                transport.get().start(getMethodExtend()).doOnNext(next().get()::accept).subscribe();
+                transport.get().start(getMethodExtend()).doOnNext(next().get()::accept).doOnError(throwable -> log.error("Rsocket {}",throwable)).subscribe();
                 return Mono.just(this);
             }
         });
