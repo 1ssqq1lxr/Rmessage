@@ -1,5 +1,6 @@
 package io.rector.netty.transport.socket;
 
+import io.reactor.netty.api.ChannelAttr;
 import io.reactor.netty.api.codec.OfflineMessage;
 import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.codec.TransportMessage;
@@ -120,6 +121,7 @@ public class ServerSocketAdapter extends Rsocket  {
             rConnection.onClose(()->{
                 InetSocketAddress socketAddres=rConnection.address().block();
                 log.info(" connection host:{} port {} closed", socketAddres.getHostString(),socketAddres.getPort());
+                ids.remove(ChannelAttr.getUserId(rConnection.getInbound()));
                 connections.remove(rConnection);
             }); // 关闭时删除连接
         };
