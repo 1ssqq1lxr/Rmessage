@@ -73,6 +73,6 @@ public class DirectServerMessageHandler {
 
 
     public Mono<Void>  sendPong(TransportMessage message) {
-        return Mono.fromRunnable(()-> message.getOutbound().send(Mono.just(Unpooled.wrappedBuffer(message.getBytes()))).then().subscribe());
+        return message.getOutbound().send(Mono.just(Unpooled.wrappedBuffer(message.getBytes()))).then();
     }
 }

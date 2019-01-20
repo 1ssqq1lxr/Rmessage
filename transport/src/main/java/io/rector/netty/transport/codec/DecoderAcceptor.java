@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
  */
 public interface DecoderAcceptor {
 
-     Mono<Void> transportMessage(TransportMessage message);
+     void transportMessage(TransportMessage message);
 
 
 }

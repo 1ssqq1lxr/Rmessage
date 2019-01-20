@@ -10,9 +10,6 @@ import io.rector.netty.transport.Transport;
 import io.rector.netty.transport.connction.RConnection;
 import io.rector.netty.transport.distribute.DirectClientMessageHandler;
 import io.rector.netty.transport.method.MethodExtend;
-import reactor.ipc.netty.NettyConnector;
-import reactor.ipc.netty.NettyInbound;
-import reactor.ipc.netty.NettyOutbound;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -79,7 +76,7 @@ public class ClientSocketAdapter  extends Rsocket {
     }
 
     private void sendPing(){
-        directClientMessageHandler.sendPing(ping);
+        directClientMessageHandler.sendPing(ping).subscribe();
     }
 
 }

@@ -27,6 +27,7 @@ public class ClientTest {
                 .tcp()
                 .ip("127.0.0.1")
                 .port(1888)
+                .onReadIdle(10000l,()->()->System.out.println("心跳了"))
                 .setClientType(ClientType.Ios)
 //                .interceptor(frame -> frame,frame -> frame)
                 .setAfterChannelInit(channel -> {

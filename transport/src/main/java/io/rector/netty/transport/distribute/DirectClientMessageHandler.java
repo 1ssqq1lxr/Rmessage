@@ -33,7 +33,7 @@ public class DirectClientMessageHandler {
 
 
     public Mono<Void>  sendPing( byte[] bs) {
-        return Mono.fromRunnable(()-> connection.getOutbound().send(Mono.just(Unpooled.wrappedBuffer(bs))).then().subscribe());
+        return connection.getOutbound().send(Mono.just(Unpooled.wrappedBuffer(bs))).then();
     }
 
 

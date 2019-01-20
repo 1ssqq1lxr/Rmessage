@@ -2,6 +2,7 @@ package io.rector.netty.transport.codec;
 
 import io.reactor.netty.api.codec.MessageBody;
 import io.reactor.netty.api.codec.OfflineMessage;
+import io.reactor.netty.api.codec.ProtocolCatagory;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.reactor.netty.api.exception.NotSupportException;
 import io.rector.netty.transport.distribute.ConnectionStateDistribute;
@@ -41,42 +42,51 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
 
 
     @Override
-    public Mono<Void> transportMessage(TransportMessage message) { // 分发消息
-        return Mono.defer(()->{
-            if(message.isDiscard()){
-                log.info("message is discard {}",message);
-                return Mono.empty();
+    public  void transportMessage(TransportMessage message) { // 分发消息
+        log.info("accept message {}",message);
+        if(message.isDiscard()){
+            log.info("message is discard {}",message);
+        }
+        else {
+            switch (message.getType()){
+                case ONLINE:
+                    connectionStateDistribute.init(message)
+                            .then(Mono.fromRunnable(()->{
+                                if(!disposable.isDisposed()){
+                                    disposable.dispose(); //取消关闭连接
+                                }
+                            }));
+                    break;
+                case ONE: // 单发
+                    Mono<Void> offline= buildOffline(message, ((MessageBody)message.getMessageBody()).getTo());
+                    directServerMessageHandler.sendOne(message,offline);
+                    break;
+                case GROUP:  //群发
+                    Function<String,Mono<Void>> consumer = uid->buildOffline(message,uid);
+                    directServerMessageHandler.sendGroup(message,consumer)
+                            .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage】 {}",throwable));
+                    break;
+                case PING:  //回复pong
+                    directServerMessageHandler.sendPong(
+                            TransportMessage
+                            .builder()
+                            .outbound(message.getOutbound())
+                            .clientType(message.getClientType())
+                            .type(ProtocolCatagory.PONG)
+                            .build())
+                            .subscribe();
+                    break;
+                case PONG:
+                    throw new NotSupportException("type PONG message not support");
+                case ONEACK:
+                    //暂时未实现
+                case GROUPACK:
+                    //暂时未实现
+                default:
+                    break;
             }
-            else {
-                switch (message.getType()){
-                    case ONLINE:
-                        return connectionStateDistribute.init(message)
-                                .then(Mono.fromRunnable(()->{
-                                    if(!disposable.isDisposed()){
-                                        disposable.dispose(); //取消关闭连接
-                                    }
-                                }));
-                    case ONE: // 单发
-                        Mono<Void> offline= buildOffline(message, ((MessageBody)message.getMessageBody()).getTo());
-                        return directServerMessageHandler.sendOne(message,offline);
-                    case GROUP:  //群发
-                        Function<String,Mono<Void>> consumer = uid->buildOffline(message,uid);
-                        return directServerMessageHandler.sendGroup(message,consumer)
-                                .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage】 {}",throwable));
-                    case PING:  //回复pong
-                        return directServerMessageHandler.sendPong(message);
-                    case PONG:
-                        throw new NotSupportException("type PONG message not support");
-                    case ONEACK:
-                         //暂时未实现
-                    case GROUPACK:
-                         //暂时未实现
-                    default:
-                        return Mono.empty();
-                }
 
-            }
-        });
+        }
     }
 
 
