@@ -32,11 +32,13 @@ public interface ServerSession extends Disposable {
     //根据key取出duplexConnection
     Mono<Set<RConnection>> keys(String key);
 
-
+    // 离线处理
     Mono<Void>   addOfflineHandler(OffMessageHandler offMessageHandler);
 
+    // 群组用户关系管理
     Mono<Void>   addGroupHandler(GroupCollector collector);
 
+    //
     Mono<Void>   addUserHandler(UserTransportHandler userHandler);
 
     Mono<Void>   addConnectionManager(ConnectionManager manager);
