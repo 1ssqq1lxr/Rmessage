@@ -70,4 +70,52 @@ Rmessage是采用Reactor3,基于reactor-netty项目构建的实时消息推送ap
        session.sendPoint("123","测试一下哦").subscribe(); // session　操作类
    });
 ```
+## 协议设计
+- **单聊  多聊**
+ 
+FixHeader  【1 byte】
+
+| client_type |  message_type |
+| --------   | :----:  |
+|  high 4bit       |  low 4bit      |
+
+ Topic     【n byte】
+
+|  from length  |  to length  |  from   |   to |
+| ------------ | ------------ | ------------ | ------------ |
+|   1byte  |  1byte |  n byte  |    n byte |
+
+ Body    【n byte】
+
+| body length    | body |
+| ------------- | ------------- |
+| 2 byte  | n byte  |
+
+| timstamp |
+| ------------- |
+| 8 byte    |
+
+
+- **Online报文/Offline报文**
+
+FixHeader  【1 byte】
+   
+   | client_type |  message_type |
+   | --------   | :----:  |
+   |  high 4bit       |  low 4bit      |
+
+ConnectionState  【n byte】
+
+| user length |  user |
+| --------   | :----:  |
+|  1 byte      |  n byte     |
+
+
+- **Ping报文/Pong报文**
+
+FixHeader  【1 byte】
+
+| client_type |  message_type |
+| --------   | :----:  |
+|  high 4bit       |  low 4bit      |
 
