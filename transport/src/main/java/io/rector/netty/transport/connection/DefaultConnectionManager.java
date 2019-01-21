@@ -36,7 +36,7 @@ public class DefaultConnectionManager implements  ConnectionManager {
     }
 
     @Override
-    public Set<Object> getConnections() {
+    public Set<RConnection> getConnections() {
         return multimap.values().stream().collect(Collectors.toSet());
     }
 

@@ -13,9 +13,10 @@ import reactor.core.publisher.Mono;
 public interface OffMessageHandler {
 
 
+     // 存贮离线消息
      Mono<Void> storageOfflineMessage(Flux<OfflineMessage> message);
 
-
+     // 获取离线消息
      Flux<TransportMessage> getToMessages(String to, ClientType clientType);
 
 

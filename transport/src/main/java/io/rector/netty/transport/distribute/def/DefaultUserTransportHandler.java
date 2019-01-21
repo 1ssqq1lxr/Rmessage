@@ -1,7 +1,6 @@
 package io.rector.netty.transport.distribute.def;
 
 import io.rector.netty.transport.distribute.UserTransportHandler;
-import reactor.core.publisher.Mono;
 
 import java.util.Set;
 
@@ -28,6 +27,6 @@ public class DefaultUserTransportHandler implements UserTransportHandler {
 
     @Override
     public Set<String> getFriends(String user) {
-        return Mono.empty();
+        return null;
     }
 }
