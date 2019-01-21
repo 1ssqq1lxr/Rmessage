@@ -50,21 +50,21 @@ Rmessage是采用Reactor3,基于reactor-netty项目构建的实时消息推送ap
 - **客户端**
 
 ```java
-        ClientStart
-                .builder()
-                .tcp()
-                .ip("127.0.0.1")
-                .port(1888)
-                .userId("21344")
-                .onReadIdle(10000l,()->()->System.out.println("心跳了"))
-                .setClientType(ClientType.Ios)
-                .setAfterChannelInit(channel -> {
+ ClientStart
+   .builder()
+   .tcp()
+   .ip("127.0.0.1")
+   .port(1888)
+   .userId("21344")
+   .onReadIdle(10000l,()->()->System.out.println("心跳了"))
+   .setClientType(ClientType.Ios)
+   .setAfterChannelInit(channel -> {
                     //  channel设置
-                })
-                .connect()
-                .cast(TcpClientSession.class)
-                .subscribe(session->{
-                    session.sendPoint("123","测试一下哦").subscribe(); // session　操作类
-                });
+    })
+   .connect()
+   .cast(TcpClientSession.class)
+   .subscribe(session->{
+       session.sendPoint("123","测试一下哦").subscribe(); // session　操作类
+   });
 ```
 
