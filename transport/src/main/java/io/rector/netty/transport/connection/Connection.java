@@ -1,4 +1,4 @@
-package io.rector.netty.transport.connction;
+package io.rector.netty.transport.connection;
 
 import io.reactor.netty.api.codec.TransportMessage;
 import reactor.core.publisher.Flux;

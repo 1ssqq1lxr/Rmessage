@@ -8,7 +8,7 @@ import io.rector.netty.config.ClientConfig;
 import io.rector.netty.config.Config;
 import io.rector.netty.flow.plugin.PluginRegistry;
 import io.rector.netty.transport.Transport;
-import io.rector.netty.transport.connction.RConnection;
+import io.rector.netty.transport.connection.RConnection;
 import io.rector.netty.transport.distribute.DirectClientMessageHandler;
 import io.rector.netty.transport.method.MethodExtend;
 import lombok.Getter;

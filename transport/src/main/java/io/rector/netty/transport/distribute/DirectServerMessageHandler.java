@@ -5,11 +5,8 @@ import io.reactor.netty.api.ChannelAttr;
 import io.reactor.netty.api.codec.MessageBody;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.reactor.netty.api.exception.NoGroupCollectorException;
-import io.rector.netty.transport.connction.RConnection;
+import io.rector.netty.transport.connection.RConnection;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 

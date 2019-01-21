@@ -1,6 +1,6 @@
 package io.rector.netty.core.session;
 
-import io.rector.netty.transport.connction.RConnection;
+import io.rector.netty.transport.connection.RConnection;
 import io.rector.netty.transport.distribute.OffMessageHandler;
 import io.rector.netty.transport.group.GroupCollector;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
