@@ -26,6 +26,8 @@ public class RConnection implements Connection {
     private NettyContext context;
 
 
+
+
     public RConnection(NettyInbound inbound, NettyOutbound outbound, NettyContext context) {
         this.inbound = inbound;
         this.outbound = outbound;
