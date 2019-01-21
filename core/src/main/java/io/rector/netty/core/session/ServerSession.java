@@ -1,6 +1,6 @@
 package io.rector.netty.core.session;
 
-import io.rector.netty.transport.connection.RConnection;
+import io.reactor.netty.api.codec.RConnection;
 import io.rector.netty.transport.distribute.OffMessageHandler;
 import io.rector.netty.transport.group.GroupCollector;
 import reactor.core.Disposable;

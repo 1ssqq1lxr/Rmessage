@@ -3,6 +3,7 @@ package io.rector.netty.transport.connection;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import io.reactor.netty.api.codec.RConnection;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,8 +16,7 @@ import lombok.Setter;
 @Getter
 public class ConnectionRelation {
 
-
-    private Multimap<String,RConnection> multimap = Multimaps.synchronizedMultimap(ArrayListMultimap.create()); // user -> list<RConnection>
+    private Multimap<String, RConnection> multimap = Multimaps.synchronizedMultimap(ArrayListMultimap.create()); // user -> list<RConnection>
 
 
 }

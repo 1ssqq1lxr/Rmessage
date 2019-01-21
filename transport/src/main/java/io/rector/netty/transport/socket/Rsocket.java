@@ -1,9 +1,9 @@
 package io.rector.netty.transport.socket;
 
 import io.reactor.netty.api.codec.Protocol;
+import io.reactor.netty.api.codec.RConnection;
 import io.rector.netty.config.Config;
 import io.rector.netty.transport.Transport;
-import io.rector.netty.transport.connection.RConnection;
 import io.rector.netty.transport.method.MethodExtend;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;

@@ -24,9 +24,7 @@ import java.util.List;
 @Builder
 public  class TransportMessage {
 
-    private transient NettyOutbound outbound;
-
-    private transient NettyInbound  inbound;
+    private transient RConnection connection;
 
     private ProtocolCatagory type;
 
@@ -37,15 +35,11 @@ public  class TransportMessage {
     private transient boolean discard;
 
 
-    public TransportMessage setOutbound(NettyOutbound outbound) {
-        this.outbound = outbound;
+    public TransportMessage setConnection(RConnection connection) {
+        this.connection = connection;
         return this;
     }
 
-    public TransportMessage setInbound(NettyInbound inbound) {
-        this.inbound = inbound;
-        return this;
-    }
 
 
     public byte[] getBytes(){

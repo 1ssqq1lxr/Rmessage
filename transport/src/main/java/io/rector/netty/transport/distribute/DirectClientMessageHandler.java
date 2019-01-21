@@ -1,8 +1,8 @@
 package io.rector.netty.transport.distribute;
 
 import io.netty.buffer.Unpooled;
+import io.reactor.netty.api.codec.RConnection;
 import io.reactor.netty.api.codec.TransportMessage;
-import io.rector.netty.transport.connection.RConnection;
 import io.rector.netty.transport.listener.MessageListener;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.Disposable;
@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class DirectClientMessageHandler {
 
-    private final  RConnection connection;
+    private final RConnection connection;
 
     public DirectClientMessageHandler(RConnection connection) {
         this.connection=connection;

@@ -1,6 +1,5 @@
-package io.rector.netty.transport.connection;
+package io.reactor.netty.api.codec;
 
-import io.reactor.netty.api.codec.TransportMessage;
 import lombok.Data;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -59,7 +58,7 @@ public class RConnection implements Connection {
 
     @Override
     public Flux<TransportMessage> receiveMsg() {
-        return inbound.receiveObject().cast(TransportMessage.class).map(message -> message.setOutbound(this.outbound).setInbound(this.inbound));
+        return inbound.receiveObject().cast(TransportMessage.class).map(message -> message.setConnection(this));
     }
 
     @Override

@@ -77,7 +77,7 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                     directServerMessageHandler.sendPong(
                             TransportMessage
                                     .builder()
-                                    .outbound(message.getOutbound())
+                                    .connection(message.getConnection())
                                     .clientType(message.getClientType())
                                     .type(ProtocolCatagory.PONG)
                                     .build())

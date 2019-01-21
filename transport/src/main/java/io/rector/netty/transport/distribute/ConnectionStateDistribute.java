@@ -32,7 +32,7 @@ public class ConnectionStateDistribute {
     public Mono<Void> init(TransportMessage message, Consumer<String> consumer) {
         return Mono.create(sink->{
             OnlineMessage onlineMessage=(OnlineMessage)message.getMessageBody();
-            ChannelAttr.boundUserId(message.getInbound(),onlineMessage.getUserId()); //  绑定id
+            ChannelAttr.boundUserId(message.getConnection().getInbound(),onlineMessage.getUserId()); //  绑定id
             // 拉取离线消息 每次10条
             consumer.accept(onlineMessage.getUserId());
             Optional.ofNullable(serverSocketAdapter.getOffMessageHandler())

@@ -3,9 +3,9 @@ package io.rector.netty.transport.distribute;
 import io.netty.buffer.Unpooled;
 import io.reactor.netty.api.ChannelAttr;
 import io.reactor.netty.api.codec.MessageBody;
+import io.reactor.netty.api.codec.RConnection;
 import io.reactor.netty.api.codec.TransportMessage;
 import io.reactor.netty.api.exception.NoGroupCollectorException;
-import io.rector.netty.transport.connection.RConnection;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -50,7 +50,7 @@ public class DirectServerMessageHandler {
             if(ids.isPresent()){
                 byte[] bs=message.getBytes();
                 // 发送所有人 check在线状态
-                ids.get().stream().filter(id->!id.equals(ChannelAttr.getUserId(message.getInbound()))).forEach(id->{
+                ids.get().stream().filter(id->!id.equals(ChannelAttr.getUserId(message.getConnection().getInbound()))).forEach(id->{
                     Optional<RConnection> connection=Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(id));
                     if(!connection.isPresent()){
                         consumer.apply(id).subscribe();
@@ -70,6 +70,6 @@ public class DirectServerMessageHandler {
 
 
     public Mono<Void>  sendPong(TransportMessage message) {
-        return message.getOutbound().send(Mono.just(Unpooled.wrappedBuffer(message.getBytes()))).then();
+        return message.getConnection().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(message.getBytes()))).then();
     }
 }
