@@ -30,6 +30,7 @@ public class DefaultOffMessageHandler implements OffMessageHandler {
 
     @Override
     public Flux<TransportMessage> getToMessages(String to, ClientType clientType) {
-        return Flux.just(messages.get(to).toArray(new TransportMessage[messages.get(to).size()]));
+        return Flux.just(messages.get(to).toArray(new TransportMessage[messages.get(to).size()]))
+                .doOnComplete(()->messages.removeAll(to));
     }
 }
