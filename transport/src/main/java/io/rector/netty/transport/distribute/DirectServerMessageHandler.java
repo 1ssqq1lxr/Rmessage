@@ -2,12 +2,14 @@ package io.rector.netty.transport.distribute;
 
 import io.netty.buffer.Unpooled;
 import io.reactor.netty.api.ChannelAttr;
-import io.reactor.netty.api.codec.MessageBody;
-import io.reactor.netty.api.codec.RConnection;
-import io.reactor.netty.api.codec.TransportMessage;
+import io.reactor.netty.api.codec.*;
 import io.reactor.netty.api.exception.NoGroupCollectorException;
+import io.rector.netty.transport.connection.ConnectionManager;
+import io.rector.netty.transport.group.GroupCollector;
 import io.rector.netty.transport.socket.ServerSocketAdapter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.Opt;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
@@ -32,9 +34,10 @@ public class DirectServerMessageHandler {
     public Mono<Void>  sendOne(TransportMessage message, Mono<Void> offline){
         return   Mono.create(monoSink -> {
             MessageBody messageBody=(MessageBody) message.getMessageBody();
-            Optional<RConnection> rConnection= Optional.ofNullable(serverSocketAdapter.getIds().get(messageBody.getTo()));
+            Optional<Set<RConnection>> rConnection= Optional.ofNullable(serverSocketAdapter.getConnectionManager().getUserMultiConnection(messageBody.getTo()));
             if(rConnection.isPresent()){ // 发送
-                rConnection.get().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(message.getBytes()))).then().subscribe();
+                byte[] bytes=message.getBytes();
+                rConnection.get().stream().forEach(connection -> connection.getOutbound().send(Mono.just(Unpooled.wrappedBuffer(bytes))).then().subscribe());
             }
             else
                 offline.subscribe();
@@ -50,15 +53,19 @@ public class DirectServerMessageHandler {
             if(ids.isPresent()){
                 byte[] bs=message.getBytes();
                 // 发送所有人 check在线状态
-                ids.get().stream().filter(id->!id.equals(ChannelAttr.getUserId(message.getConnection().getInbound()))).forEach(id->{
-                    Optional<RConnection> connection=Optional.ofNullable((RConnection) serverSocketAdapter.getIds().get(id));
-                    if(!connection.isPresent()){
-                        consumer.apply(id).subscribe();
-                        log.info(" group offline message {}",message);
-                    }
-                    else
-                        connection.get().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(bs))).then().subscribe();
-                });
+                ids.get()
+                        .stream()
+                        .filter(id->!id.equals(ChannelAttr.getUserId(message.getConnection().getInbound())))
+                        .forEach(user->{
+                            Optional<Set<RConnection>> sets=Optional.ofNullable(serverSocketAdapter.getConnectionManager().getUserMultiConnection(user));
+                            if(sets.isPresent() && sets.get().size()>0){
+                                sets.get().stream()
+                                        .forEach(connection -> message.getConnection().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(bs))).then().subscribe());
+                            }
+                            else {
+                                log.info(" group offline message {}",message);
+                                consumer.apply(user).subscribe(); }
+                        });
                 monoSink.success();
             }
             else {
@@ -72,4 +79,17 @@ public class DirectServerMessageHandler {
     public Mono<Void>  sendPong(TransportMessage message) {
         return message.getConnection().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(message.getBytes()))).then();
     }
+
+    public Mono<Void>  sendOffline(TransportMessage transportMessage,Set<String> users) {
+        return Mono.create(monoSink -> {
+            byte[] bytes = transportMessage.getBytes();
+            users.stream()
+                    .map(id->serverSocketAdapter.getConnectionManager().getUserMultiConnection(id))
+                    .flatMap(rConnections -> rConnections.stream())
+                    .forEach(connection -> transportMessage.getConnection().getOutbound().send(Mono.just(Unpooled.wrappedBuffer(bytes))).then().subscribe());
+            monoSink.success();
+        });
+
+    }
+
 }

@@ -7,17 +7,14 @@ package io.rector.netty.transport.connection;
  */
 public class ConnectionFactory {
 
-    public ConnectionManager getConnectionManager(){
+    public ConnectionManager getDefaultConnectionManager(){
         return init().transform();
     }
-
 
 
     private ConnectionInterface init(){
         return DefaultConnectionManager::new;
     }
-
-
     interface  ConnectionInterface{
         ConnectionManager transform();
     }

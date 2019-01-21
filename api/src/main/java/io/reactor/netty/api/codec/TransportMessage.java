@@ -2,15 +2,10 @@ package io.reactor.netty.api.codec;
 
 
 import io.reactor.netty.api.ByteUtil;
-import io.reactor.netty.api.exception.NotSupportException;
 import lombok.Builder;
 import lombok.Data;
-import reactor.ipc.netty.NettyInbound;
-import reactor.ipc.netty.NettyOutbound;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -45,9 +40,10 @@ public  class TransportMessage {
     public byte[] getBytes(){
         List<Byte> list =  new LinkedList<>();
         switch (type){
+            case OFFLINE:
             case ONLINE:
-                OnlineMessage onlineMessage =(OnlineMessage) messageBody;
-                byte[] userId = onlineMessage.getUserId().getBytes();
+                ConnectionState connectionState =(ConnectionState) messageBody;
+                byte[] userId = connectionState.getUserId().getBytes();
                 ByteUtil.byteToByteList(clientType.getType(),type.getNumber(),list);
                 list.add((byte)userId.length);
                 ByteUtil.byteArrayToList(userId,list);

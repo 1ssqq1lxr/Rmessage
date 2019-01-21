@@ -6,9 +6,7 @@ import io.netty.handler.codec.ReplayingDecoder;
 import io.reactor.netty.api.codec.*;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @Auther: lxr
@@ -57,7 +55,7 @@ import java.util.stream.Collectors;
  *  *   |------messageId------------  |
  *
  *
- *   ONLINE
+ *   ONLINE  OFFLINE
  *
  *    *    *   FIXHEADER
  *  *  *   |-----1byte--------------------|
@@ -86,7 +84,6 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
 
     private String body;
 
-
     private ClientType clientType;
 
 
@@ -95,7 +92,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) {
-        header:switch (state()){
+        switch (state()){
             case FIXD_HEADER:
                 byte header=buf.readByte();
                 clientType=MessageUtils.obtainHigh(header);
@@ -103,7 +100,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                     case PING:
                         out.add(TransportMessage.builder().type(type).clientType(clientType).build());
                         this.checkpoint(Type.FIXD_HEADER);
-                        break header;
+                        break;
                     case ONE:
                         type = ProtocolCatagory.ONE;
                         this.checkpoint(Type.TOPICHEADER);
@@ -112,17 +109,20 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         type = ProtocolCatagory.GROUP;
                         this.checkpoint(Type.TOPICHEADER);
                         break;
+                    case OFFLINE:
+                        this.checkpoint(Type.CONNETION_STATE);
+                        break;
                     case ONLINE:
-                        this.checkpoint(Type.ONLINE);
+                        this.checkpoint(Type.CONNETION_STATE);
                         break;
                     case PONG:
                         out.add(TransportMessage.builder().type(type).clientType(clientType).build());
                         this.checkpoint(Type.FIXD_HEADER);
-                        break header;
+                        break ;
                     case ONEACK:  //ack 暂时未实现
                         out.add(TransportMessage.builder().type(type).clientType(clientType).build());
                         this.checkpoint(Type.FIXD_HEADER);
-                        break header;
+                        break ;
                     case GROUPACK://ack 暂时未实现
                         this.checkpoint(Type.ACKBODY);
                         break ;
@@ -131,27 +131,27 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         this.checkpoint(Type.FIXD_HEADER);
                         return;
                 }
-                break header;
-            case ONLINE:
+                break;
+            case CONNETION_STATE:
                 short userIdLength= buf.readByte();
                 byte[] userIdBytes = new byte[userIdLength];
                 buf.readBytes(userIdBytes);
                 out.add(TransportMessage.builder().clientType(clientType).type(type)
                         .messageBody(
-                                OnlineMessage.builder()
+                                ConnectionState.builder()
                                         .userId(new String(userIdBytes,Charset.defaultCharset()))
                                         .build()
                         )
                         .build());
                 this.checkpoint(Type.FIXD_HEADER);
-                break  header;
+                break ;
             case ACKBODY:
                 messageId=buf.readLong();
                 out.add(TransportMessage.builder().clientType(clientType).type(type)
                         .messageBody(AckMessage.builder().messageId(messageId).build())
                         .build());
                 this.checkpoint(Type.FIXD_HEADER);
-                break  header;
+                break  ;
             case TOPICHEADER:
                 short fromlength= buf.readByte();
                 short tolength= buf.readByte();
@@ -162,7 +162,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 from =new String(fromBytes, Charset.defaultCharset());
                 to   =new String(toBytes, Charset.defaultCharset());
                 this.checkpoint(Type.MESSAGEBODY);
-                break header;
+                break ;
             case MESSAGEBODY:
                 messageId=buf.readLong(); // 消息id
                 int bodyLength= buf.readUnsignedShort();
@@ -170,7 +170,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                 buf.readBytes(bodyBytes);
                 body=new String(bodyBytes,Charset.defaultCharset());
                 this.checkpoint(Type.CRC);
-                break header;
+                break ;
             case CRC:
                 out.add(TransportMessage.builder().clientType(clientType).type(type)
                         .messageBody(MessageBody.builder()
@@ -182,7 +182,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                                 .build())
                         .build());
                 this.checkpoint(Type.FIXD_HEADER);
-                break header;
+                break ;
         }
     }
 
@@ -190,7 +190,7 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
         FIXD_HEADER,
         TOPICHEADER,
         MESSAGEBODY,
-        ONLINE,
+        CONNETION_STATE,
         ACKBODY,
         CRC
     }

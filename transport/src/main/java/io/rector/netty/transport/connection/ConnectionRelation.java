@@ -16,7 +16,6 @@ import lombok.Setter;
 @Getter
 public class ConnectionRelation {
 
-    private Multimap<String, RConnection> multimap = Multimaps.synchronizedMultimap(ArrayListMultimap.create()); // user -> list<RConnection>
 
 
 }

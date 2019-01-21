@@ -1,6 +1,7 @@
 package io.reactor.netty.api;
 
 import io.netty.util.AttributeKey;
+import io.reactor.netty.api.codec.ClientType;
 import reactor.ipc.netty.NettyInbound;
 
 import java.util.List;
@@ -15,6 +16,8 @@ public class ChannelAttr {
 
     private static final String   USER_ID   =  "USERID";
 
+    private static final String   CLIENT_TYPE   =  "CLIENT_TYPE";
+
     public static  void boundUserId(NettyInbound inbound,String userId){
         AttributeKey<String> key = AttributeKey.valueOf(USER_ID);
         inbound.attr(key).getAndSet(userId);
@@ -27,4 +30,13 @@ public class ChannelAttr {
     }
 
 
+    public static void boundClientType(NettyInbound inbound, ClientType clientType) {
+        AttributeKey<ClientType> key = AttributeKey.valueOf(CLIENT_TYPE);
+        inbound.attr(key).getAndSet(clientType);
+    }
+
+    public static Optional<ClientType> getClientType(NettyInbound inbound) {
+        AttributeKey<ClientType> key = AttributeKey.valueOf(CLIENT_TYPE);
+        return Optional.ofNullable(inbound.attr(key).get());
+    }
 }

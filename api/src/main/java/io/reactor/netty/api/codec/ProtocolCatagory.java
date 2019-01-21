@@ -9,9 +9,10 @@ import lombok.Getter;
  */
 @Getter
 public enum  ProtocolCatagory {
-    ONLINE((byte)0),//在线
-    ONE((byte)1),   // 单发
-    GROUP((byte)2),// 群发
+    ONLINE((byte)0), //在线
+    ONE((byte)1),    // 单发
+    GROUP((byte)2),  // 群发
+    OFFLINE((byte)3),//离线
     ONEACK((byte)10),
     GROUPACK((byte)11),
     PING((byte)14),  //心跳

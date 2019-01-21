@@ -1,18 +1,17 @@
 package io.rector.netty.transport.codec;
 
-import io.reactor.netty.api.codec.MessageBody;
-import io.reactor.netty.api.codec.OfflineMessage;
-import io.reactor.netty.api.codec.ProtocolCatagory;
-import io.reactor.netty.api.codec.TransportMessage;
+import io.reactor.netty.api.codec.*;
 import io.reactor.netty.api.exception.NotSupportException;
+import io.rector.netty.transport.connection.ConnectionManager;
 import io.rector.netty.transport.distribute.ConnectionStateDistribute;
 import io.rector.netty.transport.distribute.DirectServerMessageHandler;
+import io.rector.netty.transport.distribute.UserTransportHandler;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
 
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 
@@ -34,14 +33,26 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
 
     private ConnectionStateDistribute connectionStateDistribute;
 
-    private Consumer<String> consumer;
+    private ConnectionManager connectionManager;
 
-    public ServerDecoderAcceptor(UnicastProcessor<OfflineMessage> offlineMessagePipeline, DirectServerMessageHandler directServerMessageHandler, ConnectionStateDistribute connectionStateDistribute, Disposable disposable,Consumer<String> consumer) {
+    private UserTransportHandler userHandler;
+
+    private AtomicBoolean atomicBoolean;
+
+    public ServerDecoderAcceptor(UnicastProcessor<OfflineMessage> offlineMessagePipeline,
+                                 DirectServerMessageHandler directServerMessageHandler,
+                                 ConnectionStateDistribute connectionStateDistribute,
+                                 Disposable disposable,
+                                 ConnectionManager connectionManager,
+                                 UserTransportHandler userHandler,
+                                 AtomicBoolean atomicBoolean) {
         this.directServerMessageHandler = directServerMessageHandler;
         this.offlineMessagePipeline=offlineMessagePipeline;
         this.connectionStateDistribute=connectionStateDistribute;
         this.disposable=disposable;
-        this.consumer=consumer;
+        this.connectionManager=connectionManager;
+        this.userHandler=userHandler;
+        this.atomicBoolean =atomicBoolean;
     }
 
 
@@ -53,21 +64,28 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
         }
         else {
             switch (message.getType()){
+                case OFFLINE:
+                    throw new NotSupportException("type OFFLINE message not support");
                 case ONLINE:
+                    if(!userHandler.isAllowLogin(((ConnectionState)message.getMessageBody()).getUserId())) return;
                     Mono.fromRunnable(()->{
                         if(!disposable.isDisposed()){ disposable.dispose(); }//取消关闭连接
                     })
-                            .then(connectionStateDistribute.init(message,consumer))
+                            .then(connectionStateDistribute.init(message,connectionManager,atomicBoolean))
                             .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage ONLINE】 {}",throwable))
                             .subscribe();
                     break;
                 case ONE: // 单发
+                    MessageBody one=(MessageBody)message.getMessageBody();
+                    if(!userHandler.checkIsFriend(one.getFrom(),one.getTo())) return;
                     Mono<Void> offline= buildOffline(message, ((MessageBody)message.getMessageBody()).getTo());
                     directServerMessageHandler.sendOne(message,offline)
                             .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage ONE】 {}",throwable))
                             .subscribe();
                     break;
                 case GROUP:  //群发
+                    MessageBody group=(MessageBody)message.getMessageBody();
+                    if(!userHandler.checkIsFriend(group.getFrom(),group.getTo())) return;
                     Function<String,Mono<Void>> consumer = uid->buildOffline(message,uid);
                     directServerMessageHandler.sendGroup(message,consumer)
                             .doOnError(throwable -> log.error("【ServerDecoderAcceptor：transportMessage GROUP】 {}",throwable))

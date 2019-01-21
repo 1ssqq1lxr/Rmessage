@@ -2,7 +2,7 @@ package io.reactor.netty.flow.test.tcp;
 
 import io.rector.netty.core.init.ServerStart;
 import io.rector.netty.core.session.TcpServerSession;
-import io.rector.netty.transport.distribute.DefaultOffMessageHandler;
+import io.rector.netty.transport.distribute.def.DefaultOffMessageHandler;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;

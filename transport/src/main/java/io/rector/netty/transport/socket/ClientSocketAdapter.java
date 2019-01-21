@@ -66,14 +66,14 @@ public class ClientSocketAdapter  extends Rsocket {
                         sendPing();
                         methodExtend.getWriteIdle().getEvent().get().run();
                     }).subscribe());
-            OnlineMessage onlineMessage= OnlineMessage
+            ConnectionState connectionState = ConnectionState
                     .builder()
                     .userId(config.getUserId())
                     .build();
             directClientMessageHandler.send(TransportMessage.builder()
                     .clientType(config.getClientType())
                     .type(ProtocolCatagory.ONLINE)
-                    .messageBody(onlineMessage)
+                    .messageBody(connectionState)
                     .build()).subscribe();
         };
     }

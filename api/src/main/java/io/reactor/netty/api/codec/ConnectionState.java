@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class OnlineMessage {
+public class ConnectionState {
 
     private String userId;
 

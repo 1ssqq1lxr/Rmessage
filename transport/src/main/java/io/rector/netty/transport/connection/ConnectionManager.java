@@ -1,8 +1,8 @@
 package io.rector.netty.transport.connection;
 
 import io.reactor.netty.api.codec.RConnection;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
+import java.util.Set;
 
 /**
  * @Auther: lxr
@@ -11,10 +11,11 @@ import reactor.core.publisher.Mono;
  */
 public interface ConnectionManager {
 
-    Mono<Void>   acceptConnection(ConnectionAcceptor acceptor);
+    void   acceptConnection(String user, RConnection connection);
 
-    Mono<Void>   removeConnection(ConnectionAcceptor acceptor);
+    void  removeConnection(String user, RConnection connection);
 
-    Flux<RConnection>  getUserMultiConnection(String user);
+    Set<RConnection>  getUserMultiConnection(String user);
 
+    Set<RConnection> getConnections();
 }
