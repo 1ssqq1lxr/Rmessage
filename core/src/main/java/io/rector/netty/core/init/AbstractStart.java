@@ -1,6 +1,7 @@
 package io.rector.netty.core.init;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
 import io.reactor.netty.api.Idle;
 import io.reactor.netty.api.codec.ClientType;
 import io.reactor.netty.api.codec.Protocol;
@@ -91,6 +92,10 @@ abstract class AbstractStart implements Start {
         return this;
     }
 
+    @Override
+    public <T> Start option(ChannelOption<T> key, T value) {
+        return null;
+    }
 
 
 //    @Override

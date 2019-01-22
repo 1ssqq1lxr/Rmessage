@@ -13,6 +13,7 @@ import reactor.ipc.netty.NettyContext;
 import reactor.ipc.netty.options.ClientOptions;
 import reactor.ipc.netty.options.ServerOptions;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -32,8 +33,6 @@ public class ReactorMethodExtend implements MethodExtend {
     private  Idle writeIdle;
 
 
-
-
     private Consumer<? super Channel> afterChannelInit;
 
     private Consumer<ServerOptions.Builder<?>> serverOptions;
@@ -45,14 +44,22 @@ public class ReactorMethodExtend implements MethodExtend {
 
     public Consumer<? extends ServerOptions.Builder<?>> getServerOptions() {
         ServerConfig serverConfig =(ServerConfig)config;
-        this.serverOptions= builder ->builder.host(serverConfig.getIp()).port(serverConfig.port).afterChannelInit(afterChannelInit).afterNettyContextInit(afterNettyContextInit);
+        this.serverOptions= builder ->{
+            ServerOptions.Builder<?> builder1 =builder.host(serverConfig.getIp()).port(serverConfig.port).afterNettyContextInit(afterNettyContextInit);
+            Optional.ofNullable(afterChannelInit)
+                    .ifPresent(init->builder1   .afterChannelInit(afterChannelInit));
+        };
         return this.serverOptions;
     }
 
     @Override
     public Consumer<? extends ClientOptions.Builder<?>> getClientOptions() {
         ClientConfig clientConfig =(ClientConfig)config;
-        this.clientOptions= builder ->builder.disablePool().host(clientConfig.getIp()).port(clientConfig.port).afterChannelInit(afterChannelInit).afterNettyContextInit(afterNettyContextInit);
+        this.clientOptions= builder ->{
+            ClientOptions.Builder<?> builder1 =builder.disablePool().host(clientConfig.getIp()).port(clientConfig.port).afterNettyContextInit(afterNettyContextInit);
+            Optional.ofNullable(afterChannelInit)
+                    .ifPresent(init->builder1   .afterChannelInit(afterChannelInit));
+        };
         return clientOptions;
     }
 

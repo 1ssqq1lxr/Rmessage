@@ -2,6 +2,8 @@ package io.rector.netty.core.init;
 
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
+import io.reactor.netty.api.Idle;
 import io.reactor.netty.api.codec.ClientType;
 import io.rector.netty.core.session.ServerSession;
 import io.rector.netty.flow.plugin.FrameInterceptor;
@@ -38,6 +40,8 @@ public interface Start {
 
     Start onWriteIdle(Long l, Supplier<Runnable> writeLe);
 
+
+    <T> Start  option(ChannelOption<T> key, T value);
 
     Mono<Disposable> connect();
 
