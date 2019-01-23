@@ -41,12 +41,21 @@ public  class TransportMessage {
         List<Byte> list =  new LinkedList<>();
         switch (type){
             case OFFLINE:
-            case ONLINE:
                 ConnectionState connectionState =(ConnectionState) messageBody;
                 byte[] userId = connectionState.getUserId().getBytes();
                 ByteUtil.byteToByteList(clientType.getType(),type.getNumber(),list);
                 list.add((byte)userId.length);
                 ByteUtil.byteArrayToList(userId,list);
+                break;
+            case ONLINE:
+                ConnectionState state =(ConnectionState) messageBody;
+                byte[] user = state.getUserId().getBytes();
+                byte[] pwd = state.getPassword().getBytes();
+                ByteUtil.byteToByteList(clientType.getType(),type.getNumber(),list);
+                list.add((byte)user.length);
+                list.add((byte)pwd.length);
+                ByteUtil.byteArrayToList(user,list);
+                ByteUtil.byteArrayToList(pwd,list);
                 break;
             case PONG:
             case PING:

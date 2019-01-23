@@ -10,8 +10,9 @@ import java.util.Set;
  * @Description:
  */
 public class DefaultUserTransportHandler implements UserTransportHandler {
+
     @Override
-    public boolean isAllowLogin(String user) {
+    public boolean isAllowLogin(String user, String password) {
         return true;
     }
 

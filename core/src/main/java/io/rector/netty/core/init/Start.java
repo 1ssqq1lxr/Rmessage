@@ -49,4 +49,6 @@ public interface Start {
 
     Start userId(String userId);
 
+    Start password(String password);
+
 }

@@ -67,7 +67,8 @@ public class ServerDecoderAcceptor implements DecoderAcceptor{
                 case OFFLINE:
                     throw new NotSupportException("type OFFLINE message not support");
                 case ONLINE:
-                    if(!userHandler.isAllowLogin(((ConnectionState)message.getMessageBody()).getUserId())) return;
+                    ConnectionState connectionState= (ConnectionState)message.getMessageBody();
+                    if(!userHandler.isAllowLogin(connectionState.getUserId(),connectionState.getPassword())) return;
                     Mono.fromRunnable(()->{
                         if(!disposable.isDisposed()){ disposable.dispose(); }//取消关闭连接
                     })

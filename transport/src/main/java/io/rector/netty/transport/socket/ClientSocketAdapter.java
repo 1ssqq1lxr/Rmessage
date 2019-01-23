@@ -69,6 +69,7 @@ public class ClientSocketAdapter  extends Rsocket {
             ConnectionState connectionState = ConnectionState
                     .builder()
                     .userId(config.getUserId())
+                    .password(config.getPassword())
                     .build();
             directClientMessageHandler.send(TransportMessage.builder()
                     .clientType(config.getClientType())

@@ -67,6 +67,11 @@ abstract class AbstractStart implements Start {
         return this;
     }
 
+    @Override
+    public Start password(String password) {
+         throw new NotSupportException("server not support set  password");
+    }
+
 
     @Override
     public Start onReadIdle(Long l) {

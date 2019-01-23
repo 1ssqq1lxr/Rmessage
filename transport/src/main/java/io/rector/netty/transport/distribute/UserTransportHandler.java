@@ -11,7 +11,7 @@ import java.util.Set;
 public interface UserTransportHandler {
 
     // 是否允许user客户端登录
-    boolean isAllowLogin(String user);
+    boolean isAllowLogin(String user,String password);
 
     // 发送point to point 消息 判断是否为好友
     boolean checkIsFriend(String from,String to);

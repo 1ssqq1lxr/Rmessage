@@ -55,6 +55,12 @@ public class ClientStart   extends  AbstractStart {
     }
 
 
+    public  Start password(String password){
+        ((ClientConfig)config).setPassword(password);
+        return  this;
+    }
+
+
     private ClientStart() {
         super(ClientConfig.builder().build(), ReactorMethodExtend.builder().build());
     }

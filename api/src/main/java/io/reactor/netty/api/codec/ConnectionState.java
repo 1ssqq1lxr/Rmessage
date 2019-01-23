@@ -11,5 +11,7 @@ public class ConnectionState {
 
     private String userId;
 
+    private String password;
+
 
 }

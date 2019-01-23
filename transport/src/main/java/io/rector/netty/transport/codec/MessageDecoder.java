@@ -55,15 +55,24 @@ import java.util.List;
  *  *   |------messageId------------  |
  *
  *
- *   ONLINE  OFFLINE
+ *   ONLINE
  *
  *    *    *   FIXHEADER
  *  *  *   |-----1byte--------------------|
  *  *  *   |固定头高4bit| 消息类型低 4bit  |
  *  *       *  ON
+ *  *  *   |-----1byte---------------| |-----=1byte---------------|
+ *  *  *   |     userId length       |   password length
+ *  *  *   |-----nbyte---------------| |-----=nbyte---------------|
+ *  *  *   |     userId            |  password
+ * OFFLINE
+ *
+ *    *    *   FIXHEADER
+ *  *  *   |-----1byte--------------------|
+ *  *  *   |固定头高4bit| 消息类型低 4bit  |
+ *  *       *  OFF
  *  *  *   |-----1byte---------------| |-----=nbyte---------------|
  *  *  *   |     userId length       |  userId
- *
  * @see ProtocolCatagory
  */
 
@@ -110,10 +119,10 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         this.checkpoint(Type.TOPICHEADER);
                         break;
                     case OFFLINE:
-                        this.checkpoint(Type.CONNETION_STATE);
+                        this.checkpoint(Type.ONLINE);
                         break;
                     case ONLINE:
-                        this.checkpoint(Type.CONNETION_STATE);
+                        this.checkpoint(Type.OFFLINE);
                         break;
                     case PONG:
                         out.add(TransportMessage.builder().type(type).clientType(clientType).build());
@@ -132,7 +141,24 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         return;
                 }
                 break;
-            case CONNETION_STATE:
+            case ONLINE:
+                short userLength= buf.readByte();
+                byte[] userBytes = new byte[userLength];
+                short pwdLength= buf.readByte();
+                byte[] pwdBytes = new byte[pwdLength];
+                buf.readBytes(userBytes);
+                buf.readBytes(pwdBytes);
+                out.add(TransportMessage.builder().clientType(clientType).type(type)
+                        .messageBody(
+                                ConnectionState.builder()
+                                        .userId(new String(userBytes,Charset.defaultCharset()))
+                                        .password(new String(pwdBytes,Charset.defaultCharset()))
+                                        .build()
+                        )
+                        .build());
+                this.checkpoint(Type.FIXD_HEADER);
+                break ;
+            case OFFLINE:
                 short userIdLength= buf.readByte();
                 byte[] userIdBytes = new byte[userIdLength];
                 buf.readBytes(userIdBytes);
@@ -190,7 +216,8 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
         FIXD_HEADER,
         TOPICHEADER,
         MESSAGEBODY,
-        CONNETION_STATE,
+        ONLINE,
+        OFFLINE,
         ACKBODY,
         CRC
     }
