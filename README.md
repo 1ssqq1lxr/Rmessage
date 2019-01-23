@@ -13,7 +13,8 @@ Rmessage是采用Reactor3,基于reactor-netty项目构建的实时消息推送ap
 使用Rmessage你需要外部管理群组用户关系,以及离线消息存储，Rmessage不提供持久化，测试可以使用默认Handler内存保留离线消息。
 整个项目采用纯异步的编程思想去开发，旨在学习reactive programming。
 
-
+[码云地址](https://gitee.com/lxrzdy/Rmessage)
+[github地址](https://github.com/1ssqq1lxr/Rmessage)
 
 ##  目前支持的功能
 1. 单聊
