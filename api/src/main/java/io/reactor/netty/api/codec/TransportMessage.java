@@ -19,8 +19,6 @@ import java.util.List;
 @Builder
 public  class TransportMessage {
 
-    private transient RConnection connection;
-
     private ProtocolCatagory type;
 
     private ClientType clientType;
@@ -28,6 +26,8 @@ public  class TransportMessage {
     private Object messageBody;
 
     private transient boolean discard;
+
+    private transient RConnection connection;
 
 
     public TransportMessage setConnection(RConnection connection) {

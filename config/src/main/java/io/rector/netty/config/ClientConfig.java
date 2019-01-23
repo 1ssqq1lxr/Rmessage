@@ -2,6 +2,7 @@ package io.rector.netty.config;
 
 import io.reactor.netty.api.codec.ClientType;
 import io.reactor.netty.api.codec.Protocol;
+import io.reactor.netty.api.exception.CheckConfigException;
 import lombok.Builder;
 import lombok.Data;
 
@@ -28,6 +29,25 @@ public class ClientConfig  implements   Config{
 
     @Override
     public boolean check() {
+        if(protocol == null){
+            throw new CheckConfigException("please select protocol");
+        }
+        if(ip == null || ip ==""){
+            ip="127.0.0.1";
+        }
+        if(port == 0 ){
+            throw new CheckConfigException("please set port");
+        }
+        if(clientType == null){
+            throw new CheckConfigException("please set clientType");
+        }
+        if(userId == null){
+            throw new CheckConfigException("please set userId");
+        }
+
+        if(password == null){
+            throw new CheckConfigException("please set password");
+        }
         return true;
     }
 }

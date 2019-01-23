@@ -119,10 +119,10 @@ public class MessageDecoder extends ReplayingDecoder<MessageDecoder.Type> {
                         this.checkpoint(Type.TOPICHEADER);
                         break;
                     case OFFLINE:
-                        this.checkpoint(Type.ONLINE);
+                        this.checkpoint(Type.OFFLINE);
                         break;
                     case ONLINE:
-                        this.checkpoint(Type.OFFLINE);
+                        this.checkpoint(Type.ONLINE);
                         break;
                     case PONG:
                         out.add(TransportMessage.builder().type(type).clientType(clientType).build());

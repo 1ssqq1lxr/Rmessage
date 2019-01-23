@@ -25,6 +25,7 @@ public class Client1 {
                 .ip("127.0.0.1")
                 .port(1888)
                 .userId("21344")
+                .password("12312")
                 .onReadIdle(10000l,()->()->System.out.println("心跳了"))
                 .setClientType(ClientType.Ios)
 //                .interceptor(frame -> frame,frame -> frame)
