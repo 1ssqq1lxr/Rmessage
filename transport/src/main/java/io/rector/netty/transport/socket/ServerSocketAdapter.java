@@ -27,6 +27,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.UnicastProcessor;
 import reactor.core.scheduler.Schedulers;
+import reactor.ipc.netty.options.ServerOptions;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
@@ -111,9 +112,9 @@ public class ServerSocketAdapter extends Rsocket  {
     public Supplier<Consumer<RConnection>> next() {
         return ()-> rConnection -> {
             Optional.ofNullable(methodExtend.getReadIdle())
-                    .ifPresent(read-> rConnection.onReadIdle(read.getTime(), () -> read.getEvent().get().run()).subscribe());
+                    .ifPresent(read-> rConnection.onReadIdle(read.getTime(), () -> Optional.ofNullable(read.getEvent()).ifPresent(eve->eve.get().run())).subscribe());
             Optional.ofNullable(methodExtend.getWriteIdle())
-                    .ifPresent(write-> rConnection.onWriteIdle(methodExtend.getWriteIdle().getTime(),()-> methodExtend.getWriteIdle().getEvent().get().run()).subscribe());
+                    .ifPresent(write-> rConnection.onWriteIdle(write.getTime(),()-> Optional.ofNullable(write.getEvent()).ifPresent(eve->eve.get().run())).subscribe());
             Disposable disposable=Mono.defer(()-> rConnection.dispose())
                     .delaySubscription(Duration.ofSeconds(5))
                     .subscribe();

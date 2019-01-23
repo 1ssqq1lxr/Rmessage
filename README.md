@@ -32,44 +32,61 @@ Rmessage是采用Reactor3,基于reactor-netty项目构建的实时消息推送ap
 
 ##  快速开始
 - **服务端**
+###### Rmessage不管理用户群组之间关系,通过接口暴漏外部，只要实现接口注入即可。
 
 ```java
- ServerStart
-     .builder()
-     .tcp()
-     .ip("127.0.0.1")
-     .port(1888)
-     .interceptor(frame -> frame,frame -> frame)
-     .setAfterChannelInit(channel -> {//  channel设置
+ServerStart
+   .builder()
+   .tcp()
+   .ip("127.0.0.1")
+   .port(1888)
+   .onReadIdle(10000l) //设置读心跳时间
+   .onWriteIdle(10000l) //设置写心跳时间
+   .option(ChannelOption.SO_RCVBUF,1023)
+   .interceptor(frame -> frame,frame -> frame)// 拦截所有message
+   .setAfterChannelInit(channel -> {//  channel设置
       })
-     .connect()
-     .cast(TcpServerSession.class)
-     .subscribe(session->{
-       session.addGroupHandler(groupId -> null).subscribe(); // 设置群组管理handler
-       session.addOfflineHandler(new DefaultOffMessageHandler()).subscribe(); // 设置离线消息handler
-       session.addUserHandler(new DefaultUserTransportHandler()).subscribe(); // 设置用户关系管handler
+   .connect()
+   .cast(TcpServerSession.class)
+   .subscribe(session->{
+                    session.addGroupHandler(groupId -> null).subscribe();
+                    session.addOfflineHandler(new DefaultOffMessageHandler()).subscribe();
+                    session.addUserHandler(new DefaultUserTransportHandler());
   });
+
+
+
 ```
+ #### 具体接口方法定义请参照接口注释
+
+ 1. UserHandler接口是处理用户登陆校验等
+ 2. OfflineHandler 是处理离线消息存储,以及拉取离线消息的接口
+ 3. GroupHandler 是获取群组下所有用户的接口
+ 
 
 - **客户端**
 
 ```java
  ClientStart
-   .builder()
-   .tcp()
-   .ip("127.0.0.1")
-   .port(1888)
-   .userId("21344")
-   .onReadIdle(10000l,()->()->System.out.println("心跳了"))
-   .setClientType(ClientType.Ios)
-   .setAfterChannelInit(channel -> {
+     .builder()
+     .tcp()
+     .ip("127.0.0.1")
+     .port(1888)
+     .userId("21344")  //设置用户名
+     .password("12312") //设置密码
+     .onReadIdle(10000l,()->()->System.out.println("心跳了"))//设置读心跳,以及设置回调runner
+     .setClientType(ClientType.Ios)//设置客户端类型
+     .setAfterChannelInit(channel -> {
                     //  channel设置
-    })
-   .connect()
-   .cast(TcpClientSession.class)
-   .subscribe(session->{
-       session.sendPoint("123","测试一下哦").subscribe(); // session　操作类
-   });
+      })
+     .connect()
+     .cast(TcpClientSession.class)
+     .subscribe(session->{
+      session.sendPoint("123","测试一下哦").subscribe(); //发送单聊消息
+                    session.sendGroup("group1","123").subscribe();  // 发送群聊消息
+                    session.accept(message -> {
+    }); // 接受所有消息
+  });
 ```
 ## 协议设计
 - **单聊  多聊**
@@ -97,7 +114,7 @@ FixHeader  【1 byte】
 | 8 byte    |
 
 
-- **Online报文/Offline报文**
+- **Online报文**
 
 FixHeader  【1 byte】
    
@@ -107,9 +124,24 @@ FixHeader  【1 byte】
 
 ConnectionState  【n byte】
 
-| user length |  user |
-| --------   | :----:  |
-|  1 byte      |  n byte     |
+|  user length  |  password length  |  user   |   password |
+| ------------ | ------------ | ------------ | ------------ |
+|   1byte  |  1byte |  n byte  |    n byte |
+
+
+- **Offline报文**
+
+FixHeader  【1 byte】
+   
+   | client_type |  message_type |
+   | --------   | :----:  |
+   |  high 4bit       |  low 4bit      |
+
+ConnectionState  【n byte】
+
+|  user length   |  user   |
+| ------------ | ------------ | 
+|   1byte   |  n byte  | 
 
 
 - **Ping报文/Pong报文**

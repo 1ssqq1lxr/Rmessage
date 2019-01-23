@@ -24,18 +24,20 @@ public class Client1 {
                 .tcp()
                 .ip("127.0.0.1")
                 .port(1888)
-                .userId("21344")
-                .password("12312")
-                .onReadIdle(10000l,()->()->System.out.println("心跳了"))
-                .setClientType(ClientType.Ios)
-//                .interceptor(frame -> frame,frame -> frame)
+                .userId("21344")  //设置用户名
+                .password("12312") //设置密码
+                .onReadIdle(10000l,()->()->System.out.println("心跳了"))//设置读心跳,以及设置回调runner
+                .setClientType(ClientType.Ios)//设置客户端类型
                 .setAfterChannelInit(channel -> {
                     //  channel设置
                 })
                 .connect()
                 .cast(TcpClientSession.class)
                 .subscribe(session->{
-                    session.sendPoint("123","测试一下哦").subscribe();
+                    session.sendPoint("123","测试一下哦").subscribe(); //发送单聊消息
+                    session.sendGroup("group1","123").subscribe();  // 发送群聊消息
+                    session.accept(message -> {
+                    }); // 接受所有消息
         });
         countDownLatch.await();
     }
