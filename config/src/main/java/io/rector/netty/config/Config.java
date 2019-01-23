@@ -1,6 +1,9 @@
 package io.rector.netty.config;
 
+import io.netty.channel.ChannelOption;
 import io.reactor.netty.api.codec.Protocol;
+
+import java.util.Map;
 
 
 /**
@@ -24,7 +27,9 @@ public interface Config {
 
     boolean check();
 
+    void setChannelOption(Map<ChannelOption,Object> channelOption);
 
+    Map<ChannelOption,Object> getChannelOption();
 
 
 }

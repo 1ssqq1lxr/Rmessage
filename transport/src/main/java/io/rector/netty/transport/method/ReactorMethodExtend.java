@@ -1,6 +1,7 @@
 package io.rector.netty.transport.method;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelOption;
 import io.reactor.netty.api.Idle;
 import io.rector.netty.config.ClientConfig;
 import io.rector.netty.config.Config;
@@ -44,8 +45,10 @@ public class ReactorMethodExtend implements MethodExtend {
 
     public Consumer<? extends ServerOptions.Builder<?>> getServerOptions() {
         ServerConfig serverConfig =(ServerConfig)config;
+
         this.serverOptions= builder ->{
             ServerOptions.Builder<?> builder1 =builder.host(serverConfig.getIp()).port(serverConfig.port).afterNettyContextInit(afterNettyContextInit);
+            serverConfig.getChannelOption().forEach((channelOption, o) -> builder1.option(channelOption,o));
             Optional.ofNullable(afterChannelInit)
                     .ifPresent(init->builder1   .afterChannelInit(afterChannelInit));
         };
@@ -57,6 +60,7 @@ public class ReactorMethodExtend implements MethodExtend {
         ClientConfig clientConfig =(ClientConfig)config;
         this.clientOptions= builder ->{
             ClientOptions.Builder<?> builder1 =builder.disablePool().host(clientConfig.getIp()).port(clientConfig.port).afterNettyContextInit(afterNettyContextInit);
+            clientConfig.getChannelOption().forEach((channelOption, o) -> builder1.option(channelOption,o));
             Optional.ofNullable(afterChannelInit)
                     .ifPresent(init->builder1   .afterChannelInit(afterChannelInit));
         };

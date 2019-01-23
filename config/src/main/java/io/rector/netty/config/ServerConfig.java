@@ -1,9 +1,12 @@
 package io.rector.netty.config;
 
+import io.netty.channel.ChannelOption;
 import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.exception.CheckConfigException;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.Map;
 
 /**
  * @Auther: lxr
@@ -13,6 +16,8 @@ import lombok.Data;
 @Data
 @Builder
 public class ServerConfig implements Config{
+
+    private Map<ChannelOption,Object> channelOption;
 
     private Protocol protocol;
 
@@ -33,4 +38,5 @@ public class ServerConfig implements Config{
         }
         return true;
     }
+
 }

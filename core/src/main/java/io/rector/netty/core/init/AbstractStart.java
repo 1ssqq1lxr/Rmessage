@@ -14,6 +14,7 @@ import reactor.ipc.netty.NettyConnector;
 import reactor.ipc.netty.NettyInbound;
 import reactor.ipc.netty.NettyOutbound;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -29,9 +30,12 @@ abstract class AbstractStart implements Start {
 
     protected final MethodExtend methodExtend;
 
+    Map<ChannelOption,Object> channelOptions= new HashMap<>();
+
     public AbstractStart(Config config, MethodExtend methodExtend) {
         this.config = config;
         this.methodExtend = methodExtend;
+        config.setChannelOption(channelOptions);
         methodExtend.setConfig(config);
     }
 
@@ -99,7 +103,8 @@ abstract class AbstractStart implements Start {
 
     @Override
     public <T> Start option(ChannelOption<T> key, T value) {
-        return null;
+        channelOptions.put(key,value);
+        return this;
     }
 
 

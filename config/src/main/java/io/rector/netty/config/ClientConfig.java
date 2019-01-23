@@ -1,10 +1,13 @@
 package io.rector.netty.config;
 
+import io.netty.channel.ChannelOption;
 import io.reactor.netty.api.codec.ClientType;
 import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.exception.CheckConfigException;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.Map;
 
 /**
  * @Auther: luxurong
@@ -50,4 +53,6 @@ public class ClientConfig  implements   Config{
         }
         return true;
     }
+
+    private Map<ChannelOption,Object> channelOption;
 }
