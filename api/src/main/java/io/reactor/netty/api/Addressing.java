@@ -7,31 +7,14 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-/**
- * @Auther: lxr
- * @Date: 2018/12/7 17:33
- * @Description:
- */
+
 public final class Addressing {
 
   private Addressing() {
-    // Do not instantiate
+
   }
 
-  /**
-   * Returns {@link InetAddress} by given IP address or network interface name.
-   *
-   * @param listenAddress listen address; if set then {@code listenInterface} must be not set.
-   * @param listenInterface network interface name; if set then {@code listenAddress} must be not
-   *     set.
-   * @param preferIPv6 should we prefer IPv6 when choosing IP address; accounted when {@code
-   *     listenInterface} is set.
-   * @return {@link InetAddress} object.
-   * @throws IllegalArgumentException if both {@code listenAddress} and {@code listenInterface} were
-   *     passed.
-   * @throws IllegalArgumentException if {@code listenAddress} can't be resolved or if it
-   *     reprensents wildcard address, or if it doesn't belong to any active network interface.
-   */
+
   public static InetAddress getLocalIpAddress(
       String listenAddress, String listenInterface, boolean preferIPv6) {
     InetAddress ipAddress;
@@ -63,13 +46,7 @@ public final class Addressing {
     return ipAddress;
   }
 
-  /**
-   * Getting local IP address by the address of local host. <b>NOTE:</b> returned IP address is
-   * expected to be a publicly visible IP address.
-   *
-   * @throws RuntimeException wrapped {@link UnknownHostException} in case when local host name
-   *     couldn't be resolved into an address.
-   */
+
   public static InetAddress getLocalIpAddress() {
     try {
       return InetAddress.getLocalHost();
@@ -78,14 +55,7 @@ public final class Addressing {
     }
   }
 
-  /**
-   * Return inet address bound to passed listen interface.
-   *
-   * @param listenInterface NIC to listen
-   * @param preferIPv6 should ip v6 be preferred over ip v4
-   * @return {@link InetAddress} by network interface name and a flag indicating whether returned IP
-   *     * address will be IPv4 or IPv6.
-   */
+
   private static InetAddress getNetworkInterfaceIpAddress(
       String listenInterface, boolean preferIPv6) {
     try {
@@ -126,13 +96,7 @@ public final class Addressing {
     }
   }
 
-  /**
-   * Validates local ip address.
-   *
-   * @param listenAddress listen address parameter
-   * @return boolean indicating whether given address belongs to any active network interface
-   * @throws IllegalArgumentException in case validation fails
-   */
+
   private static boolean isValidLocalIpAddress(InetAddress listenAddress)
       throws IllegalArgumentException {
     List<NetworkInterface> networkInterfaces;
