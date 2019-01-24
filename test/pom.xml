@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.rector.netty.rmessage</groupId>
+    <groupId>com.github.1ssqq1lxr</groupId>
     <artifactId>test</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -30,7 +30,7 @@
             <version>4.11</version>
         </dependency>
         <dependency>
-            <groupId>io.rector.netty.rmessage</groupId>
+            <groupId>com.github.1ssqq1lxr</groupId>
             <version>1.0-SNAPSHOT</version>
             <artifactId>core</artifactId>
         </dependency>
