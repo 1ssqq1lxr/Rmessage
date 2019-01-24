@@ -17,7 +17,8 @@
   </modules>
   <packaging>pom</packaging>
 
-  <name>Rmessage</name>
+
+
   <!-- FIXME change it to the project's website -->
   <description>Reactive Programming Multi-protocol push service.</description>
   <url>https://github.com/1ssqq1lxr/Rmessage</url>
