@@ -5,10 +5,11 @@
     <parent>
         <artifactId>Rmessage</artifactId>
         <groupId>com.github.1ssqq1lxr</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <version>1.0.0</version>
     <artifactId>core</artifactId>
 
     <name>service</name>
@@ -30,7 +31,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.1ssqq1lxr</groupId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0</version>
             <artifactId>transport</artifactId>
         </dependency>
     </dependencies>

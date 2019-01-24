@@ -5,13 +5,13 @@
     <parent>
         <artifactId>Rmessage</artifactId>
         <groupId>com.github.1ssqq1lxr</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.1ssqq1lxr</groupId>
     <artifactId>test</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>test</name>
     <!-- FIXME change it to the project's website -->
@@ -31,7 +31,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.1ssqq1lxr</groupId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0</version>
             <artifactId>core</artifactId>
         </dependency>
     </dependencies>
