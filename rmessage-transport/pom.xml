@@ -9,10 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>config</artifactId>
     <version>1.0.0</version>
+    <artifactId>rmessage-transport</artifactId>
 
-    <name>config</name>
+    <name>rmessage-transport</name>
     <!-- FIXME change it to the project's website -->
     <url>http://www.example.com</url>
 
@@ -32,7 +32,12 @@
         <dependency>
             <groupId>com.github.1ssqq1lxr</groupId>
             <version>1.0.0</version>
-            <artifactId>api</artifactId>
+            <artifactId>rmessage-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.1ssqq1lxr</groupId>
+            <version>1.0.0</version>
+            <artifactId>rmessage-flow</artifactId>
         </dependency>
     </dependencies>
 
@@ -43,7 +48,7 @@
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>3.0.0</version>
                 </plugin>
-                <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+                <!-- see http://maven.apache.org/ref/current/maven-rmessage-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.0.2</version>
@@ -70,5 +75,15 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>

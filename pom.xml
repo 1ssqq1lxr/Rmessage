@@ -8,12 +8,12 @@
   <artifactId>Rmessage</artifactId>
   <version>1.0.0</version>
   <modules>
-    <module>transport</module>
-    <module>core</module>
-    <module>flow</module>
-    <module>config</module>
-    <module>api</module>
-    <module>test</module>
+    <module>rmessage-transport</module>
+    <module>rmessage-core</module>
+    <module>rmessage-flow</module>
+    <module>rmessage-config</module>
+    <module>rmessage-api</module>
+    <module>rmessage-test</module>
   </modules>
   <packaging>pom</packaging>
 

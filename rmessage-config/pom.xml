@@ -9,10 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <artifactId>rmessage-config</artifactId>
     <version>1.0.0</version>
-    <artifactId>flow</artifactId>
 
-    <name>flow</name>
+    <name>rmessage-config</name>
     <!-- FIXME change it to the project's website -->
     <url>http://www.example.com</url>
 
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>com.github.1ssqq1lxr</groupId>
             <version>1.0.0</version>
-            <artifactId>config</artifactId>
+            <artifactId>rmessage-api</artifactId>
         </dependency>
     </dependencies>
 
@@ -43,7 +43,7 @@
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>3.0.0</version>
                 </plugin>
-                <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+                <!-- see http://maven.apache.org/ref/current/maven-rmessage-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.0.2</version>
