@@ -34,7 +34,7 @@ Rmessage是采用Reactor3,基于reactor-netty项目构建的实时消息推送ap
       <groupId>com.github.1ssqq1lxr</groupId>
       <artifactId>rmessage-core</artifactId>
       <version>1.0.1</version>
-    </dependency>
+  </dependency>
 
 ```
 
