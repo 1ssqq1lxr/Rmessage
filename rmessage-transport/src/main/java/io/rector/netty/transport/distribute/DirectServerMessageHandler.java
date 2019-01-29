@@ -20,7 +20,7 @@ import java.util.function.Function;
  * @Description: 消息传输逻辑
  */
 @Slf4j
-public class DirectServerMessageHandler {
+public class DirectServerMessageHandler implements ServerMessageHandler{
 
     private final ServerSocketAdapter serverSocketAdapter;
 
