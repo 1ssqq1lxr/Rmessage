@@ -28,7 +28,15 @@ Rmessage是采用Reactor3,基于reactor-netty项目构建的实时消息推送ap
 9. 支持服务端自定义消息拦截
 9. 消息QOS机制(还未实现)
 
+## maven依赖
+```maven
+  <dependency>
+      <groupId>com.github.1ssqq1lxr</groupId>
+      <artifactId>rmessage-core</artifactId>
+      <version>1.0.1</version>
+  </dependency>
 
+```
 
 
 ##  快速开始
