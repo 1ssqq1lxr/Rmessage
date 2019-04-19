@@ -92,6 +92,10 @@ public class ClientStart   extends  AbstractStart {
 
     }
 
+    @Override
+    public Mono<Disposable> start() {
+        throw  new NotSupportException(" client not support start method");
+    }
 
 
     private  Mono<RsocketAcceptor>  rsocketAcceptor(){

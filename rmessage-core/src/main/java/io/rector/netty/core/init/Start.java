@@ -44,6 +44,8 @@ public interface Start {
 
     Mono<Disposable> connect();
 
+    Mono<Disposable> start();
+
     Start setClientType(ClientType type);
 
     Start userId(String userId);

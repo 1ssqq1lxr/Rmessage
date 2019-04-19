@@ -2,6 +2,7 @@ package io.rector.netty.core.init;
 
 import io.reactor.netty.api.codec.Protocol;
 import io.reactor.netty.api.exception.NotFindConfigException;
+import io.reactor.netty.api.exception.NotSupportException;
 import io.rector.netty.config.ServerConfig;
 import io.rector.netty.core.session.TcpServerSession;
 import io.rector.netty.flow.plugin.FrameInterceptor;
@@ -63,6 +64,11 @@ public class ServerStart    extends AbstractStart {
 
     @Override
     public   Mono<Disposable> connect(){
+        throw  new NotSupportException(" client not support frameInterceptor");
+    }
+
+    @Override
+    public Mono<Disposable> start() {
         config.check();
         ServerTransport serverTransport =new ServerTransport(socketFactory()
                 .accept(consumer)
@@ -70,16 +76,14 @@ public class ServerStart    extends AbstractStart {
                 .orElseThrow(()->new NotFindConfigException("协议不存在")));
         return rsocketAcceptor()
                 .map(rsocketAcceptor -> {
-                      ServerSocketAdapter rsocket= (ServerSocketAdapter )rsocketAcceptor.accept(() -> serverTransport,registry,(ServerConfig)config,methodExtend);
-                         return   rsocket.start()
-                                 .map(socket->new TcpServerSession(rsocket))
-                                 .doOnError(ex->log.error("connect error:",ex))
-                                 .log("server")
-                                 .block();
+                    ServerSocketAdapter rsocket= (ServerSocketAdapter )rsocketAcceptor.accept(() -> serverTransport,registry,(ServerConfig)config,methodExtend);
+                    return   rsocket.start()
+                            .map(socket->new TcpServerSession(rsocket))
+                            .doOnError(ex->log.error("connect error:",ex))
+                            .log("server")
+                            .block();
                 });
     }
-
-
 
 
     private  Mono<RsocketAcceptor>  rsocketAcceptor(){
